@@ -1,0 +1,58 @@
+﻿<Page
+    x:Class="TraceDemo.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TraceDemo"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Name="MyPage" Loaded="MyPage_Loaded">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="8*"/>
+        </Grid.ColumnDefinitions>
+
+
+        <ScrollViewer Grid.Column="0">
+            <StackPanel Name="MyImagesPanel">
+                <!--<Button x:Name="button1" Content="Button" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <Button x:Name="button2" Content="Button" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="8*"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Image Name="MyImage"/>
+                <InkCanvas Name="MyInkCanvas"/>
+            </Grid>
+            
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Viewbox Grid.Column="0">
+                    <Button Name="MyClearButton" Click="MyClearButton_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                        <Image Source="Assets/Icons/clear_icon.png" Stretch="UniformToFill"/>
+                    </Button>
+                </Viewbox>
+
+                <Viewbox Grid.Column="1" >
+                    <Button Name="MyUndoButton" Click="MyUndoButton_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                        <Image Source="Assets/Icons/undo_icon.png" Stretch="UniformToFill"/>
+                    </Button>
+                </Viewbox>
+            </Grid>
+
+        </Grid>
+        
+    </Grid>
+</Page>
