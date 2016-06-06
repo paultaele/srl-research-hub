@@ -64,15 +64,15 @@ namespace TraceDemo
             {
                 // create the image
                 location = new Uri(this.BaseUri, folderPath + fileName);
-                file = await StorageFile.GetFileFromApplicationUriAsync(location);
-                fileStream = await file.OpenAsync(FileAccessMode.Read);
-                bitmap = new BitmapImage();
-                bitmap.SetSource(fileStream);
+                //file = await StorageFile.GetFileFromApplicationUriAsync(location);
+                //fileStream = await file.OpenAsync(FileAccessMode.Read);
+                //bitmap = new BitmapImage();
+                //bitmap.SetSource(fileStream);
                 //MyImage.Source = bitmap;
 
-                // set the image
-                Image image = new Image();
-                image.Source = bitmap;
+                //// set the image
+                //Image image = new Image();
+                //image.Source = bitmap;
 
                 // create the button
                 symbolButton = new Button()

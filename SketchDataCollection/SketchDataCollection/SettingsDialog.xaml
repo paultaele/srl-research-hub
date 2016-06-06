@@ -1,0 +1,51 @@
+﻿<ContentDialog
+    x:Class="SketchDataCollection.SettingsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SketchDataCollection"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="SETTINGS"
+    PrimaryButtonText="Confirm"
+    SecondaryButtonText="Cancel"
+    PrimaryButtonClick="MySaveSettingsButton_PrimaryButtonClick"
+    SecondaryButtonClick="MyCancelSettingsButton_SecondaryButtonClick"
+    IsPrimaryButtonEnabled="False"
+    IsSecondaryButtonEnabled="True"
+    Name="MySettingsDialog" Loaded="MySettingsDialog_Loaded">
+
+    <StackPanel>
+        <StackPanel Margin="10">
+            <TextBlock Text="Data Handling" Style="{ThemeResource BaseTextBlockStyle}"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Name="MyLoadDirectoryButton" Content="Load" Click="MyLoadDirectoryButton_Click" Margin="0,0,10,0"/>
+                <TextBlock Name="MyLoadDirectoryText" VerticalAlignment="Center" Text="Please select a directory."/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Name="MySaveDirectoryButton" Content="Save" Click="MySaveDirectoryButton_Click"  Margin="0,0,10,0"/>
+                <TextBlock Name="MySaveDirectoryText" VerticalAlignment="Center" Text="Please select a directory."/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Margin="10">
+            <TextBlock Text="Iterations Count" Style="{ThemeResource BaseTextBlockStyle}"/>
+            <TextBlock Name="MyIterationsCountText"/>
+            <Slider Grid.Column="1" Name="MyIterationsSlider" Minimum="1" Maximum="10" TickFrequency="1" TickPlacement="BottomRight" SnapsTo="Ticks" Margin="10,0,10,0" ValueChanged="MyIterationsSlider_ValueChanged"/>
+            
+        </StackPanel>
+
+        <StackPanel Margin="10">
+            <TextBlock Text="Sketching Area" Style="{ThemeResource BaseTextBlockStyle}"/>
+            <RadioButton Name="MySquareAreaRadio" GroupName="MySketchingAreaGroup" IsChecked="True" Content="Square"/>
+            <RadioButton Name="MyFullAreaRadio" GroupName="MySketchingAreaGroup" Content="Full"/>
+        </StackPanel>
+
+        <StackPanel Margin="10">
+            <TextBlock Text="Dislay Options" Style="{ThemeResource BaseTextBlockStyle}"/>
+            <ToggleSwitch Name="MyDisplayTraceImageToggle" Header="Display trace image" IsOn="True"/>
+            <ToggleSwitch Name="MyDisplayPreviewImageToggle" Header="Display preview image" IsOn="True"/>
+            <ToggleSwitch Name="MyDisplayRandomImagesToggle" Header="Display images randomly" IsOn="True"/>
+        </StackPanel>
+    </StackPanel>
+</ContentDialog>
