@@ -13,6 +13,7 @@ using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
+using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
@@ -202,6 +203,81 @@ namespace BasicWhiteBoard
         }
 
         private async void WriteXml(StorageFile file, string label, IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection)
+        {
+            //
+            using (IRandomAccessStream writeStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                Stream stream = writeStream.AsStreamForWrite();
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Async = true;
+
+                using (XmlWriter xmlWriter = XmlWriter.Create(stream, settings))
+                {
+                    // <xml>
+                    xmlWriter.WriteStartDocument();
+
+                    // <sketch>
+                    xmlWriter.WriteStartElement("sketch");
+                    xmlWriter.WriteAttributeString("label", label);
+
+                    // set up the required variables
+                    List<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
+                    List<InkPoint> points;
+                    List<long> times;
+                    InkPoint point;
+                    long time;
+
+                    // iterate through each stroke
+                    for (int i = 0; i < strokes.Count; ++i)
+                    {
+                        // <stroke>
+                        xmlWriter.WriteStartElement("stroke");
+
+                        // get the current stroke's points and times
+                        points = strokes[i].GetInkPoints().ToList();
+                        times = myTimeCollection[i];
+
+                        //
+                        while (points.Count != times.Count)
+                        {
+                            if (points.Count > times.Count) { points.RemoveAt(points.Count - 1); }
+                            else if (times.Count > points.Count) { times.RemoveAt(times.Count - 1); }
+                        }
+
+                        //
+                        for (int j = 0; j < points.Count; ++j)
+                        {
+                            point = points[j];
+                            time = times[j];  // TODO: FIX!
+
+                            // <point>
+                            xmlWriter.WriteStartElement("point");
+
+                            xmlWriter.WriteAttributeString("x", "" + point.Position.X);
+                            xmlWriter.WriteAttributeString("y", "" + point.Position.Y);
+                            xmlWriter.WriteAttributeString("time", "" + times[j]);
+
+                            // </point>
+                            xmlWriter.WriteEndElement();
+                        }
+
+
+                        // </stroke>
+                        xmlWriter.WriteEndElement();
+                    }
+
+                    // </sketch>
+                    xmlWriter.WriteEndElement();
+
+                    // </xml>
+                    xmlWriter.WriteEndDocument();
+
+                    await xmlWriter.FlushAsync();
+                }
+            }
+        }
+
+        private async void WriteXml2(StorageFile file, string label, IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection)
         {
             // create the string writer as the streaming source of the XML data
             string output = "";
