@@ -258,14 +258,12 @@ namespace SketchDataCollection
 
         private async void WriteXml(StorageFile file, string label, IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection)
         {
-            //
-            using (IRandomAccessStream writeStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            // create the string writer as the streaming source of the XML data
+            string output = "";
+            using (StringWriter stringWriter = new StringWriter())
             {
-                Stream stream = writeStream.AsStreamForWrite();
-                XmlWriterSettings settings = new XmlWriterSettings();
-                settings.Async = true;
-
-                using (XmlWriter xmlWriter = XmlWriter.Create(stream, settings))
+                // set the string writer as the streaming source for the XML writer
+                using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
                 {
                     // <xml>
                     xmlWriter.WriteStartDocument();
@@ -308,8 +306,8 @@ namespace SketchDataCollection
                             xmlWriter.WriteStartElement("point");
 
                             xmlWriter.WriteAttributeString("x", "" + point.Position.X);
-                            xmlWriter.WriteAttributeString("y", "" + point.Position.Y);
-                            xmlWriter.WriteAttributeString("time", "" + times[j]);
+                            xmlWriter.WriteAttributeString("y", "" +  point.Position.Y);
+                            xmlWriter.WriteAttributeString("time", "" +  times[j]);
 
                             // </point>
                             xmlWriter.WriteEndElement();
@@ -325,10 +323,12 @@ namespace SketchDataCollection
 
                     // </xml>
                     xmlWriter.WriteEndDocument();
-
-                    await xmlWriter.FlushAsync();
                 }
+
+                output = stringWriter.ToString();
             }
+
+            await FileIO.WriteTextAsync(file, output);
         }
 
         private void UpdateTime(bool hasStarted, bool hasEnded)

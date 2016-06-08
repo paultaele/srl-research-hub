@@ -1,0 +1,30 @@
+﻿<Page
+    x:Class="SketchDataViewer.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SketchDataViewer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Name="MyPage" Loaded="MyPage_Loaded">
+
+    <Page.TopAppBar>
+        <CommandBar>
+            <CommandBar.Content>
+                <Grid Margin="12,14">
+                    <TextBlock Name="MyOutputText" Text=""/>
+                </Grid>
+            </CommandBar.Content>
+
+
+            <AppBarButton Name="MyPreviousButton" Icon="Previous" Click="MyPreviousButton_Click"/>
+            <AppBarButton Name="MyNextButton" Icon="Next" Click="MyNextButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MyLoadButton" Icon="OpenFile" Click="MyLoadButton_Click"/>
+        </CommandBar>
+    </Page.TopAppBar>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <InkCanvas Name="MyInkCanvas"/>
+    </Grid>
+</Page>
