@@ -101,25 +101,41 @@ namespace SketchDataRetracer
 
         private void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            //
-            var strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes();
-            var times = myTimeCollection[0];
+            // 1. Clear the canvas of all strokes and tracers.
+            // 2. 
 
-            // get starting position
-            var stroke = strokes[0];
-            double startX = stroke.GetInkPoints()[0].Position.X;
-            double startY = stroke.GetInkPoints()[0].Position.Y;
+            // clear the canvas
+            MyCanvas.Children.Clear();
 
-            // create traing dot
+            // create the tracer
             myEllipse = new Ellipse();
-            myEllipse.Width = 50;
-            myEllipse.Height = 50;
+            myEllipse.Width = 30;
+            myEllipse.Height = 30;
             myEllipse.Fill = new SolidColorBrush(Colors.Red);
-            Canvas.SetLeft(myEllipse, -20);
-            Canvas.SetTop(myEllipse, -20);
+            Canvas.SetLeft(myEllipse, -myEllipse.Width / 2);
+            Canvas.SetTop(myEllipse, -myEllipse.Height / 2);
             MyCanvas.Children.Add(myEllipse);
 
-            //Temp();
+            //
+            var strokesCollection = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
+
+            //
+            for (int i = 0; i < strokesCollection.Count; ++i)
+            {
+
+            }
+
+            //
+            var stroke = strokesCollection[0];
+            var times = myTimeCollection[0];
+
+            //
+            int pointsCount = stroke.GetInkPoints().Count;
+            int count = pointsCount < times.Count ? pointsCount : times.Count;
+
+            //
+            double startX = stroke.GetInkPoints()[0].Position.X;
+            double startY = stroke.GetInkPoints()[0].Position.Y;
 
             //
             long initialTime = times[0];
@@ -134,11 +150,11 @@ namespace SketchDataRetracer
             KeyTime keyTime;
             EasingDoubleKeyFrame frameX, frameY;
             double x, y;
-            for (int i = 0; i < times.Count; ++i)
+            for (int j = 0; j < count; ++j)
             {
-                keyTime = new TimeSpan(times[i] - initialTime);
-                x = stroke.GetInkPoints()[i].Position.X;
-                y = stroke.GetInkPoints()[i].Position.Y;
+                keyTime = new TimeSpan(times[j] - initialTime);
+                x = stroke.GetInkPoints()[j].Position.X;
+                y = stroke.GetInkPoints()[j].Position.Y;
 
                 frameX = new EasingDoubleKeyFrame() { KeyTime = keyTime, Value = x };
                 frameY = new EasingDoubleKeyFrame() { KeyTime = keyTime, Value = y };
@@ -159,58 +175,10 @@ namespace SketchDataRetracer
             storyboard.Begin();
         }
 
-        private void Temp()
-        {
-            myEllipse.RenderTransform = new CompositeTransform();
-
-            Storyboard storyboard = new Storyboard();
-
-            DoubleAnimationUsingKeyFrames translateXAnimation = new DoubleAnimationUsingKeyFrames();
-            DoubleAnimationUsingKeyFrames translateYAnimation = new DoubleAnimationUsingKeyFrames();
-
-            //
-            KeyTime time1 = new TimeSpan(0, 0, 0); //new TimeSpan(long ticks);
-            KeyTime time2 = new TimeSpan(0, 0, 1); //new TimeSpan(long ticks);
-            KeyTime time3 = new TimeSpan(0, 0, 2); //new TimeSpan(long ticks);
-
-            EasingDoubleKeyFrame frame1x = new EasingDoubleKeyFrame() { KeyTime = time1, Value = 550 };
-            EasingDoubleKeyFrame frame1y = new EasingDoubleKeyFrame() { KeyTime = time1, Value = 50 };
-
-            EasingDoubleKeyFrame frame2x = new EasingDoubleKeyFrame();
-            frame2x.KeyTime = time2;
-            frame2x.Value = 300;
-
-            EasingDoubleKeyFrame frame2y = new EasingDoubleKeyFrame();
-            frame2y.KeyTime = time2;
-            frame2y.Value = 400;
-
-            EasingDoubleKeyFrame frame3x = new EasingDoubleKeyFrame();
-            frame3x.KeyTime = time3;
-            frame3x.Value = 100;
-
-            EasingDoubleKeyFrame frame3y = new EasingDoubleKeyFrame();
-            frame3y.KeyTime = time3;
-            frame3y.Value = 200;
-
-            translateXAnimation.KeyFrames.Add(frame1x);
-            translateXAnimation.KeyFrames.Add(frame2x);
-            translateXAnimation.KeyFrames.Add(frame3x);
-
-            translateYAnimation.KeyFrames.Add(frame1y);
-            translateYAnimation.KeyFrames.Add(frame2y);
-            translateYAnimation.KeyFrames.Add(frame3y);
-
-            Storyboard.SetTarget(translateXAnimation, myEllipse);
-            Storyboard.SetTarget(translateYAnimation, myEllipse);
-
-            Storyboard.SetTargetProperty(translateXAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateX)");
-            Storyboard.SetTargetProperty(translateYAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateY)");
-
-            storyboard.Children.Add(translateXAnimation);
-            storyboard.Children.Add(translateYAnimation);
-
-            storyboard.Begin();
-        }
+         //<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName= "rectangle" >
+         //       < EasingDoubleKeyFrame KeyTime= "0:0:3" Value= "1" />
+         //       < EasingDoubleKeyFrame KeyTime= "0:0:4" Value= "0" />
+         //   </ DoubleAnimationUsingKeyFrames >
 
         #endregion
 
