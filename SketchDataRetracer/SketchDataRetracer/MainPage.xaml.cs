@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -73,7 +74,7 @@ namespace SketchDataRetracer
             MyInkCanvas.InkPresenter.StrokeContainer.Clear();
             myTimeCollection = new List<List<long>>();
             DateTimeOffset = 0;
-            MyCanvas.Children.Remove(myEllipse);
+            MyCanvas.Children.Clear();
         }
 
         private void MyUndoButton_Click(object sender, RoutedEventArgs e)
@@ -96,34 +97,132 @@ namespace SketchDataRetracer
             myTimeCollection.RemoveAt(myTimeCollection.Count - 1);
 
             //
-            MyCanvas.Children.Remove(myEllipse);
+            MyCanvas.Children.Clear();
         }
 
         private void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Clear the canvas of all strokes and tracers.
-            // 2. 
+            if (MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count == 0) { return; }
 
+            Play2();
+        }
+
+        private void Play2()
+        {
             // clear the canvas
             MyCanvas.Children.Clear();
 
-            // create the tracer
-            myEllipse = new Ellipse();
-            myEllipse.Width = 30;
-            myEllipse.Height = 30;
-            myEllipse.Fill = new SolidColorBrush(Colors.Red);
-            Canvas.SetLeft(myEllipse, -myEllipse.Width / 2);
-            Canvas.SetTop(myEllipse, -myEllipse.Height / 2);
-            MyCanvas.Children.Add(myEllipse);
+            //
+            List<InkStroke> strokesCollection = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
+            List<List<long>> timesCollection = myTimeCollection;
+
+            //
+            long offsetTime = timesCollection[0][0];
+
+            // iterate through each stroke
+            for (int i = 0; i < strokesCollection.Count; ++i)
+            {
+                // get the current stroke and times
+                InkStroke stroke = strokesCollection[i];
+                List<long> times = timesCollection[i];
+                int pointsCount = stroke.GetInkPoints().Count;
+                int count = pointsCount < times.Count ? pointsCount : times.Count;
+
+                // get the tracer's starting position
+                double startX = stroke.GetInkPoints()[0].Position.X;
+                double startY = stroke.GetInkPoints()[0].Position.Y;
+
+                // create the stroke's current tracer
+                Ellipse ellipse = new Ellipse()
+                {
+                    Width = 30,
+                    Height = 30,
+                    Fill = new SolidColorBrush(Colors.Red)
+                };
+
+                // add the tracer to the canvas
+                Canvas.SetLeft(ellipse, -ellipse.Width / 2);
+                Canvas.SetTop(ellipse, -ellipse.Height / 2);
+                MyCanvas.Children.Add(ellipse);
+
+                // initialize the storyboard and animation
+                ellipse.RenderTransform = new CompositeTransform();
+                Storyboard storyboard = new Storyboard();
+                DoubleAnimationUsingKeyFrames translateXAnimation = new DoubleAnimationUsingKeyFrames();
+                DoubleAnimationUsingKeyFrames translateYAnimation = new DoubleAnimationUsingKeyFrames();
+                DoubleAnimationUsingKeyFrames fadeAnimation = new DoubleAnimationUsingKeyFrames();
+
+                // create the tracer's translation animation
+                KeyTime keyTime;
+                EasingDoubleKeyFrame frameX, frameY;
+                double x, y;
+                for (int j = 0; j < count; ++j)
+                {
+                    keyTime = new TimeSpan(times[j] - offsetTime);
+                    x = stroke.GetInkPoints()[j].Position.X;
+                    y = stroke.GetInkPoints()[j].Position.Y;
+
+                    frameX = new EasingDoubleKeyFrame() { KeyTime = keyTime, Value = x };
+                    frameY = new EasingDoubleKeyFrame() { KeyTime = keyTime, Value = y };
+
+                    translateXAnimation.KeyFrames.Add(frameX);
+                    translateYAnimation.KeyFrames.Add(frameY);
+                }
+
+                // update offset time to offset drawing break between current and previous stroke
+                long firstTime = times[0] - offsetTime;
+                long lastTime = times[times.Count - 1] - offsetTime;
+
+                //
+                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 1 });
+                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 0 });
+                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(firstTime), Value = 0 });
+                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(firstTime), Value = 1 });
+                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(lastTime), Value = 1 });
+                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(lastTime), Value = 0 });
+
+                // assign the animations to their components
+                Storyboard.SetTarget(translateXAnimation, ellipse);
+                Storyboard.SetTarget(translateYAnimation, ellipse);
+                Storyboard.SetTarget(fadeAnimation, ellipse);
+
+                // assign the animation to their behavior
+                Storyboard.SetTargetProperty(translateXAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateX)");
+                Storyboard.SetTargetProperty(translateYAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateY)");
+                Storyboard.SetTargetProperty(fadeAnimation, "(UIElement.Opacity)");
+
+                // add the animations to the storyboard
+                storyboard.Children.Add(translateXAnimation);
+                storyboard.Children.Add(translateYAnimation);
+                storyboard.Children.Add(fadeAnimation);
+
+                // begin the storyboard
+                storyboard.Begin();
+            }
+        }
+
+        private void Play()
+        {
+            // clear the canvas
+            MyCanvas.Children.Clear();
 
             //
             var strokesCollection = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
-
-            //
             for (int i = 0; i < strokesCollection.Count; ++i)
             {
 
             }
+
+            // create the tracer
+            Ellipse ellipse = new Ellipse()
+            {
+                Width = 30,
+                Height = 30,
+                Fill = new SolidColorBrush(Colors.Red)
+            };
+            Canvas.SetLeft(ellipse, -ellipse.Width / 2);
+            Canvas.SetTop(ellipse, -ellipse.Height / 2);
+            MyCanvas.Children.Add(ellipse);
 
             //
             var stroke = strokesCollection[0];
@@ -141,12 +240,15 @@ namespace SketchDataRetracer
             long initialTime = times[0];
 
             //
-            myEllipse.RenderTransform = new CompositeTransform();
+            ellipse.RenderTransform = new CompositeTransform();
             Storyboard storyboard = new Storyboard();
 
             // 
             DoubleAnimationUsingKeyFrames translateXAnimation = new DoubleAnimationUsingKeyFrames();
             DoubleAnimationUsingKeyFrames translateYAnimation = new DoubleAnimationUsingKeyFrames();
+            DoubleAnimationUsingKeyFrames fadeoutAnimation = new DoubleAnimationUsingKeyFrames();
+
+            //
             KeyTime keyTime;
             EasingDoubleKeyFrame frameX, frameY;
             double x, y;
@@ -164,21 +266,31 @@ namespace SketchDataRetracer
             }
 
             //
-            Storyboard.SetTarget(translateXAnimation, myEllipse);
-            Storyboard.SetTarget(translateYAnimation, myEllipse);
+            long lastTime = times[times.Count - 1] - initialTime;
+            KeyTime visibleTime = new TimeSpan(lastTime);
+            KeyTime invisibleTime = new TimeSpan(lastTime + 100);
+            EasingDoubleKeyFrame visible = new EasingDoubleKeyFrame() { KeyTime = visibleTime, Value = 1 };
+            EasingDoubleKeyFrame invisible = new EasingDoubleKeyFrame() { KeyTime = invisibleTime, Value = 0 };
+            fadeoutAnimation.KeyFrames.Add(visible);
+            fadeoutAnimation.KeyFrames.Add(invisible);
+
+            //
+            Storyboard.SetTarget(translateXAnimation, ellipse);
+            Storyboard.SetTarget(translateYAnimation, ellipse);
+            Storyboard.SetTarget(fadeoutAnimation, ellipse);
+
+            //
             Storyboard.SetTargetProperty(translateXAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateX)");
             Storyboard.SetTargetProperty(translateYAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateY)");
+            Storyboard.SetTargetProperty(fadeoutAnimation, "(UIElement.Opacity)");
 
+            //
             storyboard.Children.Add(translateXAnimation);
             storyboard.Children.Add(translateYAnimation);
+            storyboard.Children.Add(fadeoutAnimation);
 
             storyboard.Begin();
         }
-
-         //<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName= "rectangle" >
-         //       < EasingDoubleKeyFrame KeyTime= "0:0:3" Value= "1" />
-         //       < EasingDoubleKeyFrame KeyTime= "0:0:4" Value= "0" />
-         //   </ DoubleAnimationUsingKeyFrames >
 
         #endregion
 
@@ -244,7 +356,6 @@ namespace SketchDataRetracer
 
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
-        private Ellipse myEllipse;
 
         #endregion
     }
