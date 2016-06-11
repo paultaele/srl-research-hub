@@ -22,10 +22,10 @@ using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
-namespace SketchDataRetracer
+namespace SketchPlayer
 {
     /// <summary>
-    /// A page for drawing, editing, and retracing strokes on a sketching interface.
+    /// A page for drawing, editing, and playing back strokes on a sketching interface.
     /// </summary>
     public sealed partial class MainPage : Page
     {
