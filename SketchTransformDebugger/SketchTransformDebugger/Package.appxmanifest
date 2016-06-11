@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="119938c6-2aa6-4013-b20d-6ba24b8313ba"
+    Name="e4c14d3e-b0f7-413a-a8ad-eae4268d42bb"
     Publisher="CN=paultaele"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="119938c6-2aa6-4013-b20d-6ba24b8313ba" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="e4c14d3e-b0f7-413a-a8ad-eae4268d42bb" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>SketchDataRetracer</DisplayName>
+    <DisplayName>SketchTransformDebugger</DisplayName>
     <PublisherDisplayName>paultaele</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="SketchDataRetracer.App">
+      EntryPoint="SketchTransformDebugger.App">
       <uap:VisualElements
-        DisplayName="SketchDataRetracer"
+        DisplayName="SketchTransformDebugger"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="SketchDataRetracer"
+        Description="SketchTransformDebugger"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
