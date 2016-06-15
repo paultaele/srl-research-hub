@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -42,6 +43,8 @@ namespace SketchTransformDebugger
 
         private void Mypage_Loaded(object sender, RoutedEventArgs e)
         {
+            IsLoaded = true;
+
             //double length = MyInkCanvas.ActualHeight < MyInkCanvas.ActualWidth ? MyInkCanvas.ActualHeight : MyInkCanvas.ActualWidth;
             //MyRightBorder.Width = MyRightBorder.Height = length;
 
@@ -120,18 +123,80 @@ namespace SketchTransformDebugger
             myTimeCollection.RemoveAt(myTimeCollection.Count - 1);
         }
 
+        private void MyTransformButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded) { return; }
+
+            Sketch sketch = PDollar.CloneSketch(mySketch);
+
+            // resample
+            if (MyResampleToggle.IsOn)
+            {
+                int count = (int)MyResampleSlider.Value * 16;
+                sketch = PDollar.Resample(sketch, count);
+            }
+
+            // scale
+            if (MyScaleToggle.IsOn)
+            {
+                double size = MyScaleSlider.Value * 100;
+                sketch = MyScaleSquareRadio.IsChecked.Value ? PDollar.ScaleSquare(sketch, size) : PDollar.ScaleProportional(sketch, size);
+            }
+
+            // translate
+            if (MyTranslateToggle.IsOn)
+            {
+                double size = MyScaleSlider.Value * 100;
+                Point k = new Point(MyInkCanvas.ActualWidth / 2, MyInkCanvas.ActualHeight / 2);
+                sketch = MyTranslateMedianRadio.IsChecked.Value ? PDollar.TranslateCentroid(sketch, k) : PDollar.TranslateMedian(sketch, k);
+            }
+
+            //
+            foreach (InkStroke stroke in sketch.Strokes) { stroke.DrawingAttributes = StrokeVisuals; }
+            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
+            MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(sketch.Strokes);
+            myTimeCollection = sketch.Times;
+        }
+
         #endregion
 
         #region Toggle Handlers
 
         private void MyDrawToggle_Toggled(object sender, RoutedEventArgs e)
         {
-            bool isEnabled = MyDrawToggle.IsOn;
-            MyInkCanvas.InkPresenter.IsInputEnabled = isEnabled;
+            if (!IsLoaded) { return; }
+
+            bool isOn = MyDrawToggle.IsOn;
+            MyInkCanvas.InkPresenter.IsInputEnabled = isOn;
 
             // null check needed since this method is called before clear and undo buttons exist
-            if (MyClearButton != null) { MyClearButton.IsEnabled = isEnabled; }
-            if (MyUndoButton != null) { MyUndoButton.IsEnabled = isEnabled; }
+            if (MyClearButton != null) { MyClearButton.IsEnabled = isOn; }
+            if (MyUndoButton != null) { MyUndoButton.IsEnabled = isOn; }
+
+            //
+            MyResampleToggle.IsEnabled = !isOn;
+            MyResampleSlider.IsEnabled = !isOn;
+            MyScaleToggle.IsEnabled = !isOn;
+            MyScaleSlider.IsEnabled = !isOn;
+            MyTranslateToggle.IsEnabled = !isOn;
+            MyTranslateCenterRadio.IsEnabled = !isOn;
+            MyTranslateMedianRadio.IsEnabled = !isOn;
+            if (MyTransformButton != null) { MyTransformButton.IsEnabled = !isOn; }
+
+            //
+            if (!isOn)
+            {
+                mySketch = new Sketch(MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList(), myTimeCollection);
+            }
+            else
+            {
+                Sketch clone = PDollar.CloneSketch(mySketch);
+                foreach (InkStroke stroke in clone.Strokes) { stroke.DrawingAttributes = StrokeVisuals; }
+
+                MyInkCanvas.InkPresenter.StrokeContainer.Clear();
+                MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(clone.Strokes);
+                myTimeCollection = clone.Times;
+            }
         }
 
         #endregion
@@ -140,6 +205,7 @@ namespace SketchTransformDebugger
 
         private InkDrawingAttributes StrokeVisuals { get; set; }
         private long DateTimeOffset { get; set; }
+        private bool IsLoaded { get; set; }
 
         #endregion
 
@@ -147,6 +213,7 @@ namespace SketchTransformDebugger
 
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
+        private Sketch mySketch;
 
         #endregion
     }
