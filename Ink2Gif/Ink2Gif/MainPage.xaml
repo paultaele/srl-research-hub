@@ -9,12 +9,13 @@
 
     <Page.TopAppBar>
         <CommandBar>
-            <AppBarButton Name="MyClearButton" Icon="Delete" Click="MyClearButton_Click"/>
-            <AppBarButton Name="MyUndoButton" Icon="Undo" Click="MyUndoButton_Click"/>
-            <AppBarButton Name="MyDotButton" Icon="Emoji" Click="MyDotButton_Click"/>
+            <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
+            <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>
+            <AppBarButton Name="MyDotButton" Icon="Emoji" Label="Dotify" Click="MyDotButton_Click"/>
             <AppBarSeparator/>
-            <AppBarButton Name="MySaveButton" Icon="Save" Click="MySaveButton_Click"/>
-            <AppBarButton Name="MyLoadButton" Icon="OpenFile" Click="MyLoadButton_Click"/>
+            <AppBarButton Name="MySaveButton" Icon="Save" Label="Save File" Click="MySaveButton_Click"/>
+            <AppBarButton Name="MyLoadFileButton" Icon="OpenFile" Label="Open File" Click="MyLoadFileButton_Click"/>
+            <AppBarButton Name="MyLoadFolderButton" Icon="OpenLocal" Label="Open Folder"  Click="MyLoadFolderButton_Click"/>
         </CommandBar>
     </Page.TopAppBar>
 
