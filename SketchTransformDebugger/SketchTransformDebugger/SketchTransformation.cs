@@ -9,7 +9,7 @@ using Windows.UI.Input.Inking;
 
 namespace SketchTransformDebugger
 {
-    public class PDollar
+    public class SketchTransformation
     {
         public static Sketch Resample(Sketch sketch, int n)
         {
@@ -275,7 +275,7 @@ namespace SketchTransformDebugger
             return new Point((minX + maxX) / 2.0, (minY + maxY) / 2.0);
         }
 
-        public static Sketch CloneSketch(Sketch mySketch)
+        public static Sketch Clone(Sketch mySketch)
         {
             //
             List<InkStroke> newStrokesCollection = new List<InkStroke>();
@@ -334,5 +334,36 @@ namespace SketchTransformDebugger
 
             return distance;
         }
+    }
+
+    public class Sketch
+    {
+        public Sketch(List<InkStroke> strokes, List<List<long>> times)
+        {
+            Strokes = strokes;
+            Times = times;
+        }
+
+        public List<InkStroke> Strokes { get; set; }
+        public List<List<long>> Times { get; set; }
+    }
+
+    public class SketchPair
+    {
+        public SketchPair(Sketch original, Sketch transformed)
+        {
+            Original = original;
+            Transformed = transformed;
+        }
+
+        public SketchPair(Sketch original)
+        {
+            Original = original;
+            Transformed = null;
+        }
+
+        public Sketch Original { get; set; }
+
+        public Sketch Transformed { get; set; }
     }
 }

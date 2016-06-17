@@ -144,12 +144,13 @@ namespace SketchPlayer
                 List<long> times = new List<long>();
                 for (int j = 0; j < strokesCollection[i].GetInkPoints().Count; ++j)
                 {
-                    interval += 125000;
+                    interval += 500000;
                     times.Add(interval);
                 }
 
                 timesCollection.Add(times);
-                interval += 1000000;
+                interval += 3000000;
+                //interval += 1000000;
             }
 
             Trace(canvas, strokesCollection, timesCollection, false);

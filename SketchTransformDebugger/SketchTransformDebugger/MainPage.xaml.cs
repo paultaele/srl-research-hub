@@ -127,20 +127,20 @@ namespace SketchTransformDebugger
         {
             if (!IsLoaded) { return; }
 
-            Sketch sketch = PDollar.CloneSketch(mySketch);
+            Sketch sketch = SketchTransformation.Clone(mySketch);
 
             // resample
             if (MyResampleToggle.IsOn)
             {
                 int count = (int)MyResampleSlider.Value * 16;
-                sketch = PDollar.Resample(sketch, count);
+                sketch = SketchTransformation.Resample(sketch, count);
             }
 
             // scale
             if (MyScaleToggle.IsOn)
             {
                 double size = MyScaleSlider.Value * 100;
-                sketch = MyScaleSquareRadio.IsChecked.Value ? PDollar.ScaleSquare(sketch, size) : PDollar.ScaleProportional(sketch, size);
+                sketch = MyScaleSquareRadio.IsChecked.Value ? SketchTransformation.ScaleSquare(sketch, size) : SketchTransformation.ScaleProportional(sketch, size);
             }
 
             // translate
@@ -148,7 +148,7 @@ namespace SketchTransformDebugger
             {
                 double size = MyScaleSlider.Value * 100;
                 Point k = new Point(MyInkCanvas.ActualWidth / 2, MyInkCanvas.ActualHeight / 2);
-                sketch = MyTranslateMedianRadio.IsChecked.Value ? PDollar.TranslateCentroid(sketch, k) : PDollar.TranslateMedian(sketch, k);
+                sketch = MyTranslateMedianRadio.IsChecked.Value ? SketchTransformation.TranslateCentroid(sketch, k) : SketchTransformation.TranslateMedian(sketch, k);
             }
 
             //
@@ -190,7 +190,7 @@ namespace SketchTransformDebugger
             }
             else
             {
-                Sketch clone = PDollar.CloneSketch(mySketch);
+                Sketch clone = SketchTransformation.Clone(mySketch);
                 foreach (InkStroke stroke in clone.Strokes) { stroke.DrawingAttributes = StrokeVisuals; }
 
                 MyInkCanvas.InkPresenter.StrokeContainer.Clear();

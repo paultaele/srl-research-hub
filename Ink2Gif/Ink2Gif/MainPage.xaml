@@ -1,0 +1,25 @@
+﻿<Page
+    x:Class="Ink2Gif.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Ink2Gif"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
+
+    <Page.TopAppBar>
+        <CommandBar>
+            <AppBarButton Name="MyClearButton" Icon="Delete" Click="MyClearButton_Click"/>
+            <AppBarButton Name="MyUndoButton" Icon="Undo" Click="MyUndoButton_Click"/>
+            <AppBarButton Name="MyDotButton" Icon="Emoji" Click="MyDotButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MySaveButton" Icon="Save" Click="MySaveButton_Click"/>
+            <AppBarButton Name="MyLoadButton" Icon="OpenFile" Click="MyLoadButton_Click"/>
+        </CommandBar>
+    </Page.TopAppBar>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Canvas Name="MyCanvas"/>
+        <InkCanvas Name="MyInkCanvas"/>
+    </Grid>
+</Page>
