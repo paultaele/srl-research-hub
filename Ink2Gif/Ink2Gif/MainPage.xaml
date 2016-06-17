@@ -20,7 +20,11 @@
     </Page.TopAppBar>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Canvas Name="MyCanvas"/>
-        <InkCanvas Name="MyInkCanvas"/>
+        <Border Name="MyBorder">
+            <Grid>
+                <Canvas Name="MyCanvas"/>
+                <InkCanvas Name="MyInkCanvas"/>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

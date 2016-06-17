@@ -27,7 +27,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
-namespace Ink2Gif
+namespace Kinect2Gif
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -42,7 +42,7 @@ namespace Ink2Gif
             InitializeInkCanvas();
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
-            MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen | CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Touch;
+            MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.None;
         }
 
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
@@ -60,60 +60,13 @@ namespace Ink2Gif
 
         #region Button Interaction
 
-        private async void MySaveButton_Click(object sender, RoutedEventArgs e)
-        {
-
-
-            FileSavePicker savePicker = new FileSavePicker();
-            savePicker.SuggestedStartLocation = PickerLocationId.Desktop;
-            savePicker.FileTypeChoices.Add("Gif with embedded ISF", new List<string> { ".gif" });
-
-            StorageFile file = await savePicker.PickSaveFileAsync();
-            if (null != file)
-            {
-                try
-                {
-                    using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite))
-                    {
-                        await MyInkCanvas.InkPresenter.StrokeContainer.SaveAsync(stream);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    //GenerateErrorMessage();
-                }
-            }
-        }
-
-        private async void MyLoadFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            //
-            FileOpenPicker picker = new FileOpenPicker();
-            picker.SuggestedStartLocation = PickerLocationId.Desktop;
-            picker.ViewMode = PickerViewMode.List;
-            picker.FileTypeFilter.Add(".xml");
-            StorageFile dataFile = await picker.PickSingleFileAsync();
-            if (dataFile == null) { return; }
-
-            //
-            List<InkStroke> strokes = await ReadMotionXml(dataFile);
-
-            //
-            Sketch motion = new Sketch(strokes, null);
-            motion = SketchTransformation.ScaleProportional(motion, MyBorder.ActualHeight * 0.75);
-            motion = SketchTransformation.TranslateMedian(motion, new Point(MyBorder.ActualWidth / 2, MyBorder.ActualHeight / 2));
-            strokes = motion.Strokes;
-            strokes[0].DrawingAttributes = LEFT_HAND_VISUALS;
-            strokes[1].DrawingAttributes = RIGHT_HAND_VISUALS;
-
-            //
-            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
-            MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(Gridify());
-            MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(strokes);
-            MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(Dotify(strokes));
-        }
-
         private async void MyLoadFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoadFolder();
+            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
+        }
+
+        private async void LoadFolder()
         {
             // open the folder picker dialog window and select the folder with the images
             FolderPicker folderPicker = new FolderPicker();
@@ -150,8 +103,8 @@ namespace Ink2Gif
 
                 //
                 Sketch motion = new Sketch(strokes, null);
-                motion = SketchTransformation.ScaleProportional(motion, MyBorder.ActualHeight * 0.75);
-                motion = SketchTransformation.TranslateMedian(motion, new Point(MyBorder.ActualWidth / 2, MyBorder.ActualHeight / 2));
+                motion = SketchTransformation.ScaleProportional(motion, MyInkCanvas.ActualHeight * 0.75);
+                motion = SketchTransformation.TranslateMedian(motion, new Point(MyInkCanvas.ActualWidth / 2, MyInkCanvas.ActualHeight / 2));
                 strokes = motion.Strokes;
                 strokes[0].DrawingAttributes = LEFT_HAND_VISUALS;
                 strokes[1].DrawingAttributes = RIGHT_HAND_VISUALS;
@@ -176,89 +129,6 @@ namespace Ink2Gif
                     ;
                 }
             }
-        }
-
-        private async void MyLoadFolderButton2_Click(object sender, RoutedEventArgs e)
-        {
-            // open the folder picker dialog window and select the folder with the images
-            FolderPicker folderPicker = new FolderPicker();
-            folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
-            folderPicker.FileTypeFilter.Add("*");
-
-            // get the folder selection result
-            StorageFolder loadFolder = await folderPicker.PickSingleFolderAsync();
-            if (loadFolder == null)
-            {
-                Debug.WriteLine("Operation cancelled.");
-                return;
-            }
-
-            // application now has read/write access to all contents in the picked folder (including other sub-folder contents)
-            StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", loadFolder);
-
-            // get all the sketches
-            List<StorageFile> dataFiles = new List<StorageFile>();
-            List<StorageFile> loadFiles = (await loadFolder.GetFilesAsync()).ToList();
-            foreach (StorageFile file in loadFiles)
-            {
-                if (Path.GetExtension(file.Name).EndsWith(".xml"))
-                {
-                    dataFiles.Add(file);
-                }
-            }
-
-            //
-            foreach (StorageFile dataFile in dataFiles)
-            {
-                //
-                List<InkStroke> strokes = await ReadXml(dataFile);
-
-                //
-                MyInkCanvas.InkPresenter.StrokeContainer.Clear();
-                MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(Gridify());
-                MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(strokes);
-                MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(Dotify(strokes));
-
-                //
-                StorageFile saveFile = await loadFolder.CreateFileAsync(dataFile.Name + ".gif", CreationCollisionOption.ReplaceExisting);
-                try
-                {
-                    using (IRandomAccessStream stream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
-                    {
-                        await MyInkCanvas.InkPresenter.StrokeContainer.SaveAsync(stream);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    ;
-                }
-            }
-        }
-
-        private void MyDotButton_Click(object sender, RoutedEventArgs e)
-        {
-
-            List<InkStroke> dotStrokes = Dotify(MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList());
-            MyInkCanvas.InkPresenter.StrokeContainer.AddStrokes(dotStrokes);
-        }
-
-        private void MyClearButton_Click(object sender, RoutedEventArgs e)
-        {
-            // clear the canvas
-            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
-        }
-
-        private void MyUndoButton_Click(object sender, RoutedEventArgs e)
-        {
-            // get the strokes
-            IReadOnlyList<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes();
-
-            // reset the time offset and finish
-            if (strokes.Count == 0) { return; }
-
-            // select the last stroke and delete it
-            strokes[strokes.Count - 1].Selected = true;
-            MyInkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
         }
 
         #endregion
@@ -381,12 +251,18 @@ namespace Ink2Gif
             InkStrokeBuilder builder = new InkStrokeBuilder();
             for (int i = 0; i < points.Count; ++i)
             {
-                if (i % 20 != 0) { continue; }
-
                 InkPoint point = points[i];
                 List<Point> dotPoint = new List<Point> { new Point(point.Position.X, point.Position.Y) };
                 InkStroke dotStroke = builder.CreateStroke(dotPoint);
-                dotStroke.DrawingAttributes = DOT_VISUALS;
+                if (i % 20 != 0) { dotStroke.DrawingAttributes = SMALL_DOT_VISUALS; }
+                dotStrokes.Add(dotStroke);
+            }
+            for (int i = 0; i < points.Count; ++i)
+            {
+                InkPoint point = points[i];
+                List<Point> dotPoint = new List<Point> { new Point(point.Position.X, point.Position.Y) };
+                InkStroke dotStroke = builder.CreateStroke(dotPoint);
+                if (i % 20 == 0) { dotStroke.DrawingAttributes = LARGE_DOT_VISUALS; }
                 dotStrokes.Add(dotStroke);
             }
 
@@ -398,8 +274,8 @@ namespace Ink2Gif
             List<InkStroke> gridlines = new List<InkStroke>();
             InkStrokeBuilder builder = new InkStrokeBuilder();
 
-            double maxX = MyBorder.ActualWidth;
-            double maxY = MyBorder.ActualHeight;
+            double maxX = MyInkCanvas.ActualWidth;
+            double maxY = MyInkCanvas.ActualHeight;
 
             for (int x = 0; x < maxX; x += 50)
             {
@@ -414,7 +290,7 @@ namespace Ink2Gif
             {
                 Point top = new Point(0, y);
                 Point bottom = new Point(maxX, y);
-                InkStroke line = builder.CreateStroke(new List<Point> { top, bottom});
+                InkStroke line = builder.CreateStroke(new List<Point> { top, bottom });
                 line.DrawingAttributes = LINE_VISUALS;
                 gridlines.Add(line);
             }
@@ -427,7 +303,6 @@ namespace Ink2Gif
         #region Properties
 
         private InkDrawingAttributes StrokeVisuals { get; set; }
-        public object PixelFormats { get; private set; }
 
         #endregion
 
@@ -441,7 +316,15 @@ namespace Ink2Gif
             Size = new Size(10, 10),
         };
 
-        public InkDrawingAttributes DOT_VISUALS = new InkDrawingAttributes()
+        public InkDrawingAttributes SMALL_DOT_VISUALS = new InkDrawingAttributes()
+        {
+            Color = Colors.Black,
+            IgnorePressure = true,
+            PenTip = PenTipShape.Circle,
+            Size = new Size(15, 15),
+        };
+
+        public InkDrawingAttributes LARGE_DOT_VISUALS = new InkDrawingAttributes()
         {
             Color = Colors.Green,
             IgnorePressure = true,
