@@ -108,6 +108,8 @@ namespace Kinect2Gif
                 strokes = motion.Strokes;
                 strokes[0].DrawingAttributes = LEFT_HAND_VISUALS;
                 strokes[1].DrawingAttributes = RIGHT_HAND_VISUALS;
+                strokes[2].DrawingAttributes = HEAD_VISUALS;
+                strokes[3].DrawingAttributes = SPINE_MID_VISUALS;
 
                 //
                 MyInkCanvas.InkPresenter.StrokeContainer.Clear();
@@ -135,53 +137,6 @@ namespace Kinect2Gif
 
         #region Helper Methods
 
-        private async Task<List<InkStroke>> ReadXml(StorageFile file)
-        {
-            // create a new XML document
-            // get the text from the XML file
-            // load the file's text into an XML document 
-            string text = await FileIO.ReadTextAsync(file);
-            XDocument document = XDocument.Parse(text);
-
-            // 
-            string label = document.Root.Attribute("label").Value;
-
-            // itereate through each stroke element
-            InkStrokeBuilder builder = new InkStrokeBuilder();
-            InkStroke stroke;
-            List<InkStroke> strokes = new List<InkStroke>();
-            foreach (XElement element in document.Root.Elements())
-            {
-                // initialize the point and time lists
-                List<Point> points = new List<Point>();
-                List<long> times = new List<long>();
-
-                // iterate through each point element
-                double x, y;
-                Point point;
-                long time;
-                foreach (XElement pointElement in element.Elements())
-                {
-                    x = Double.Parse(pointElement.Attribute("x").Value);
-                    y = Double.Parse(pointElement.Attribute("y").Value);
-                    point = new Point(x, y);
-                    time = Int64.Parse(pointElement.Attribute("time").Value);
-
-                    points.Add(point);
-                    times.Add(time);
-                }
-
-                //
-                stroke = builder.CreateStroke(points);
-                stroke.DrawingAttributes = StrokeVisuals;
-
-                //
-                strokes.Add(stroke);
-            }
-
-            return strokes;
-        }
-
         private async Task<List<InkStroke>> ReadMotionXml(StorageFile file)
         {
             // create a new XML document
@@ -193,8 +148,10 @@ namespace Kinect2Gif
             // itereate through each stroke element
             InkStrokeBuilder builder = new InkStrokeBuilder();
             List<InkStroke> strokes = new List<InkStroke>();
-            List<Point> leftPoints = new List<Point>();
-            List<Point> rightPoints = new List<Point>();
+            List<Point> leftHandPoints = new List<Point>();
+            List<Point> rightHandPoints = new List<Point>();
+            List<Point> headPoints = new List<Point>();
+            List<Point> spineMidPoints = new List<Point>();
 
             List<XElement> rootElements = document.Root.Elements().ToList();
             XElement framesElement = rootElements[1];
@@ -213,25 +170,49 @@ namespace Kinect2Gif
                         double x = Double.Parse(xyzElements[0].Value);
                         double y = Double.Parse(xyzElements[1].Value);
 
-                        leftPoints.Add(new Point(x, y));
+                        leftHandPoints.Add(new Point(x, y));
                     }
 
-                    if (jointTypeElement.Value.Equals("HandRight"))
+                    else if (jointTypeElement.Value.Equals("HandRight"))
                     {
                         XElement positionElement = jointElement.Elements().ToList()[1];
                         List<XElement> xyzElements = positionElement.Elements().ToList();
                         double x = Double.Parse(xyzElements[0].Value);
                         double y = Double.Parse(xyzElements[1].Value);
 
-                        rightPoints.Add(new Point(x, y));
+                        rightHandPoints.Add(new Point(x, y));
+                    }
+
+                    else if (jointTypeElement.Value.Equals("Head"))
+                    {
+                        XElement positionElement = jointElement.Elements().ToList()[1];
+                        List<XElement> xyzElements = positionElement.Elements().ToList();
+                        double x = Double.Parse(xyzElements[0].Value);
+                        double y = Double.Parse(xyzElements[1].Value);
+
+                        headPoints.Add(new Point(x, y));
+                    }
+
+                    else if (jointTypeElement.Value.Equals("SpineMid"))
+                    {
+                        XElement positionElement = jointElement.Elements().ToList()[1];
+                        List<XElement> xyzElements = positionElement.Elements().ToList();
+                        double x = Double.Parse(xyzElements[0].Value);
+                        double y = Double.Parse(xyzElements[1].Value);
+
+                        spineMidPoints.Add(new Point(x, y));
                     }
                 }
             }
 
-            InkStroke leftStroke = builder.CreateStroke(leftPoints);
-            InkStroke rightStroke = builder.CreateStroke(rightPoints);
-            strokes.Add(leftStroke);
-            strokes.Add(rightStroke);
+            InkStroke leftHandStroke = builder.CreateStroke(leftHandPoints);
+            InkStroke righHandStroke = builder.CreateStroke(rightHandPoints);
+            InkStroke headStroke = builder.CreateStroke(headPoints);
+            InkStroke spineMidStroke = builder.CreateStroke(spineMidPoints);
+            strokes.Add(leftHandStroke);
+            strokes.Add(righHandStroke);
+            strokes.Add(headStroke);
+            strokes.Add(spineMidStroke);
 
             return strokes;
         }
@@ -354,6 +335,22 @@ namespace Kinect2Gif
             IgnorePressure = true,
             PenTip = PenTipShape.Circle,
             Size = new Size(10, 10),
+        };
+
+        public InkDrawingAttributes HEAD_VISUALS = new InkDrawingAttributes()
+        {
+            Color = Colors.Purple,
+            IgnorePressure = true,
+            PenTip = PenTipShape.Circle,
+            Size = new Size(50, 50),
+        };
+
+        public InkDrawingAttributes SPINE_MID_VISUALS = new InkDrawingAttributes()
+        {
+            Color = Colors.Orange,
+            IgnorePressure = true,
+            PenTip = PenTipShape.Circle,
+            Size = new Size(50, 50),
         };
 
         #endregion
