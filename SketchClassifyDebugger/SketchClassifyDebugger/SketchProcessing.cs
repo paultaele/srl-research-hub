@@ -63,12 +63,15 @@ namespace SketchClassifyDebugger
                 timesCollection.Add(times);
             }
 
-            Sketch sketch = new Sketch(strokesCollection, timesCollection);
+            Sketch sketch = new Sketch(label, strokesCollection, timesCollection);
             return sketch;
         }
 
         public static Sketch Clone(Sketch mySketch)
         {
+            //
+            string label = mySketch.Label;
+
             //
             List<InkStroke> newStrokesCollection = new List<InkStroke>();
             InkStrokeBuilder builder = new InkStrokeBuilder();
@@ -95,7 +98,7 @@ namespace SketchClassifyDebugger
                 newTimesCollection.Add(newTimes);
             }
 
-            return new Sketch(newStrokesCollection, newTimesCollection);
+            return new Sketch(label, newStrokesCollection, newTimesCollection);
         }
     }
 }

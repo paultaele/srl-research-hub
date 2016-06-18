@@ -93,7 +93,7 @@ namespace SketchClassifyDebugger
             }
 
             //
-            Sketch newSketch = new Sketch(newStrokes, newTimesCollection);
+            Sketch newSketch = new Sketch(sketch.Label, newStrokes, newTimesCollection);
             return newSketch;
         }
 
@@ -139,7 +139,7 @@ namespace SketchClassifyDebugger
             }
 
             //
-            Sketch newSketch = new Sketch(newStrokes, sketch.Times);
+            Sketch newSketch = new Sketch(sketch.Label, newStrokes, sketch.Times);
             return newSketch;
         }
 
@@ -197,7 +197,7 @@ namespace SketchClassifyDebugger
             }
 
             //
-            Sketch newSketch = new Sketch(newStrokes, sketch.Times);
+            Sketch newSketch = new Sketch(sketch.Label, newStrokes, sketch.Times);
             return newSketch;
         }
 
@@ -238,7 +238,7 @@ namespace SketchClassifyDebugger
             }
 
             //
-            Sketch newSketch = new Sketch(newStrokes, sketch.Times);
+            Sketch newSketch = new Sketch(sketch.Label, newStrokes, sketch.Times);
             return newSketch;
         }
 
@@ -319,12 +319,14 @@ namespace SketchClassifyDebugger
 
     public class Sketch
     {
-        public Sketch(List<InkStroke> strokes, List<List<long>> times)
+        public Sketch(string label, List<InkStroke> strokes, List<List<long>> times)
         {
+            Label = label;
             Strokes = strokes;
             Times = times;
         }
 
+        public string Label { get; set; }
         public List<InkStroke> Strokes { get; set; }
         public List<List<long>> Times { get; set; }
     }

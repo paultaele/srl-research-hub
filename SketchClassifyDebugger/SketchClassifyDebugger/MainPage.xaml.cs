@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -50,36 +51,31 @@ namespace SketchClassifyDebugger
             MyInkCanvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded;
         }
 
-        private void MyPage_Loaded(object sender, RoutedEventArgs e)
+        private async void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
             // set time variables
             myTimeCollection = new List<List<long>>();
             DateTimeOffset = 0;
 
-            // preload templates
-            InitializeTemplates();
+            // initialize and train classifier
+            myClassifier = await InitializeClassifier();
         }
 
-        private async void InitializeTemplates()
+        private async Task<PDollar> InitializeClassifier()
         {
             // get directory of model templates
             string root = Package.Current.InstalledLocation.Path;
             string path = root + @"\Assets\Templates\";
-            Debug.WriteLine($"# {path}");
             StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(path);
             List<StorageFile> files = (await folder.GetFilesAsync()).ToList();
 
-            //
-            myPairs = new List<SketchPair>();
-            foreach (StorageFile file in files)
-            {
-                //
-                Sketch original = await SketchProcessing.ReadXml(file, PEN_DRAWING_ATTRIBUTES);
-                Sketch transformed = Normalize(SketchProcessing.Clone(original));
+            int n = 128;
+            double size = MyInkCanvasBorder.Height;
+            Point k = new Point(MyInkCanvasBorder.ActualWidth / 2, MyInkCanvasBorder.ActualHeight / 2);
+            PDollar classifier = new PDollar(n, size, k);
+            classifier.Train(files);
 
-                //
-                myPairs.Add(new SketchPair(original, transformed));
-            }
+            return classifier;
         }
 
         #endregion
@@ -144,32 +140,22 @@ namespace SketchClassifyDebugger
             List<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
             if (strokes.Count == 0) { DateTimeOffset = 0; return; }
 
-            //
-            Sketch original = new Sketch(strokes, myTimeCollection);
-            Sketch transformed = Normalize(SketchProcessing.Clone(original));
-            SketchPair pair = new SketchPair(original, transformed);
+            // 
+            Sketch input = new Sketch("Unknown", strokes, myTimeCollection);
+            myClassifier.Run(input);
 
             //
-            // ##### TODO #####
-            // PDollar classifier = ...
+            List<SketchPair> results = myClassifier.Results();
+            for (int i = 0; i < 5; ++i)
+            {
+                string label = results[i].Transformed.Label;
+                Debug.WriteLine($"{i + 1}. {label}");
+            }
         }
 
         #endregion
 
         #region Helper Methods
-
-        private Sketch Normalize(Sketch sketch)
-        {
-            int n = 128;
-            double size = MyInkCanvasBorder.Height;
-            Point k = new Point(MyInkCanvasBorder.ActualWidth / 2, MyInkCanvasBorder.ActualHeight / 2);
-
-            sketch = SketchTransformation.Resample(sketch, n);
-            sketch = SketchTransformation.ScaleSquare(sketch, size);
-            sketch = SketchTransformation.TranslateCentroid(sketch, k);
-
-            return sketch;
-        }
 
         #endregion
 
@@ -177,7 +163,6 @@ namespace SketchClassifyDebugger
 
         private InkDrawingAttributes StrokeVisuals { get; set; }
         private long DateTimeOffset { get; set; }
-        //private bool IsLoaded { get; set; }
 
         #endregion
 
@@ -185,7 +170,8 @@ namespace SketchClassifyDebugger
 
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
-        private List<SketchPair> myPairs;
+
+        private PDollar myClassifier;
 
         public InkDrawingAttributes PEN_DRAWING_ATTRIBUTES = new InkDrawingAttributes() { Color = Colors.Black, IgnorePressure = true, PenTip = PenTipShape.Circle, Size = new Size(10, 10), };
 
