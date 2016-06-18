@@ -7,6 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
 
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
+            <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MyClassifyButton" Icon="Accept" Label="Submit" Click="MyClassifyButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"/>
@@ -15,8 +24,10 @@
 
         <Grid Grid.Column="0"/>
 
-        <Grid Grid.Column="1">
-            <InkCanvas Name="MyInkCanvas"/>
-        </Grid>
+        <Border Grid.Column="1" Name="MyInkCanvasBorder" BorderBrush="Black" BorderThickness="3">
+            <Grid>
+                <InkCanvas Name="MyInkCanvas"/>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

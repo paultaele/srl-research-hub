@@ -41,7 +41,7 @@ namespace SketchTransformDebugger
             MyInkCanvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded;
         }
 
-        private void Mypage_Loaded(object sender, RoutedEventArgs e)
+        private void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
             IsLoaded = true;
 

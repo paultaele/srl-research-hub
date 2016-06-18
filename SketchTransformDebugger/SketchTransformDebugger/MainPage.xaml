@@ -5,7 +5,7 @@
     xmlns:local="using:SketchTransformDebugger"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Name="Mypage" Loaded="Mypage_Loaded">
+    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
