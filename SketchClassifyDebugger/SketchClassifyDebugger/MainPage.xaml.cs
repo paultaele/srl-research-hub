@@ -55,56 +55,41 @@ namespace SketchClassifyDebugger
         {
             // set the transformation attributes
             N = 128;
-            Size = MyInkCanvasBorder.ActualHeight * 0.75;
-            K = new Point(MyInkCanvasBorder.ActualWidth / 2, MyInkCanvasBorder.ActualHeight / 2);
+            Size = 500;
+            K = new Point(0, 0);
+            myClassifier = new PDollar(N, Size, K);
+
+            //
+            List<Sketch> originalTemplates = null;
+            Task task = Task.Run(async () => originalTemplates = await ReadXml(@"\Assets\Templates\"));
+            task.Wait();
+            myClassifier.Train(originalTemplates);
 
             // set time variables
             myTimeCollection = new List<List<long>>();
             DateTimeOffset = 0;
-
-            // get the files
-            List<StorageFile> files = new List<StorageFile>();
-            Task extractTask = Task.Run(async () => files = await ExtractFiles());
-            extractTask.Wait();
-
-            // read and transform the data
-            myTemplates = new List<SketchPair>();
-            foreach (StorageFile file in files)
-            {
-                Sketch original = null;
-                Task readTask = Task.Run(async () => original = await SketchTools.ReadXml(file, PEN_DRAWING_ATTRIBUTES));
-                readTask.Wait();
-
-                Debug.WriteLine("@@@ " + original.Label);
-
-                Sketch tranformed = SketchTools.Clone(original);
-                tranformed = SketchTransformation.Resample(tranformed, N);
-                tranformed = SketchTransformation.ScaleSquare(tranformed, Size);
-                tranformed = SketchTransformation.TranslateCentroid(tranformed, K);
-
-                SketchPair template = new SketchPair(original, tranformed);
-                myTemplates.Add(template);
-            }
         }
 
-        private async Task<List<StorageFile>> ExtractFiles()
+        private async Task<List<Sketch>> ReadXml(string relativePath)
         {
-            // get directory of model templates
+            // initialize the list of sketches and path
             string root = Package.Current.InstalledLocation.Path;
-            string path = root + @"\Assets\Templates\";
+            string path = root + relativePath;
 
-            //
+            // get the list of files
             StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(path);
-            List<StorageFile> files = new List<StorageFile>();
+            List<Sketch> sketches = new List<Sketch>();
             foreach (StorageFile file in await folder.GetFilesAsync())
             {
+                // case: file is an XML file
                 if (file.Name.EndsWith(".xml"))
                 {
-                    files.Add(file);
+                    Sketch sketch = await SketchTools.ReadXml(file, PEN_DRAWING_ATTRIBUTES);
+                    sketches.Add(sketch);
                 }
             }
 
-            return files;
+            return sketches;
         }
 
         #endregion
@@ -170,31 +155,20 @@ namespace SketchClassifyDebugger
         private void MyClassifyButton_Click(object sender, RoutedEventArgs e)
         {
             //
-            Sketch original = new Sketch("Unknown", MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList(), myTimeCollection);
-            Sketch transformed = SketchTools.Clone(original);
-            transformed = SketchTransformation.Resample(transformed, N);
-            transformed = SketchTransformation.ScaleSquare(transformed, Size);
-            transformed = SketchTransformation.TranslateCentroid(transformed, K);
-            SketchPair input = new SketchPair(original, transformed);
+            Sketch input = new Sketch("Unknown", MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList(), myTimeCollection);
 
             //
-            List<Tuple<string, double>> pairs = new List<Tuple<string, double>>();
-            foreach (SketchPair template in myTemplates)
-            {
-                double distance1 = SketchTools.Distance(input.Transformed, template.Transformed);
-                double distance2 = SketchTools.Distance(input.Transformed, template.Transformed);
-                double distance = Math.Min(distance1, distance2);
-
-                pairs.Add(new Tuple<string, double>(template.Transformed.Label, distance));
-            }
+            myClassifier.Run(input);
 
             //
-            pairs.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+            List<string> labels = myClassifier.Labels;
+            List<double> scores = myClassifier.Scores;
+
+            //
             string output = "";
-            for (int i = 0; i < pairs.Count; ++i)
+            for (int i = 0; i < labels.Count; ++i)
             {
-                var pair = pairs[i];
-                output += "" + (i + 1) + ". " + pair.Item1 + ", " + pair.Item2 + "\n";
+                output += $"{i+1}. {labels[i]}: {scores[i]}\n";
             }
             MyOutputText.Text = output;
         }
@@ -221,9 +195,7 @@ namespace SketchClassifyDebugger
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
 
-        private List<SketchPair> myTemplates;
-
-        //private PDollar myClassifier;
+        private PDollar myClassifier;
 
         public InkDrawingAttributes PEN_DRAWING_ATTRIBUTES = new InkDrawingAttributes() { Color = Colors.Black, IgnorePressure = true, PenTip = PenTipShape.Circle, Size = new Size(10, 10), };
 
