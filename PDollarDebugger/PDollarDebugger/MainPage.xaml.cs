@@ -36,7 +36,7 @@ namespace PDollarDebugger
         {
             this.InitializeComponent();
 
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             MyInputInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.None;
             MyTemplateInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.None;
