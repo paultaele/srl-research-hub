@@ -38,7 +38,7 @@ namespace SketchClassifyDebugger
 
         public void Run(Sketch original)
         {
-            //
+            // clone and normalize the input
             Sketch input = SketchProcessing.Clone(original);
             input = Normalize(input);
 
@@ -61,8 +61,10 @@ namespace SketchClassifyDebugger
                 pairs.Add(new Tuple<SketchPair, double>(template, score));
             }
 
-            //
+            // sort the pairs
             pairs.Sort((a, b) => b.Item2.CompareTo(a.Item2));
+
+            // 
             foreach (var pair in pairs)
             {
                 //

@@ -140,8 +140,10 @@ namespace SketchClassifyDebugger
             List<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
             if (strokes.Count == 0) { DateTimeOffset = 0; return; }
 
-            // 
+            // set the input
             Sketch input = new Sketch("Unknown", strokes, myTimeCollection);
+
+            // classify the input
             myClassifier.Run(input);
 
             //

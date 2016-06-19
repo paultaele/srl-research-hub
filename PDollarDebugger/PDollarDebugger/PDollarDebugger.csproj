@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{BCFC43BF-9B7A-42A1-AD85-DA36A1D426B8}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PDollarDebugger</RootNamespace>
+    <AssemblyName>PDollarDebugger</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PackageCertificateKeyFile>PDollarDebugger_TemporaryKey.pfx</PackageCertificateKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SketchProcessing.cs" />
+    <Compile Include="SketchTransformation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="PDollarDebugger_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Debug\a_636018787069609886.xml" />
+    <Content Include="Assets\Debug\chi_636018785803475428.xml" />
+    <Content Include="Assets\Debug\e_636018786566776031.xml" />
+    <Content Include="Assets\Debug\ha_636018786741848282.xml" />
+    <Content Include="Assets\Debug\he_636018785828435828.xml" />
+    <Content Include="Assets\Debug\hi_636018786522469091.xml" />
+    <Content Include="Assets\Debug\ho_636018785990820034.xml" />
+    <Content Include="Assets\Debug\hu_636018785711805846.xml" />
+    <Content Include="Assets\Debug\i_636018786823476249.xml" />
+    <Content Include="Assets\Debug\ka_636018786283982866.xml" />
+    <Content Include="Assets\Debug\ke_636018785761042401.xml" />
+    <Content Include="Assets\Debug\ki_636018786690062383.xml" />
+    <Content Include="Assets\Debug\ko_636018786597451858.xml" />
+    <Content Include="Assets\Debug\ku_636018786391818922.xml" />
+    <Content Include="Assets\Debug\ma_636018786482943410.xml" />
+    <Content Include="Assets\Debug\me_636018787123432806.xml" />
+    <Content Include="Assets\Debug\mi_636018785874134259.xml" />
+    <Content Include="Assets\Debug\mo_636018785278116906.xml" />
+    <Content Include="Assets\Debug\mu_636018786115363726.xml" />
+    <Content Include="Assets\Debug\na_636018787181807893.xml" />
+    <Content Include="Assets\Debug\ne_636018786930013666.xml" />
+    <Content Include="Assets\Debug\ni_636018785476124918.xml" />
+    <Content Include="Assets\Debug\no_636018785323836092.xml" />
+    <Content Include="Assets\Debug\nu_636018785631969314.xml" />
+    <Content Include="Assets\Debug\n_636018785224251698.xml" />
+    <Content Include="Assets\Debug\o_636018785186051801.xml" />
+    <Content Include="Assets\Debug\ra_636018785571606307.xml" />
+    <Content Include="Assets\Debug\re_636018786198259502.xml" />
+    <Content Include="Assets\Debug\ri_636018785432671402.xml" />
+    <Content Include="Assets\Debug\ro_636018786965290063.xml" />
+    <Content Include="Assets\Debug\ru_636018786431236236.xml" />
+    <Content Include="Assets\Debug\sa_636018786870769142.xml" />
+    <Content Include="Assets\Debug\se_636018785925377713.xml" />
+    <Content Include="Assets\Debug\shi_636018785660349918.xml" />
+    <Content Include="Assets\Debug\so_636018785073708747.xml" />
+    <Content Include="Assets\Debug\su_636018786362704887.xml" />
+    <Content Include="Assets\Debug\ta_636018787239121240.xml" />
+    <Content Include="Assets\Debug\te_636018785394126020.xml" />
+    <Content Include="Assets\Debug\to_636018785034652995.xml" />
+    <Content Include="Assets\Debug\tsu_636018786063108821.xml" />
+    <Content Include="Assets\Debug\u_636018785362106508.xml" />
+    <Content Include="Assets\Debug\wa_636018785525049898.xml" />
+    <Content Include="Assets\Debug\wo_636018786644042426.xml" />
+    <Content Include="Assets\Debug\ya_636018785135080297.xml" />
+    <Content Include="Assets\Debug\yo_636018786034500807.xml" />
+    <Content Include="Assets\Debug\yu_636018786790724936.xml" />
+    <Content Include="Assets\Models\a_636008486897535994.xml" />
+    <Content Include="Assets\Models\chi_636008487090575393.xml" />
+    <Content Include="Assets\Models\e_636008487329144360.xml" />
+    <Content Include="Assets\Models\ha_636008487625463400.xml" />
+    <Content Include="Assets\Models\he_636008488014533443.xml" />
+    <Content Include="Assets\Models\hi_636008489179055401.xml" />
+    <Content Include="Assets\Models\ho_636008489474115956.xml" />
+    <Content Include="Assets\Models\hu_636008490550298758.xml" />
+    <Content Include="Assets\Models\i_636008490675202760.xml" />
+    <Content Include="Assets\Models\ka_636008490920658262.xml" />
+    <Content Include="Assets\Models\ke_636008491127968931.xml" />
+    <Content Include="Assets\Models\ki_636008491369647591.xml" />
+    <Content Include="Assets\Models\ko_636008491707475401.xml" />
+    <Content Include="Assets\Models\ku_636008491838007402.xml" />
+    <Content Include="Assets\Models\ma_636008492057766049.xml" />
+    <Content Include="Assets\Models\me_636008492879372734.xml" />
+    <Content Include="Assets\Models\mi_636008493503354389.xml" />
+    <Content Include="Assets\Models\mo_636008494167307691.xml" />
+    <Content Include="Assets\Models\mu_636008494317044806.xml" />
+    <Content Include="Assets\Models\na_636008495343397575.xml" />
+    <Content Include="Assets\Models\ne_636008495804839598.xml" />
+    <Content Include="Assets\Models\ni_636008495991882922.xml" />
+    <Content Include="Assets\Models\no_636008496280530660.xml" />
+    <Content Include="Assets\Models\nu_636008496597265262.xml" />
+    <Content Include="Assets\Models\n_636008494831037535.xml" />
+    <Content Include="Assets\Models\o_636008497280864738.xml" />
+    <Content Include="Assets\Models\ra_636008497626130581.xml" />
+    <Content Include="Assets\Models\re_636008499041351518.xml" />
+    <Content Include="Assets\Models\ri_636008499706240796.xml" />
+    <Content Include="Assets\Models\ro_636008499885772654.xml" />
+    <Content Include="Assets\Models\ru_636008500181403758.xml" />
+    <Content Include="Assets\Models\sa_636008500603299442.xml" />
+    <Content Include="Assets\Models\se_636008500935676709.xml" />
+    <Content Include="Assets\Models\shi_636008501022079414.xml" />
+    <Content Include="Assets\Models\so_636008501825892423.xml" />
+    <Content Include="Assets\Models\su_636008502455302351.xml" />
+    <Content Include="Assets\Models\ta_636008502631410668.xml" />
+    <Content Include="Assets\Models\te_636008503629433333.xml" />
+    <Content Include="Assets\Models\to_636008503999393676.xml" />
+    <Content Include="Assets\Models\tsu_636008504105415312.xml" />
+    <Content Include="Assets\Models\u_636008504197101306.xml" />
+    <Content Include="Assets\Models\wa_636008504743185037.xml" />
+    <Content Include="Assets\Models\wo_636008505055813627.xml" />
+    <Content Include="Assets\Models\ya_636008505764821332.xml" />
+    <Content Include="Assets\Models\yo_636008506617710177.xml" />
+    <Content Include="Assets\Models\yu_636008507860108560.xml" />
+    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
