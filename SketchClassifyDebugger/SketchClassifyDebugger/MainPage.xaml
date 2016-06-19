@@ -22,7 +22,9 @@
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0"/>
+        <Grid Grid.Column="0">
+            <TextBlock Name="MyOutputText" Text="???"/>
+        </Grid>
 
         <Border Grid.Column="1" Name="MyInkCanvasBorder" BorderBrush="Black" BorderThickness="3">
             <Grid>

@@ -44,10 +44,12 @@ namespace PDollarDebugger
 
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
+            // set the transformation attributes
             N = 128;
-            Size = MyInputInkCanvas.Height * 0.75;
-            K = new Point(MyInputInkCanvas.ActualWidth / 2, MyInputInkCanvas.ActualHeight / 2);
+            Size = MyInputInkCanvasBorder.ActualHeight * 0.75;
+            K = new Point(MyInputInkCanvasBorder.ActualWidth / 2, MyInputInkCanvasBorder.ActualHeight / 2);
 
+            // read the data
             Task task = Task.Run(async () => await ReadData());
             task.Wait();
 
@@ -61,15 +63,66 @@ namespace PDollarDebugger
             NormalizeData();
 
             //
-            MyInputInkCanvas.InkPresenter.StrokeContainer.AddStrokes(myInputPairs[0].Original.Strokes);
+            MyInputInkCanvas.InkPresenter.StrokeContainer.AddStrokes(myInputPairs[0].Transformed.Strokes);
+            MyTemplateInkCanvas.InkPresenter.StrokeContainer.AddStrokes(myTemplatePairs[0].Transformed.Strokes);
 
+            //
+            IsLoaded = true;
         }
+
+        #endregion
+
+        #region Combo Box Interactions
+
+        private void MyInputsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded) { return; }
+
+            MyInputInkCanvas.InkPresenter.StrokeContainer.Clear();
+
+            int index = MyInputsComboBox.SelectedIndex;
+            Sketch sketch = SketchTools.Clone(myInputPairs[index].Transformed);
+            MyInputInkCanvas.InkPresenter.StrokeContainer.AddStrokes(sketch.Strokes);
+        }
+
+        private void MyTemplatesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded) { return; }
+
+            MyTemplateInkCanvas.InkPresenter.StrokeContainer.Clear();
+
+            int index = MyTemplatesComboBox.SelectedIndex;
+            Sketch sketch = SketchTools.Clone(myTemplatePairs[index].Transformed);
+            MyTemplateInkCanvas.InkPresenter.StrokeContainer.AddStrokes(sketch.Strokes);
+        }
+
+        #endregion
+
+        #region Button Interaction
+
+        private void MyCalculateButton_Click(object sender, RoutedEventArgs e)
+        {
+            SketchPair input = myInputPairs[MyInputsComboBox.SelectedIndex];
+            SketchPair template = myInputPairs[MyTemplatesComboBox.SelectedIndex];
+
+            double distance1 = SketchTools.Distance(input.Transformed, template.Transformed);
+            double distance2 = SketchTools.Distance(template.Transformed, input.Transformed);
+            double minDistance = Math.Min(distance1, distance2);
+
+            MyLrDistanceText.Text = "" + distance1;
+            MyRlDistanceText.Text = "" + distance2;
+            MyMinDistanceText.Text = "" + minDistance;
+        }
+
+        #endregion
+
+        #region Helper Methods
 
         private async Task ReadData()
         {
             // get directory of model templates
             string root = Package.Current.InstalledLocation.Path;
-            string inputsPath = root + @"\Assets\Debug\";
+            string inputsPath = root + @"\Assets\Inputs\";
             string templatesPath = root + @"\Assets\Models\";
 
             //
@@ -87,8 +140,8 @@ namespace PDollarDebugger
             myTemplates = new List<Sketch>();
             myInputLabels = new List<string>();
             myTemplateLabels = new List<string>();
-            foreach (StorageFile file in inputFiles) { Sketch sketch = await SketchProcessing.ReadXml(file); myInputs.Add(sketch); myInputLabels.Add(sketch.Label); }
-            foreach (StorageFile file in templateFiles) { Sketch sketch = await SketchProcessing.ReadXml(file); myTemplates.Add(sketch); myTemplateLabels.Add(sketch.Label); }
+            foreach (StorageFile file in inputFiles) { Sketch sketch = await SketchTools.ReadXml(file, PEN_DRAWING_ATTRIBUTES); myInputs.Add(sketch); myInputLabels.Add(sketch.Label); }
+            foreach (StorageFile file in templateFiles) { Sketch sketch = await SketchTools.ReadXml(file, PEN_DRAWING_ATTRIBUTES); myTemplates.Add(sketch); myTemplateLabels.Add(sketch.Label); }
         }
 
         private void NormalizeData()
@@ -109,7 +162,7 @@ namespace PDollarDebugger
 
         private Sketch Normalize(Sketch original)
         {
-            Sketch sketch = SketchProcessing.Clone(original);
+            Sketch sketch = SketchTools.Clone(original);
             sketch = SketchTransformation.Resample(sketch, N);
             sketch = SketchTransformation.ScaleSquare(sketch, Size);
             sketch = SketchTransformation.TranslateCentroid(sketch, K);
@@ -124,6 +177,8 @@ namespace PDollarDebugger
         private int N { get; set; }
         private double Size { get; set; }
         private Point K { get; set; }
+
+        private bool IsLoaded { get; set; }
 
         #endregion
 

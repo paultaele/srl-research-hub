@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +9,9 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.Input.Inking;
 
-namespace PDollarDebugger
+namespace SketchClassifyDebugger
 {
-    public class SketchProcessing
+    public class SketchTools
     {
         public static async Task<Sketch> ReadXml(StorageFile file)
         {
@@ -83,7 +84,9 @@ namespace PDollarDebugger
                     Point newPoint = new Point(point.Position.X, point.Position.Y);
                     newPoints.Add(newPoint);
                 }
-                newStrokesCollection.Add(builder.CreateStroke(newPoints));
+                InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
+                newStrokesCollection.Add(newStroke);
             }
 
             //
@@ -99,6 +102,66 @@ namespace PDollarDebugger
             }
 
             return new Sketch(label, newStrokesCollection, newTimesCollection);
+        }
+
+        public static double Distance(Sketch alphaSketch, Sketch betaSketch)
+        {
+            //
+            double distances = 0.0;
+
+            // get the alpha and beta points from their respective strokes
+            List<InkPoint> alphaPoints = new List<InkPoint>();
+            List<InkPoint> betaPoints = new List<InkPoint>();
+            foreach (InkStroke stroke in alphaSketch.Strokes)
+            {
+                alphaPoints.AddRange(stroke.GetInkPoints().ToList());
+            }
+            foreach (var stroke in betaSketch.Strokes)
+            {
+                betaPoints.AddRange(stroke.GetInkPoints().ToList());
+            }
+
+            // iterate through each alpha point
+            var pairs = new List<Tuple<InkPoint, InkPoint>>();
+            double minDistance, weight, distance;
+            int index;
+            InkPoint minPoint = betaPoints[0];
+            foreach (var alphaPoint in alphaPoints)
+            {
+                minDistance = Double.MaxValue;
+
+                // iterate through each beta point to find the min beta point to the alpha point
+                index = 1;
+                foreach (var betaPoint in betaPoints)
+                {
+                    distance = Distance(alphaPoint, betaPoint);
+
+                    // update the min distance and min point
+                    if (minDistance > distance)
+                    {
+                        minDistance = distance;
+                        minPoint = betaPoint;
+                    }
+                }
+
+                // update distance between alpha and beta point lists
+                weight = 1 - ((index - 1) / alphaPoints.Count);
+                distances += minDistance * weight;
+
+                // pair the alpha point to the min beta point and remove min beta point from list of beta points
+                pairs.Add(new Tuple<InkPoint, InkPoint>(alphaPoint, minPoint));
+                betaPoints.Remove(minPoint);
+            }
+
+            //
+            return distances;
+        }
+
+        public static double Distance(InkPoint a, InkPoint b)
+        {
+            double distance = Math.Sqrt((b.Position.X - a.Position.X) * (b.Position.X - a.Position.X) + (b.Position.Y - a.Position.Y) * (b.Position.Y - a.Position.Y));
+
+            return distance;
         }
     }
 }

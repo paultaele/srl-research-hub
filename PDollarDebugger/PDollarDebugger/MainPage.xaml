@@ -39,11 +39,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" BorderBrush="Black" BorderThickness="3">
+            <Border Grid.Column="0" Name="MyInputInkCanvasBorder" BorderBrush="Black" BorderThickness="3">
                 <InkCanvas Name="MyInputInkCanvas"/>
             </Border>
 
-            <Border Grid.Column="1" BorderBrush="Black" BorderThickness="3">
+            <Border Grid.Column="1" Name="MyTemplateInkCanvasBorder" BorderBrush="Black" BorderThickness="3">
                 <InkCanvas Name="MyTemplateInkCanvas"/>
             </Border>
 
@@ -56,8 +56,8 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Column="0" Name="MyInputsComboBox" HorizontalAlignment="Stretch"/>
-            <ComboBox Grid.Column="1" Name="MyTemplatesComboBox" HorizontalAlignment="Stretch"/>
+            <ComboBox Grid.Column="0" Name="MyInputsComboBox" HorizontalAlignment="Stretch" SelectionChanged="MyInputsComboBox_SelectionChanged"/>
+            <ComboBox Grid.Column="1" Name="MyTemplatesComboBox" HorizontalAlignment="Stretch" SelectionChanged="MyTemplatesComboBox_SelectionChanged"/>
 
         </Grid>
 
@@ -77,9 +77,9 @@
             </StackPanel>
 
             <StackPanel Grid.Column="2" HorizontalAlignment="Left" Margin="20,0,0,0">
-                <TextBlock Text="???" FontSize="24"/>
-                <TextBlock Text="???" FontSize="24"/>
-                <TextBlock Text="???" FontSize="24"/>
+                <TextBlock Name="MyLrDistanceText" Text="???" FontSize="24"/>
+                <TextBlock Name="MyRlDistanceText" Text="???" FontSize="24"/>
+                <TextBlock Name="MyMinDistanceText" Text="???" FontSize="24"/>
             </StackPanel>
 
         </Grid>
@@ -87,7 +87,7 @@
         <!-- BUTTON -->
         <Grid Grid.Row="4" HorizontalAlignment="Center">
             <Viewbox>
-                <Button Content="CALCULATE"/>
+                <Button Name="MyCalculateButton" Content="CALCULATE" Click="MyCalculateButton_Click"/>
             </Viewbox>
         </Grid>
         

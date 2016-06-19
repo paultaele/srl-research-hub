@@ -70,6 +70,7 @@ namespace PDollarDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
@@ -135,6 +136,7 @@ namespace PDollarDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
@@ -193,6 +195,7 @@ namespace PDollarDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
@@ -234,6 +237,7 @@ namespace PDollarDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 

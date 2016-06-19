@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -70,6 +71,7 @@ namespace SketchClassifyDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
@@ -85,7 +87,7 @@ namespace SketchClassifyDebugger
 
                 for (int j = 0; j < newCount; ++j)
                 {
-                    int index = (int)((double)j/newCount*oldCount);
+                    int index = (int)((double)j / newCount * oldCount);
                     newTimes.Add(times[index]);
                 }
 
@@ -135,6 +137,7 @@ namespace SketchClassifyDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
@@ -193,6 +196,7 @@ namespace SketchClassifyDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
@@ -234,6 +238,7 @@ namespace SketchClassifyDebugger
 
                 //
                 InkStroke newStroke = builder.CreateStroke(newPoints);
+                newStroke.DrawingAttributes = stroke.DrawingAttributes;
                 newStrokes.Add(newStroke);
             }
 
