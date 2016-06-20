@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
 
-namespace SketchClassifyDebugger
+namespace SketchDataTransformer
 {
     public class SketchTransformation
     {

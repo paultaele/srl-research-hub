@@ -1,0 +1,78 @@
+﻿<Page
+    x:Class="SketchDataTransformer.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SketchDataTransformer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Name="MyLoadDirectoryButton" Icon="OpenLocal" Label="Load Directory" Click="MyLoadDirectoryButton_Click"/>
+            <AppBarButton Name="MyTransformDirectoryButton" Icon="Accept" IsEnabled="False" Label="Transform Directory" Click="MyTransformDirectoryButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="1">
+            <StackPanel Margin="10">
+                <TextBlock Text="Load" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <TextBlock Name="MyLoadDirectoryText"/>
+            </StackPanel>
+
+            <StackPanel Margin="10">
+                <TextBlock Text="Resample" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <ToggleSwitch Header="Enable?"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Margin="0,0,10,0"/>
+                    <Viewbox>
+                        <TextBlock Text="Number of Resampled Points"/>
+                    </Viewbox>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Margin="10">
+                <TextBlock Text="Scale" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <ToggleSwitch Header="Enable?"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Margin="0,0,10,0"/>
+                    <Viewbox>
+                        <TextBlock Text="Size of Bounding Box"/>
+                    </Viewbox>
+                </StackPanel>
+                <StackPanel>
+                    <RadioButton Content="Square" />
+                    <RadioButton Content="Proportional" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Margin="10">
+                <TextBlock Text="Translate" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <ToggleSwitch/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Margin="0,0,10,0"/>
+                    <Viewbox>
+                        <TextBlock Text="X-Coordinate"/>
+                    </Viewbox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Margin="0,0,10,0"/>
+                    <Viewbox>
+                        <TextBlock Text="Y-Coordinate"/>
+                    </Viewbox>
+                </StackPanel>
+                <StackPanel>
+                    <RadioButton Content="Centroid" />
+                    <RadioButton Content="Median" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>
