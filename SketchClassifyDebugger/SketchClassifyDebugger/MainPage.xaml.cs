@@ -84,7 +84,7 @@ namespace SketchClassifyDebugger
                 // case: file is an XML file
                 if (file.Name.EndsWith(".xml"))
                 {
-                    Sketch sketch = await SketchTools.ReadXml(file, PEN_DRAWING_ATTRIBUTES);
+                    Sketch sketch = await SketchTools.XmlToSketch(file, PEN_DRAWING_ATTRIBUTES);
                     sketches.Add(sketch);
                 }
             }

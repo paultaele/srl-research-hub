@@ -63,11 +63,11 @@ namespace SketchClassifyDebugger
             {
                 double distance1 = SketchTools.Distance(input.Transformed, template.Transformed);
                 double distance2 = SketchTools.Distance(input.Transformed, template.Transformed);
-                double distance = Math.Min(distance1, distance2);
+                double distance = ToScore(Math.Min(distance1, distance2));
 
                 results.Add(new Tuple<string, double>(template.Transformed.Label, distance));
             }
-            results.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+            results.Sort((x, y) => y.Item2.CompareTo(x.Item2));
 
             //
             myLabels = new List<string>();
@@ -95,6 +95,11 @@ namespace SketchClassifyDebugger
             sketch = SketchTransformation.TranslateCentroid(sketch, K);
 
             return sketch;
+        }
+
+        private double ToScore(double distance)
+        {
+            return 100.0 - (distance / (0.5 * (Math.Sqrt(Size * Size + Size * Size))));
         }
 
         #endregion

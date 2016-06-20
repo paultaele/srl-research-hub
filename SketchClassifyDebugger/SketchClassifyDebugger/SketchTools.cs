@@ -13,12 +13,12 @@ namespace SketchClassifyDebugger
 {
     public class SketchTools
     {
-        public static async Task<Sketch> ReadXml(StorageFile file)
+        public static async Task<Sketch> XmlToSketch(StorageFile file)
         {
-            return await ReadXml(file, new InkDrawingAttributes());
+            return await XmlToSketch(file, new InkDrawingAttributes());
         }
 
-        public static async Task<Sketch> ReadXml(StorageFile file, InkDrawingAttributes attributes)
+        public static async Task<Sketch> XmlToSketch(StorageFile file, InkDrawingAttributes attributes)
         {
             // create a new XML document
             // get the text from the XML file
