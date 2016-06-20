@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using Windows.Foundation;
 using Windows.Storage;
@@ -66,6 +68,81 @@ namespace SketchClassifyDebugger
 
             Sketch sketch = new Sketch(label, strokesCollection, timesCollection);
             return sketch;
+        }
+
+        public static async void SketchToXml(StorageFile file, string label, List<InkStroke> strokeCollection, List<List<long>> timeCollection)
+        {
+            // create the string writer as the streaming source of the XML data
+            string output = "";
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                // set the string writer as the streaming source for the XML writer
+                using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
+                {
+                    // <xml>
+                    xmlWriter.WriteStartDocument();
+
+                    // <sketch>
+                    xmlWriter.WriteStartElement("sketch");
+                    xmlWriter.WriteAttributeString("label", label);
+
+                    // set up the required variables
+                    List<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
+                    List<InkPoint> points;
+                    List<long> times;
+                    InkPoint point;
+                    long time;
+
+                    // iterate through each stroke
+                    for (int i = 0; i < strokes.Count; ++i)
+                    {
+                        // <stroke>
+                        xmlWriter.WriteStartElement("stroke");
+
+                        // get the current stroke's points and times
+                        points = strokes[i].GetInkPoints().ToList();
+                        times = myTimeCollection[i];
+
+                        //
+                        while (points.Count != times.Count)
+                        {
+                            if (points.Count > times.Count) { points.RemoveAt(points.Count - 1); }
+                            else if (times.Count > points.Count) { times.RemoveAt(times.Count - 1); }
+                        }
+
+                        //
+                        for (int j = 0; j < points.Count; ++j)
+                        {
+                            point = points[j];
+                            time = times[j];  // TODO: FIX!
+
+                            // <point>
+                            xmlWriter.WriteStartElement("point");
+
+                            xmlWriter.WriteAttributeString("x", "" + point.Position.X);
+                            xmlWriter.WriteAttributeString("y", "" + point.Position.Y);
+                            xmlWriter.WriteAttributeString("time", "" + times[j]);
+
+                            // </point>
+                            xmlWriter.WriteEndElement();
+                        }
+
+
+                        // </stroke>
+                        xmlWriter.WriteEndElement();
+                    }
+
+                    // </sketch>
+                    xmlWriter.WriteEndElement();
+
+                    // </xml>
+                    xmlWriter.WriteEndDocument();
+                }
+
+                output = stringWriter.ToString();
+            }
+
+            await FileIO.WriteTextAsync(file, output);
         }
 
         public static Sketch Clone(Sketch mySketch)
