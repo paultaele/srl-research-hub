@@ -233,9 +233,8 @@ namespace SketchTransformDebugger2
             //
             for (int i = 0; i < frameStrokes.Count; ++i)
             {
-                InkStroke frameStroke = frameStrokes[i];
-                sketch.Strokes.Remove(frameStroke);
-                sketch.Times.Remove(dummyTime);
+                sketch.Strokes.RemoveAt(sketch.Strokes.Count - 1);
+                sketch.Times.RemoveAt(sketch.Times.Count - 1);
             }
 
             return sketch;
@@ -275,9 +274,8 @@ namespace SketchTransformDebugger2
             //
             for (int i = 0; i < frameStrokes.Count; ++i)
             {
-                InkStroke frameStroke = frameStrokes[i];
-                sketch.Strokes.Remove(frameStroke);
-                sketch.Times.Remove(dummyTime);
+                sketch.Strokes.RemoveAt(sketch.Strokes.Count - 1);
+                sketch.Times.RemoveAt(sketch.Times.Count - 1);
             }
 
             return sketch;

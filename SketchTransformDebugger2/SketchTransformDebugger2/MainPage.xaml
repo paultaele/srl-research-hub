@@ -43,7 +43,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
                     <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyResampleToggle" Toggled="MyResampleToggle_Toggled"/>
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Count" Margin="10,0,10,0"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Name="MyResampleCountTextBox" Margin="0,0,10,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="MyResampleCountTextBox" IsEnabled="False" Text="2" Margin="0,0,10,0"/>
                 </Grid>
             </StackPanel>
 
@@ -62,18 +62,19 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
-                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyScaleToggle"/>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Area" Margin="10,0,10,0"/>
-                    <Slider Grid.Row="1" Grid.Column="1" Name="MyScaleSlider" Minimum="1" Maximum="5" TickFrequency="1" TickPlacement="BottomRight" SnapsTo="Ticks" Margin="0,0,10,0"/>
+                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyScaleToggle" Toggled="MyScaleToggle_Toggled"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Size" Margin="10,0,10,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="MyScaleSizeTextBox" IsEnabled="False" Text="1" Margin="0,0,10,0"/>
                     <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="Type" Margin="10,0,10,0"/>
                     <StackPanel Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
-                        <RadioButton Name="MyScaleSquareRadio" Content="Scale" IsChecked="True"/>
-                        <RadioButton Name="MyScaleProportionalRadio" Content="Proportional"/>
+                        <RadioButton Name="MyScaleSquareRadio" GroupName="MyScaleRadio" Content="Square" IsEnabled="False" IsChecked="True"/>
+                        <RadioButton Name="MyScaleProportionalRadio" GroupName="MyScaleRadio" IsEnabled="False" Content="Proportional"/>
+                        <RadioButton Name="MyScaleFrameRadio" GroupName="MyScaleRadio" IsEnabled="False" Content="Frame"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
 
-            <StackPanel Grid.Row="2" >
+            <StackPanel Grid.Row="2">
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="TRANSLATE" Margin="10" Style="{ThemeResource BaseTextBlockStyle}"/>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -86,12 +87,29 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
-                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyTranslateToggle"/>
+                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyTranslateToggle" Toggled="MyTranslateToggle_Toggled"/>
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="Type" Margin="10,0,10,0"/>
                     <StackPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
-                        <RadioButton Name="MyTranslateCenterRadio" Content="Centroid" IsChecked="True"/>
-                        <RadioButton Name="MyTranslateMedianRadio" Content="Median"/>
+                        <RadioButton Name="MyTranslateCentroidRadio" GroupName="MyTranslateRadio" IsEnabled="False" Content="Centroid" IsChecked="True"/>
+                        <RadioButton Name="MyTranslateMedianRadio" GroupName="MyTranslateRadio" IsEnabled="False" Content="Median"/>
+                        <RadioButton Name="MyTranslateFrameRadio" GroupName="MyTranslateRadio" IsEnabled="False" Content="Frame"/>
                     </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Grid.Row="3">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="FRAME" Margin="10" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
+                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyFrameToggle"/>
                 </Grid>
             </StackPanel>
         </Grid>
