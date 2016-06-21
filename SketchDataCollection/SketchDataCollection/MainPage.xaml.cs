@@ -194,8 +194,16 @@ namespace SketchDataCollection
             // save the sketch
             string currentLabel = Path.GetFileNameWithoutExtension(myImageFiles[Indexer-1].Path);
             string fileName = currentLabel + "_" + DateTime.Now.Ticks + ".xml";
-            StorageFile file = await mySaveFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting); ;
-            WriteXml(file, currentLabel, MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes(), myTimeCollection);
+            StorageFile currentFile = await mySaveFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting); ;
+            List<InkStroke> currentStrokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
+            List<List<long>> currentTimeCollection = myTimeCollection;
+            double frameMinX = 0;
+            double frameMinY = 0;
+            double frameMaxX = MyInkCanvas.ActualWidth;
+            double frameMaxY = MyInkCanvas.ActualHeight;
+
+            //WriteXml(currentFile, currentLabel, MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes(), myTimeCollection);
+            SketchTools.SketchToXml(currentFile, currentLabel, currentStrokes, currentTimeCollection, frameMinX, frameMinY, frameMaxX, frameMaxY);
 
             // clear and reset the sketch
             MyClearButton_Click(null, null);
@@ -255,81 +263,6 @@ namespace SketchDataCollection
         #endregion
 
         #region Helper Methods
-
-        private async void WriteXml(StorageFile file, string label, IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection)
-        {
-            // create the string writer as the streaming source of the XML data
-            string output = "";
-            using (StringWriter stringWriter = new StringWriter())
-            {
-                // set the string writer as the streaming source for the XML writer
-                using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
-                {
-                    // <xml>
-                    xmlWriter.WriteStartDocument();
-
-                    // <sketch>
-                    xmlWriter.WriteStartElement("sketch");
-                    xmlWriter.WriteAttributeString("label", label);
-
-                    // set up the required variables
-                    List<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList();
-                    List<InkPoint> points;
-                    List<long> times;
-                    InkPoint point;
-                    long time;
-
-                    // iterate through each stroke
-                    for (int i = 0; i < strokes.Count; ++i)
-                    {
-                        // <stroke>
-                        xmlWriter.WriteStartElement("stroke");
-
-                        // get the current stroke's points and times
-                        points = strokes[i].GetInkPoints().ToList();
-                        times = myTimeCollection[i];
-
-                        //
-                        while (points.Count != times.Count)
-                        {
-                            if (points.Count > times.Count) { points.RemoveAt(points.Count - 1); }
-                            else if (times.Count > points.Count) { times.RemoveAt(times.Count - 1); }
-                        }
-
-                        //
-                        for (int j = 0; j < points.Count; ++j)
-                        {
-                            point = points[j];
-                            time = times[j];  // TODO: FIX!
-
-                            // <point>
-                            xmlWriter.WriteStartElement("point");
-
-                            xmlWriter.WriteAttributeString("x", "" + point.Position.X);
-                            xmlWriter.WriteAttributeString("y", "" +  point.Position.Y);
-                            xmlWriter.WriteAttributeString("time", "" +  times[j]);
-
-                            // </point>
-                            xmlWriter.WriteEndElement();
-                        }
-
-
-                        // </stroke>
-                        xmlWriter.WriteEndElement();
-                    }
-
-                    // </sketch>
-                    xmlWriter.WriteEndElement();
-
-                    // </xml>
-                    xmlWriter.WriteEndDocument();
-                }
-
-                output = stringWriter.ToString();
-            }
-
-            await FileIO.WriteTextAsync(file, output);
-        }
 
         private void UpdateTime(bool hasStarted, bool hasEnded)
         {

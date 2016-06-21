@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
 
-namespace SketchClassifyDebugger
+namespace SketchDataCollection
 {
     public class SketchTransformation
     {
@@ -271,7 +271,7 @@ namespace SketchClassifyDebugger
 
             //
             sketch = TranslateMedian(sketch, k);
-            
+
             //
             for (int i = 0; i < frameStrokes.Count; ++i)
             {

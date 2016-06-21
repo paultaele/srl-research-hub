@@ -11,7 +11,7 @@ using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI.Input.Inking;
 
-namespace SketchClassifyDebugger
+namespace SketchDataCollection
 {
     public class SketchTools
     {

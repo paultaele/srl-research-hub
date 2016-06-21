@@ -1,0 +1,106 @@
+﻿<Page
+    x:Class="SketchTransformDebugger2.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SketchTransformDebugger2"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Name="MyLoadFileButton" Icon="OpenFile" Label="Load File" Click="MyLoadFileButton_Click"/>
+            <AppBarButton Name="MyTransformDataButton" Icon="Play" Label="Transform Data" Click="MyTransformDataButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="RESAMPLE" Margin="10" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
+                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyResampleToggle" Toggled="MyResampleToggle_Toggled"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Count" Margin="10,0,10,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="MyResampleCountTextBox" Margin="0,0,10,0"/>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="SCALE" Margin="10" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
+                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyScaleToggle"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Area" Margin="10,0,10,0"/>
+                    <Slider Grid.Row="1" Grid.Column="1" Name="MyScaleSlider" Minimum="1" Maximum="5" TickFrequency="1" TickPlacement="BottomRight" SnapsTo="Ticks" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="Type" Margin="10,0,10,0"/>
+                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                        <RadioButton Name="MyScaleSquareRadio" Content="Scale" IsChecked="True"/>
+                        <RadioButton Name="MyScaleProportionalRadio" Content="Proportional"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" >
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="TRANSLATE" Margin="10" Style="{ThemeResource BaseTextBlockStyle}"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Display" Margin="10,0,10,0"/>
+                    <ToggleSwitch Grid.Row="0" Grid.Column="1" Name="MyTranslateToggle"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="Type" Margin="10,0,10,0"/>
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                        <RadioButton Name="MyTranslateCenterRadio" Content="Centroid" IsChecked="True"/>
+                        <RadioButton Name="MyTranslateMedianRadio" Content="Median"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Column="1" Name="MyRightBorder" BorderBrush="DarkBlue" BorderThickness="5">
+            <Grid Grid.Column="1">
+                <InkCanvas Name="MyInkCanvas"/>
+                <Canvas Name="MyCanvas"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
