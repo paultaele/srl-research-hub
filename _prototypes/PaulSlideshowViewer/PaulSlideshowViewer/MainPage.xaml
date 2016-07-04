@@ -9,8 +9,8 @@
 
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton Name="MyBackButton" Icon="Back" Label="Back" Click="MyPrevButton_Click"/>
-            <AppBarButton Name="MyNextButton" Icon="Next" Label="Next" Click="MyNextButton_Click"/>
+            <AppBarButton Name="MyBackButton" Icon="Back" Label="Back" IsEnabled="False" Click="MyBackButton_Click"/>
+            <AppBarButton Name="MyNextButton" Icon="Forward" Label="Next" IsEnabled="False" Click="MyNextButton_Click"/>
             <AppBarSeparator/>
             <AppBarButton Name="MyLoadButton" Icon="OpenLocal" Label="Load" Click="MyLoadButton_Click"/>
         </CommandBar>
@@ -18,5 +18,17 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1">
+            <Border Name="MyBorder" BorderBrush="Black" BorderThickness="3">
+                <Image Name="MyImage"/>
+            </Border>
+        </Grid>
+        
     </Grid>
 </Page>

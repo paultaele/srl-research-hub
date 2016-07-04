@@ -155,7 +155,11 @@ namespace SketchClassifyDebugger
         private void MyClassifyButton_Click(object sender, RoutedEventArgs e)
         {
             //
-            Sketch input = new Sketch("Unknown", MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList(), myTimeCollection);
+            double minX = 0;
+            double minY = 0;
+            double maxX = MyInkCanvasBorder.ActualWidth;
+            double maxY = MyInkCanvasBorder.ActualHeight;
+            Sketch input = new Sketch("Unknown", MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes().ToList(), myTimeCollection, minX, minY, maxX, maxY);
 
             //
             myClassifier.Run(input);
