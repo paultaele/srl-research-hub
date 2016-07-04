@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -13,7 +11,7 @@ using Windows.UI.Input.Inking;
 
 namespace Srl
 {
-    public class SketchTools
+public class SketchTools
     {
         public static async Task<Sketch> XmlToSketch(StorageFile file)
         {

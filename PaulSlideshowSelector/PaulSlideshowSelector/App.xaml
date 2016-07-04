@@ -1,8 +1,8 @@
 ﻿<Application
-    x:Class="Srl.App"
+    x:Class="PaulSlideshowSelector.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Srl"
+    xmlns:local="using:PaulSlideshowSelector"
     RequestedTheme="Light">
 
 </Application>

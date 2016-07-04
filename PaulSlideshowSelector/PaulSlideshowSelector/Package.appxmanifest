@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="b8343c3f-e04e-45d2-aa5f-a728d4b4f8b8"
-    Publisher="CN=pault"
+    Name="8a232d29-f790-4daa-a040-79faad1b4d31"
+    Publisher="CN=Paul Taele"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="b8343c3f-e04e-45d2-aa5f-a728d4b4f8b8" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="8a232d29-f790-4daa-a040-79faad1b4d31" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>Srl</DisplayName>
-    <PublisherDisplayName>pault</PublisherDisplayName>
+    <DisplayName>PaulSlideshowSelector</DisplayName>
+    <PublisherDisplayName>Paul Taele</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="Srl.App">
+      EntryPoint="PaulSlideshowSelector.App">
       <uap:VisualElements
-        DisplayName="Srl"
+        DisplayName="PaulSlideshowSelector"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="Srl"
+        Description="PaulSlideshowSelector"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

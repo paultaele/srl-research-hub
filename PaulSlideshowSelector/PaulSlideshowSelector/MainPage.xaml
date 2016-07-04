@@ -1,0 +1,43 @@
+﻿<Page
+    x:Class="PaulSlideshowSelector.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PaulSlideshowSelector"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
+
+    <Page.BottomAppBar>
+        <CommandBar>
+            <!--<AppBarButton Name="MyBackButton" Icon="Back" Label="Back" IsEnabled="False" Click="MyBackButton_Click"/>
+            <AppBarButton Name="MyNextButton" Icon="Forward" Label="Next" IsEnabled="False" Click="MyNextButton_Click"/>-->
+            <AppBarButton Name="MySymbolsButton" Icon="Filter" Label="Symbols" Click="MySymbolsButton_Click">
+                <Button.Flyout>
+                    <Flyout>
+                        <ComboBox Name="MySymbols">
+                            <ComboBoxItem Content="Hello"/>
+                        </ComboBox>
+                    </Flyout>
+                </Button.Flyout>
+            </AppBarButton>
+            <AppBarSeparator/>
+            <AppBarButton Name="MyLoadButton" Icon="OpenLocal" Label="Load" Click="MyLoadButton_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1">
+            <Border Name="MyBorder" BorderBrush="Black" BorderThickness="3">
+                <Image Name="MyImage"/>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Page>
