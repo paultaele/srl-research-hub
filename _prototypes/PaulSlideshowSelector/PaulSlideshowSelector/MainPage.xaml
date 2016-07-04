@@ -9,28 +9,22 @@
 
     <Page.BottomAppBar>
         <CommandBar>
-            <!--<AppBarButton Name="MyBackButton" Icon="Back" Label="Back" IsEnabled="False" Click="MyBackButton_Click"/>
-            <AppBarButton Name="MyNextButton" Icon="Forward" Label="Next" IsEnabled="False" Click="MyNextButton_Click"/>-->
             <AppBarButton Name="MySymbolsButton" Icon="Filter" Label="Symbols" Click="MySymbolsButton_Click">
                 <Button.Flyout>
                     <Flyout>
-                        <ComboBox Name="MySymbols">
-                            <ComboBoxItem Content="Hello"/>
-                        </ComboBox>
+                        <ComboBox Name="MySymbolsComboBox" SelectionChanged="MySymbolsComboBox_SelectionChanged"/>
                     </Flyout>
                 </Button.Flyout>
             </AppBarButton>
-            <AppBarSeparator/>
-            <AppBarButton Name="MyLoadButton" Icon="OpenLocal" Label="Load" Click="MyLoadButton_Click"/>
         </CommandBar>
     </Page.BottomAppBar>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="6*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="1">

@@ -1,5 +1,9 @@
 ﻿using Srl;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -31,56 +35,37 @@ namespace PaulSlideshowSelector
             double length = width < height ? width : height;
             MyBorder.Width = length;
             MyBorder.Height = width;
+
+            //
+            LoadImages();
         }
 
-        #endregion
-
-        #region Button Interactions
-
-        //private void MyBackButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (!HasImages) { return; }
-
-        //    InteractionTools.SetImage(MyImage, myImageFiles[--ImageIndex]);
-        //    MyNextButton.IsEnabled = true;
-        //    if (ImageIndex <= 0) { MyBackButton.IsEnabled = false; }
-        //}
-
-        //private void MyNextButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (!HasImages) { return; }
-
-        //    InteractionTools.SetImage(MyImage, myImageFiles[++ImageIndex]);
-        //    MyBackButton.IsEnabled = true;
-        //    if (ImageIndex >= myImageFiles.Count - 1) { MyNextButton.IsEnabled = false; }
-        //}
-
-        private async void MyLoadButton_Click(object sender, RoutedEventArgs e)
+        private async void LoadImages()
         {
             //
-            List<StorageFile> files = await InteractionTools.GetFiles();
-            if (files == null || files.Count == 0) { return; }
+            StorageFolder imagesFolder = await Package.Current.InstalledLocation.GetFolderAsync(@"Assets\Images");
 
             //
             myImageFiles = new List<StorageFile>();
-            foreach (StorageFile file in files)
+            foreach (StorageFile file in await imagesFolder.GetFilesAsync())
             {
                 string name = file.Name;
                 if (name.EndsWith(".png") || name.EndsWith(".jpg") || name.EndsWith(".gif"))
                 {
                     myImageFiles.Add(file);
+
+                    MySymbolsComboBox.Items.Add(Path.GetFileNameWithoutExtension(file.Path));
                 }
             }
 
             //
-            ImageIndex = 0;
-            InteractionTools.SetImage(MyImage, myImageFiles[ImageIndex]);
-            HasImages = true;
-            //MyBackButton.IsEnabled = false;
-            //if (myImageFiles.Count > 1) { MyNextButton.IsEnabled = true; }
-            //else { MyNextButton.IsEnabled = false; }
+            InteractionTools.SetImage(MyImage, myImageFiles[0]);
+            MySymbolsComboBox.SelectedIndex = 0;
         }
 
+        #endregion
+
+        #region Button Interactions
 
         private void MySymbolsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -89,10 +74,19 @@ namespace PaulSlideshowSelector
 
         #endregion
 
+        #region Combo Box Interactions
+
+        private void MySymbolsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ImageIndex = MySymbolsComboBox.SelectedIndex;
+            InteractionTools.SetImage(MyImage, myImageFiles[ImageIndex]);
+        }
+
+        #endregion
+
         #region Properties
 
         private int ImageIndex { get; set; }
-        private bool HasImages { get; set; }
 
         #endregion
 

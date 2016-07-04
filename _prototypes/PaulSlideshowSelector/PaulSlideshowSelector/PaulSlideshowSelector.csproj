@@ -107,6 +107,52 @@
     <None Include="PaulSlideshowSelector_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Images\a.png" />
+    <Content Include="Assets\Images\chi.png" />
+    <Content Include="Assets\Images\e.png" />
+    <Content Include="Assets\Images\ha.png" />
+    <Content Include="Assets\Images\he.png" />
+    <Content Include="Assets\Images\hi.png" />
+    <Content Include="Assets\Images\ho.png" />
+    <Content Include="Assets\Images\hu.png" />
+    <Content Include="Assets\Images\i.png" />
+    <Content Include="Assets\Images\ka.png" />
+    <Content Include="Assets\Images\ke.png" />
+    <Content Include="Assets\Images\ki.png" />
+    <Content Include="Assets\Images\ko.png" />
+    <Content Include="Assets\Images\ku.png" />
+    <Content Include="Assets\Images\ma.png" />
+    <Content Include="Assets\Images\me.png" />
+    <Content Include="Assets\Images\mi.png" />
+    <Content Include="Assets\Images\mo.png" />
+    <Content Include="Assets\Images\mu.png" />
+    <Content Include="Assets\Images\n.png" />
+    <Content Include="Assets\Images\na.png" />
+    <Content Include="Assets\Images\ne.png" />
+    <Content Include="Assets\Images\ni.png" />
+    <Content Include="Assets\Images\no.png" />
+    <Content Include="Assets\Images\nu.png" />
+    <Content Include="Assets\Images\o.png" />
+    <Content Include="Assets\Images\ra.png" />
+    <Content Include="Assets\Images\re.png" />
+    <Content Include="Assets\Images\ri.png" />
+    <Content Include="Assets\Images\ro.png" />
+    <Content Include="Assets\Images\ru.png" />
+    <Content Include="Assets\Images\sa.png" />
+    <Content Include="Assets\Images\se.png" />
+    <Content Include="Assets\Images\shi.png" />
+    <Content Include="Assets\Images\so.png" />
+    <Content Include="Assets\Images\su.png" />
+    <Content Include="Assets\Images\ta.png" />
+    <Content Include="Assets\Images\te.png" />
+    <Content Include="Assets\Images\to.png" />
+    <Content Include="Assets\Images\tsu.png" />
+    <Content Include="Assets\Images\u.png" />
+    <Content Include="Assets\Images\wa.png" />
+    <Content Include="Assets\Images\wo.png" />
+    <Content Include="Assets\Images\ya.png" />
+    <Content Include="Assets\Images\yo.png" />
+    <Content Include="Assets\Images\yu.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -128,7 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Srl">
-      <HintPath>..\..\Srl.dll</HintPath>
+      <HintPath>..\..\..\Srl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
