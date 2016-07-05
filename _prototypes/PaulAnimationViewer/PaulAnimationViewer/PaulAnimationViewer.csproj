@@ -153,6 +153,52 @@
     <Content Include="Assets\Images\ya.png" />
     <Content Include="Assets\Images\yo.png" />
     <Content Include="Assets\Images\yu.png" />
+    <Content Include="Assets\Templates\a_636008486897535994.xml" />
+    <Content Include="Assets\Templates\chi_636008487090575393.xml" />
+    <Content Include="Assets\Templates\e_636008487329144360.xml" />
+    <Content Include="Assets\Templates\ha_636008487625463400.xml" />
+    <Content Include="Assets\Templates\he_636008488014533443.xml" />
+    <Content Include="Assets\Templates\hi_636008489179055401.xml" />
+    <Content Include="Assets\Templates\ho_636008489474115956.xml" />
+    <Content Include="Assets\Templates\hu_636008490550298758.xml" />
+    <Content Include="Assets\Templates\i_636008490675202760.xml" />
+    <Content Include="Assets\Templates\ka_636008490920658262.xml" />
+    <Content Include="Assets\Templates\ke_636008491127968931.xml" />
+    <Content Include="Assets\Templates\ki_636008491369647591.xml" />
+    <Content Include="Assets\Templates\ko_636008491707475401.xml" />
+    <Content Include="Assets\Templates\ku_636008491838007402.xml" />
+    <Content Include="Assets\Templates\ma_636008492057766049.xml" />
+    <Content Include="Assets\Templates\me_636008492879372734.xml" />
+    <Content Include="Assets\Templates\mi_636008493503354389.xml" />
+    <Content Include="Assets\Templates\mo_636008494167307691.xml" />
+    <Content Include="Assets\Templates\mu_636008494317044806.xml" />
+    <Content Include="Assets\Templates\na_636008495343397575.xml" />
+    <Content Include="Assets\Templates\ne_636008495804839598.xml" />
+    <Content Include="Assets\Templates\ni_636008495991882922.xml" />
+    <Content Include="Assets\Templates\no_636008496280530660.xml" />
+    <Content Include="Assets\Templates\nu_636008496597265262.xml" />
+    <Content Include="Assets\Templates\n_636008494831037535.xml" />
+    <Content Include="Assets\Templates\o_636008497280864738.xml" />
+    <Content Include="Assets\Templates\ra_636008497626130581.xml" />
+    <Content Include="Assets\Templates\re_636008499041351518.xml" />
+    <Content Include="Assets\Templates\ri_636008499706240796.xml" />
+    <Content Include="Assets\Templates\ro_636008499885772654.xml" />
+    <Content Include="Assets\Templates\ru_636008500181403758.xml" />
+    <Content Include="Assets\Templates\sa_636008500603299442.xml" />
+    <Content Include="Assets\Templates\se_636008500935676709.xml" />
+    <Content Include="Assets\Templates\shi_636008501022079414.xml" />
+    <Content Include="Assets\Templates\so_636008501825892423.xml" />
+    <Content Include="Assets\Templates\su_636008502455302351.xml" />
+    <Content Include="Assets\Templates\ta_636008502631410668.xml" />
+    <Content Include="Assets\Templates\te_636008503629433333.xml" />
+    <Content Include="Assets\Templates\to_636008503999393676.xml" />
+    <Content Include="Assets\Templates\tsu_636008504105415312.xml" />
+    <Content Include="Assets\Templates\u_636008504197101306.xml" />
+    <Content Include="Assets\Templates\wa_636008504743185037.xml" />
+    <Content Include="Assets\Templates\wo_636008505055813627.xml" />
+    <Content Include="Assets\Templates\ya_636008505764821332.xml" />
+    <Content Include="Assets\Templates\yo_636008506617710177.xml" />
+    <Content Include="Assets\Templates\yu_636008507860108560.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -173,8 +219,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Srl">
-      <HintPath>..\..\..\Srl.dll</HintPath>
+    <Reference Include="Srl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Srl\Srl\bin\Release\Srl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

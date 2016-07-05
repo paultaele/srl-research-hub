@@ -27,11 +27,12 @@
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="1">
-            <Border Name="MyBorder" BorderBrush="Black" BorderThickness="3">
+        <Border Grid.Column="1" Name="MyBorder" BorderBrush="Black" BorderThickness="3">
+            <Grid>
                 <Image Name="MyImage"/>
-            </Border>
-        </Grid>
+                <InkCanvas Name="MyInkCanvas"/>
+            </Grid>
+        </Border>
 
     </Grid>
 </Page>

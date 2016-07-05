@@ -1,13 +1,18 @@
 ﻿using Srl;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Foundation;
 using Windows.Storage;
+using Windows.UI;
+using Windows.UI.Input.Inking;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -36,30 +41,64 @@ namespace PaulAnimationViewer
             MyBorder.Width = MyBorder.Height = BorderLength;
 
             //
-            LoadImages();
-        }
-
-        private async void LoadImages()
-        {
-            //
-            StorageFolder imagesFolder = await Package.Current.InstalledLocation.GetFolderAsync(IMAGES_PATH);
+            InkStrokes = MyInkCanvas.InkPresenter.StrokeContainer;
 
             //
-            myImageFiles = new List<StorageFile>();
-            foreach (StorageFile file in await imagesFolder.GetFilesAsync())
-            {
-                string name = file.Name;
-                if (name.EndsWith(".png") || name.EndsWith(".jpg") || name.EndsWith(".gif"))
-                {
-                    myImageFiles.Add(file);
-
-                    MySymbolsComboBox.Items.Add(Path.GetFileNameWithoutExtension(file.Path));
-                }
-            }
+            LoadContents(IMAGES_PATH, out myImageFiles, ".png");
+            LoadContents(TEMPLATES_PATH, out myTemplateFiles, ".xml");
 
             //
+            foreach (StorageFile file in myImageFiles) { MySymbolsComboBox.Items.Add(Path.GetFileNameWithoutExtension(file.Path)); }
             InteractionTools.SetImage(MyImage, myImageFiles[0]);
             MySymbolsComboBox.SelectedIndex = 0;
+
+            //
+            myTemplates = new List<Sketch>();
+            foreach (StorageFile file in myTemplateFiles)
+            {
+                Sketch template = null;
+                Task task = Task.Run(async () => template = await SketchTools.XmlToSketch(file));
+                task.Wait();
+
+                template = SketchTransformation.ScaleFrame(template, BorderLength);
+                template = SketchTransformation.TranslateFrame(template, new Point(BorderLength / 2 - MyBorder.BorderThickness.Left, BorderLength / 2 - MyBorder.BorderThickness.Top));
+                myTemplates.Add(template);
+                foreach (InkStroke stroke in template.Strokes)
+                {
+                    stroke.DrawingAttributes = StrokeVisuals;
+                }
+            }
+            InkStrokes.AddStrokes(myTemplates[0].Strokes);
+
+            //
+            IsReady = true;
+        }
+
+        private void LoadContents(string path, out List<StorageFile> targetFiles, string extension)
+        {
+            //
+            Task task;
+
+            //
+            StorageFolder folder = null;
+            task = Task.Run(async () => folder = await Package.Current.InstalledLocation.GetFolderAsync(path));
+            task.Wait();
+
+            //
+            IReadOnlyList<StorageFile> files = null;
+            task = Task.Run(async () => files = await folder.GetFilesAsync());
+            task.Wait();
+
+            //
+            targetFiles = new List<StorageFile>();
+            foreach (StorageFile file in files)
+            {
+                string name = file.Name;
+                if (name.EndsWith(extension))
+                {
+                    targetFiles.Add(file);
+                }
+            }
         }
 
         #endregion
@@ -77,24 +116,44 @@ namespace PaulAnimationViewer
 
         private void MySymbolsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //if (myTemplates == null) { return; }
+            if (!IsReady) { return; }
+
             ImageIndex = MySymbolsComboBox.SelectedIndex;
             InteractionTools.SetImage(MyImage, myImageFiles[ImageIndex]);
+
+            Sketch template = SketchTools.Clone(myTemplates[ImageIndex]);
+            InkStrokes.Clear();
+            InkStrokes.AddStrokes(template.Strokes);
         }
 
         #endregion
 
         #region Properties
 
+        private bool IsReady { get; set; }
         private int ImageIndex { get; set; }
         public double BorderLength { get; private set; }
+        private InkStrokeContainer InkStrokes { get; set; }
 
         #endregion
 
         #region Fields
 
         private List<StorageFile> myImageFiles;
+        private List<StorageFile> myTemplateFiles;
+        private List<Sketch> myTemplates;
+
+        public InkDrawingAttributes StrokeVisuals = new InkDrawingAttributes()
+        {
+            Color = Colors.Red,
+            IgnorePressure = true,
+            PenTip = PenTipShape.Circle,
+            Size = new Size(10, 10)
+        };
 
         public readonly string IMAGES_PATH = @"Assets\Images";
+        public readonly string TEMPLATES_PATH = @"Assets\Templates";
 
         #endregion
     }
