@@ -18,28 +18,21 @@ namespace PaulAnimationViewer
         {
             // offset and shift the times
             // that is, offset all the times so that the first time is zeroed
-            // and shift the times so that the delay between each stroke is one second
+            // and shift the times so that the delay between each point is one tick
             List<List<long>> newTimesCollection = new List<List<long>>();
-            long shift = 0;
-            int delay = 1;
+            //int tick = 200000;
+            int tick = 20000;
             long offset = timesCollection[0][0];
+            int time = 0;
             for (int i = 0; i < timesCollection.Count; ++i)
             {
-                // begin shifting after the first stroke
-                if (i > 0)
-                {
-                    long previousLastTime = timesCollection[i - 1][timesCollection[i - 1].Count - 1];
-                    long currentFirstTime = timesCollection[i][0];
-                    shift += currentFirstTime - previousLastTime - delay;
-                }
-
-                // include the shift and offset values
                 List<long> times = new List<long>();
                 for (int j = 0; j < timesCollection[i].Count; ++j)
                 {
-                    long time = timesCollection[i][j] - shift - offset;
+                    time += tick;
                     times.Add(time);
                 }
+
                 newTimesCollection.Add(times);
             }
 
@@ -59,9 +52,9 @@ namespace PaulAnimationViewer
                 // create the stroke's corresponding tracer
                 Ellipse tracer = new Ellipse()
                 {
-                    Width = 30,
-                    Height = 30,
-                    Fill = new SolidColorBrush(Colors.Red)
+                    Width = 50,
+                    Height = 50,
+                    Fill = new SolidColorBrush(Colors.Green)
                 };
 
                 // add the tracer to the canvas

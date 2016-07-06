@@ -14,6 +14,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -63,7 +64,6 @@ namespace PaulAnimationViewer
                 Task task = Task.Run(async () => template = await SketchTools.XmlToSketch(file));
                 task.Wait();
 
-                //template = SketchTransformation.Resample(template, 128);
                 template = SketchTransformation.ScaleFrame(template, BorderLength);
                 template = SketchTransformation.TranslateFrame(template, new Point(BorderLength / 2 - MyBorder.BorderThickness.Left, BorderLength / 2 - MyBorder.BorderThickness.Top));
                 myTemplates.Add(template);
@@ -131,6 +131,9 @@ namespace PaulAnimationViewer
             //
             ImageIndex = MySymbolsComboBox.SelectedIndex;
             InteractionTools.SetImage(MyImage, myImageFiles[ImageIndex]);
+
+            // TODO: delete later
+            InkStrokes.Clear();
         }
 
         #endregion
@@ -150,13 +153,7 @@ namespace PaulAnimationViewer
         private List<StorageFile> myTemplateFiles;
         private List<Sketch> myTemplates;
 
-        public InkDrawingAttributes StrokeVisuals = new InkDrawingAttributes()
-        {
-            Color = Colors.Red,
-            IgnorePressure = true,
-            PenTip = PenTipShape.Circle,
-            Size = new Size(10, 10)
-        };
+        public InkDrawingAttributes StrokeVisuals = new InkDrawingAttributes() { Color = Colors.Red, IgnorePressure = true, PenTip = PenTipShape.Circle, Size = new Size(10, 10) };
 
         public readonly string IMAGES_PATH = @"Assets\Images";
         public readonly string TEMPLATES_PATH = @"Assets\Templates";
