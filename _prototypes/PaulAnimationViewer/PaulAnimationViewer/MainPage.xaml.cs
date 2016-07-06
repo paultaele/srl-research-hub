@@ -8,6 +8,7 @@ using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.UI;
+using Windows.UI.Core;
 using Windows.UI.Input.Inking;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -42,6 +43,8 @@ namespace PaulAnimationViewer
 
             //
             InkStrokes = MyInkCanvas.InkPresenter.StrokeContainer;
+            MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen | CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Touch;
+            MyInkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(StrokeVisuals);
 
             //
             LoadContents(IMAGES_PATH, out myImageFiles, ".png");
@@ -60,6 +63,7 @@ namespace PaulAnimationViewer
                 Task task = Task.Run(async () => template = await SketchTools.XmlToSketch(file));
                 task.Wait();
 
+                //template = SketchTransformation.Resample(template, 128);
                 template = SketchTransformation.ScaleFrame(template, BorderLength);
                 template = SketchTransformation.TranslateFrame(template, new Point(BorderLength / 2 - MyBorder.BorderThickness.Left, BorderLength / 2 - MyBorder.BorderThickness.Top));
                 myTemplates.Add(template);
@@ -68,7 +72,6 @@ namespace PaulAnimationViewer
                     stroke.DrawingAttributes = StrokeVisuals;
                 }
             }
-            InkStrokes.AddStrokes(myTemplates[0].Strokes);
 
             //
             IsReady = true;
@@ -110,21 +113,24 @@ namespace PaulAnimationViewer
 
         }
 
+        private void MyPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Sketch template = SketchTools.Clone(myTemplates[ImageIndex]);
+            Helper.Trace(MyCanvas, template.Strokes, template.Times);
+        }
+
         #endregion
 
         #region Combo Box Interactions
 
         private void MySymbolsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (myTemplates == null) { return; }
+            //
             if (!IsReady) { return; }
 
+            //
             ImageIndex = MySymbolsComboBox.SelectedIndex;
             InteractionTools.SetImage(MyImage, myImageFiles[ImageIndex]);
-
-            Sketch template = SketchTools.Clone(myTemplates[ImageIndex]);
-            InkStrokes.Clear();
-            InkStrokes.AddStrokes(template.Strokes);
         }
 
         #endregion

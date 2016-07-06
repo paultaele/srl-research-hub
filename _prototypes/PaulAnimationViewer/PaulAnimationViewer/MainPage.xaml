@@ -9,6 +9,8 @@
 
     <Page.BottomAppBar>
         <CommandBar>
+            <AppBarButton Name="MyPlayButton" Icon="Play" Label="Play" Click="MyPlayButton_Click"/>
+            <AppBarSeparator/>
             <AppBarButton Name="MySymbolsButton" Icon="Filter" Label="Symbols" Click="MySymbolsButton_Click">
                 <Button.Flyout>
                     <Flyout>
@@ -31,6 +33,7 @@
             <Grid>
                 <Image Name="MyImage"/>
                 <InkCanvas Name="MyInkCanvas"/>
+                <Canvas Name="MyCanvas"/>
             </Grid>
         </Border>
 
