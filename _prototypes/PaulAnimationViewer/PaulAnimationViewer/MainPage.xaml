@@ -9,7 +9,7 @@
 
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarToggleButton Name="MyEnableImageButton" Icon="Pictures" Label="Show Image" Click="MyEnableImageButton_Click"/>
+            <AppBarToggleButton Name="MyImageButton" Icon="Pictures" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
             <AppBarSeparator/>
             <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
             <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>

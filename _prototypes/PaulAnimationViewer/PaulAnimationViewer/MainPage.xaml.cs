@@ -32,6 +32,11 @@ namespace PaulAnimationViewer
             InitializeComponent();
 
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+
+            // initialize the stroke event handlers
+            MyInkCanvas.InkPresenter.StrokeInput.StrokeStarted += StrokeInput_StrokeStarted; ;
+            MyInkCanvas.InkPresenter.StrokeInput.StrokeContinued += StrokeInput_StrokeContinued; ;
+            MyInkCanvas.InkPresenter.StrokeInput.StrokeEnded += StrokeInput_StrokeEnded; ;
         }
 
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
@@ -39,11 +44,15 @@ namespace PaulAnimationViewer
             //
             double width = MyBorder.ActualWidth;
             double height = MyBorder.ActualHeight;
-            BorderLength = width < height ? width : height;
-            MyBorder.Width = MyBorder.Height = BorderLength;
+            MyBorderLength = width < height ? width : height;
+            MyBorder.Width = MyBorder.Height = MyBorderLength;
+
+            // initialize the external timing data structure and offset
+            myTimeCollection = new List<List<long>>();
+            MyDateTimeOffset = 0;
 
             //
-            InkStrokes = MyInkCanvas.InkPresenter.StrokeContainer;
+            MyInkStrokes = MyInkCanvas.InkPresenter.StrokeContainer;
             MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen | CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Touch;
             MyInkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(StrokeVisuals);
 
@@ -53,7 +62,6 @@ namespace PaulAnimationViewer
 
             //
             foreach (StorageFile file in myImageFiles) { MySymbolsComboBox.Items.Add(Path.GetFileNameWithoutExtension(file.Path)); }
-            InteractionTools.SetImage(MyImage, myImageFiles[0]);
             MySymbolsComboBox.SelectedIndex = 0;
 
             //
@@ -64,8 +72,8 @@ namespace PaulAnimationViewer
                 Task task = Task.Run(async () => template = await SketchTools.XmlToSketch(file));
                 task.Wait();
 
-                template = SketchTransformation.ScaleFrame(template, BorderLength);
-                template = SketchTransformation.TranslateFrame(template, new Point(BorderLength / 2 - MyBorder.BorderThickness.Left, BorderLength / 2 - MyBorder.BorderThickness.Top));
+                template = SketchTransformation.ScaleFrame(template, MyBorderLength);
+                template = SketchTransformation.TranslateFrame(template, new Point(MyBorderLength / 2 - MyBorder.BorderThickness.Left, MyBorderLength / 2 - MyBorder.BorderThickness.Top));
                 myTemplates.Add(template);
                 foreach (InkStroke stroke in template.Strokes)
                 {
@@ -74,7 +82,7 @@ namespace PaulAnimationViewer
             }
 
             //
-            IsReady = true;
+            MyIsReady = true;
         }
 
         private void LoadContents(string path, out List<StorageFile> targetFiles, string extension)
@@ -106,27 +114,131 @@ namespace PaulAnimationViewer
 
         #endregion
 
+        #region Stroke Interactions
+
+        private void StrokeInput_StrokeStarted(Windows.UI.Input.Inking.InkStrokeInput sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            UpdateTime(true, false);
+        }
+
+        private void StrokeInput_StrokeContinued(Windows.UI.Input.Inking.InkStrokeInput sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            UpdateTime(false, false);
+        }
+
+        private void StrokeInput_StrokeEnded(Windows.UI.Input.Inking.InkStrokeInput sender, Windows.UI.Core.PointerEventArgs args)
+        {
+            UpdateTime(false, true);
+        }
+
+        private void UpdateTime(bool hasStarted, bool hasEnded)
+        {
+            // case: stroke has started and ended
+            // impossible so throw exception
+            if (hasStarted && hasEnded)
+            {
+                throw new Exception("Cannot start and end stroke at the same time.");
+            }
+
+            // case: stroke has started
+            // initialize the stroke
+            if (hasStarted)
+            {
+                myTimes = new List<long>();
+            }
+
+            // calibrate recorded time
+            long time = DateTime.Now.Ticks - MyDateTimeOffset;
+            myTimes.Add(time);
+
+            // case: stroke has ended
+            // complete the stroke
+            if (hasEnded)
+            {
+                myTimeCollection.Add(myTimes);
+            }
+        }
+
+
+        #endregion
+
         #region Button Interactions
 
-        private void MyEnableImageButton_Click(object sender, RoutedEventArgs e)
+        private void MyImageButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!MyImageButton.IsChecked.Value)
+            {
+                MyImage.Source = null;
+            }
 
+            else
+            {
+                InteractionTools.SetImage(MyImage, myImageFiles[MyImageIndex]);
+                MySymbolsComboBox.SelectedIndex = MyImageIndex;
+            }
         }
 
         private void MyClearButton_Click(object sender, RoutedEventArgs e)
         {
+            // clear the canvas
+            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
 
+            // clear the stroke and timing data
+            myTimeCollection = new List<List<long>>();
+            MyDateTimeOffset = 0;
+
+            // clear the tracers
+            MyCanvas.Children.Clear();
         }
 
         private void MyUndoButton_Click(object sender, RoutedEventArgs e)
         {
+            // get the strokes
+            IReadOnlyList<InkStroke> strokes = MyInkCanvas.InkPresenter.StrokeContainer.GetStrokes();
 
+            // reset the time offset and finish
+            if (strokes.Count == 0)
+            {
+                MyDateTimeOffset = 0;
+                return;
+            }
+
+            // select the last stroke and delete it
+            strokes[strokes.Count - 1].Selected = true;
+            MyInkCanvas.InkPresenter.StrokeContainer.DeleteSelected();
+
+            // remove the last time
+            myTimeCollection.RemoveAt(myTimeCollection.Count - 1);
+
+            // clear the canvas
+            MyCanvas.Children.Clear();
         }
 
         private void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Sketch template = SketchTools.Clone(myTemplates[ImageIndex]);
-            Helper.Trace(MyCanvas, template.Strokes, template.Times);
+            List<InkStroke> strokes = new List<InkStroke>();
+            foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
+
+            if (strokes.Count > 0)
+            {
+                Sketch sketch = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
+                Sketch input = SketchTools.Clone(sketch);
+                List<Storyboard> inputStoryboards = Helper.Playback(MyCanvas, sketch.Strokes, sketch.Times, Colors.Red);
+                foreach (Storyboard storyboard in inputStoryboards)
+                {
+                    storyboard.Begin();
+                }
+            }
+
+            if (MyImageButton.IsChecked.Value)
+            {
+                Sketch template = SketchTools.Clone(myTemplates[MyImageIndex]);
+                List<Storyboard> modelStoryboards = Helper.Trace(MyCanvas, template.Strokes, template.Times, Colors.Green, 30000);
+                foreach (Storyboard storyboard in modelStoryboards)
+                {
+                    storyboard.Begin();
+                }
+            }
         }
 
         #endregion
@@ -136,28 +248,36 @@ namespace PaulAnimationViewer
         private void MySymbolsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //
-            if (!IsReady) { return; }
+            if (!MyIsReady) { return; }
 
             //
-            ImageIndex = MySymbolsComboBox.SelectedIndex;
-            InteractionTools.SetImage(MyImage, myImageFiles[ImageIndex]);
+            MyImage.Source = null;
+            if (MyImageButton.IsChecked.Value)
+            {
+                MyImageIndex = MySymbolsComboBox.SelectedIndex;
+                InteractionTools.SetImage(MyImage, myImageFiles[MyImageIndex]);
+            }
 
             // TODO: delete later
-            InkStrokes.Clear();
+            MyInkStrokes.Clear();
         }
 
         #endregion
 
         #region Properties
 
-        private bool IsReady { get; set; }
-        private int ImageIndex { get; set; }
-        public double BorderLength { get; private set; }
-        private InkStrokeContainer InkStrokes { get; set; }
+        private bool MyIsReady { get; set; }
+        private int MyImageIndex { get; set; }
+        public double MyBorderLength { get; private set; }
+        private InkStrokeContainer MyInkStrokes { get; set; }
+        private long MyDateTimeOffset { get; set; }
 
         #endregion
 
         #region Fields
+
+        private List<long> myTimes;
+        private List<List<long>> myTimeCollection;
 
         private List<StorageFile> myImageFiles;
         private List<StorageFile> myTemplateFiles;
