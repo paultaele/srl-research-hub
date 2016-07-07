@@ -14,15 +14,17 @@ namespace PaulAnimationViewer
 {
     public class Helper
     {
+        /// <summary>
+        /// This method creates the animations for tracing over the sketch.
+        /// </summary>
+        /// <param name="canvas">The canvas to show the animation.</param>
+        /// <param name="strokesCollection">The strokes of the sketch.</param>
+        /// <param name="timesCollection">The times of the sketch.</param>
         public static void Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection)
         {
-            // offset and shift the times
-            // that is, offset all the times so that the first time is zeroed
-            // and shift the times so that the delay between each point is one tick
+            // set the timings of the animation
             List<List<long>> newTimesCollection = new List<List<long>>();
-            //int tick = 200000;
             int tick = 20000;
-            long offset = timesCollection[0][0];
             int time = 0;
             for (int i = 0; i < timesCollection.Count; ++i)
             {
@@ -49,7 +51,7 @@ namespace PaulAnimationViewer
                 double startX = stroke.GetInkPoints()[0].Position.X;
                 double startY = stroke.GetInkPoints()[0].Position.Y;
 
-                // create the stroke's corresponding tracer
+                // set the visuals of the stroke's corresponding tracer
                 Ellipse tracer = new Ellipse()
                 {
                     Width = 50,

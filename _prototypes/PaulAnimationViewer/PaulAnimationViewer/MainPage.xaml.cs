@@ -108,7 +108,17 @@ namespace PaulAnimationViewer
 
         #region Button Interactions
 
-        private void MySymbolsButton_Click(object sender, RoutedEventArgs e)
+        private void MyEnableImageButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MyClearButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MyUndoButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
