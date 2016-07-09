@@ -180,6 +180,11 @@ namespace PaulAnimationViewer
 
         private void MyClearButton_Click(object sender, RoutedEventArgs e)
         {
+            Clear();
+        }
+
+        private void Clear()
+        {
             // clear the canvas
             MyInkCanvas.InkPresenter.StrokeContainer.Clear();
 
@@ -216,33 +221,46 @@ namespace PaulAnimationViewer
 
         private void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            // get the canvas' strokes
+            // get the input and model sketch, and set the duration
             List<InkStroke> strokes = new List<InkStroke>();
             foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
+            Sketch input = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
             Sketch model = myTemplates[MyImageIndex];
             int duration = 30000;
+
+            // debug
+            for (int i = 0; i < strokes.Count; ++i)
+            {
+                var points = strokes[i].GetInkPoints();
+                var times = myTimeCollection[i];
+
+                Debug.WriteLine(points.Count + " | " + times.Count);
+            }
+            Debug.WriteLine("-----");
+            // end debug
 
             // animate the expert's model strokes
             if (MyImageButton.IsChecked.Value)
             {
                 Sketch sketch = SketchTools.Clone(model);
-
                 double opacity = strokes.Count > 0 ? 0.8 : 1.0;
                 SolidColorBrush color = new SolidColorBrush(Colors.Green) { Opacity = opacity };
-                List<Storyboard> modelStoryboards = Helper.Trace(MyCanvas, sketch.Strokes, sketch.Times, color, duration);
+
+                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, color, duration);
                 foreach (Storyboard storyboard in modelStoryboards)
                 {
                     storyboard.Begin();
                 }
             }
 
+            // animate the user's input strokes
             if (strokes.Count > 0)
             {
-                Sketch sketch = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
-                Sketch input = SketchTools.Clone(sketch);
+                Sketch sketch = SketchTools.Clone(input);
+                double opacity = 1.0;
+                SolidColorBrush color = new SolidColorBrush(Colors.Orange) { Opacity = opacity };
 
-                SolidColorBrush color = new SolidColorBrush(Colors.Orange) { Opacity = 1.0 };
-                List<Storyboard> inputStoryboards = Helper.Trace(MyCanvas, input.Strokes, input.Times, color, duration, model);
+                List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, color, duration, model);
                 foreach (Storyboard storyboard in inputStoryboards)
                 {
                     storyboard.Begin();
@@ -268,7 +286,7 @@ namespace PaulAnimationViewer
             }
 
             //
-            MyInkStrokes.Clear();
+            Clear();
         }
 
         #endregion
