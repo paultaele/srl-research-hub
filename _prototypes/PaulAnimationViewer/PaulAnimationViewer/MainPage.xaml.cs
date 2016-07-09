@@ -216,25 +216,34 @@ namespace PaulAnimationViewer
 
         private void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
+            // get the canvas' strokes
             List<InkStroke> strokes = new List<InkStroke>();
             foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
+            Sketch model = myTemplates[MyImageIndex];
+            int duration = 30000;
 
-            if (strokes.Count > 0)
+            // animate the expert's model strokes
+            if (MyImageButton.IsChecked.Value)
             {
-                Sketch sketch = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
-                Sketch input = SketchTools.Clone(sketch);
-                List<Storyboard> inputStoryboards = Helper.Playback(MyCanvas, sketch.Strokes, sketch.Times, Colors.Red);
-                foreach (Storyboard storyboard in inputStoryboards)
+                Sketch sketch = SketchTools.Clone(model);
+
+                double opacity = strokes.Count > 0 ? 0.8 : 1.0;
+                SolidColorBrush color = new SolidColorBrush(Colors.Green) { Opacity = opacity };
+                List<Storyboard> modelStoryboards = Helper.Trace(MyCanvas, sketch.Strokes, sketch.Times, color, duration);
+                foreach (Storyboard storyboard in modelStoryboards)
                 {
                     storyboard.Begin();
                 }
             }
 
-            if (MyImageButton.IsChecked.Value)
+            if (strokes.Count > 0)
             {
-                Sketch template = SketchTools.Clone(myTemplates[MyImageIndex]);
-                List<Storyboard> modelStoryboards = Helper.Trace(MyCanvas, template.Strokes, template.Times, Colors.Green, 30000);
-                foreach (Storyboard storyboard in modelStoryboards)
+                Sketch sketch = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
+                Sketch input = SketchTools.Clone(sketch);
+
+                SolidColorBrush color = new SolidColorBrush(Colors.Orange) { Opacity = 1.0 };
+                List<Storyboard> inputStoryboards = Helper.Trace(MyCanvas, input.Strokes, input.Times, color, duration, model);
+                foreach (Storyboard storyboard in inputStoryboards)
                 {
                     storyboard.Begin();
                 }
@@ -252,13 +261,13 @@ namespace PaulAnimationViewer
 
             //
             MyImage.Source = null;
+            MyImageIndex = MySymbolsComboBox.SelectedIndex;
             if (MyImageButton.IsChecked.Value)
             {
-                MyImageIndex = MySymbolsComboBox.SelectedIndex;
                 InteractionTools.SetImage(MyImage, myImageFiles[MyImageIndex]);
             }
 
-            // TODO: delete later
+            //
             MyInkStrokes.Clear();
         }
 
