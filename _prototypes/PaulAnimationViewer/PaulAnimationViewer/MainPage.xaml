@@ -25,7 +25,7 @@
             </AppBarButton>
 
             <CommandBar.Content>
-                <TextBlock Text="Hello..." Margin="12,14"/>
+                <TextBlock Name="MyPrompText" Text="Hello..." Margin="12,14"/>
             </CommandBar.Content>
         </CommandBar>
     </Page.BottomAppBar>

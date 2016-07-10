@@ -41,7 +41,7 @@ namespace PaulAnimationViewer
 
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
-            //
+            // squarify the ink canvas' drawing area
             double width = MyBorder.ActualWidth;
             double height = MyBorder.ActualHeight;
             MyBorderLength = width < height ? width : height;
@@ -51,20 +51,24 @@ namespace PaulAnimationViewer
             myTimeCollection = new List<List<long>>();
             MyDateTimeOffset = 0;
 
-            //
+            // enable writing and set the stroke visuals of the ink canvas
             MyInkStrokes = MyInkCanvas.InkPresenter.StrokeContainer;
             MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen | CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Touch;
             MyInkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(StrokeVisuals);
 
-            //
+            // load the images and templates
             LoadContents(IMAGES_PATH, out myImageFiles, ".png");
             LoadContents(TEMPLATES_PATH, out myTemplateFiles, ".xml");
 
-            //
+            // populate the symbols combo box
             foreach (StorageFile file in myImageFiles) { MySymbolsComboBox.Items.Add(Path.GetFileNameWithoutExtension(file.Path)); }
             MySymbolsComboBox.SelectedIndex = 0;
 
-            //
+            // set the prompt text
+            string promptedSymbol = MySymbolsComboBox.SelectedValue.ToString().ToUpper();
+            MyPrompText.Text = PROMPT_TEXT + promptedSymbol;
+
+            // modify the templates to fit the current ink canvas' drawing area
             myTemplates = new List<Sketch>();
             foreach (StorageFile file in myTemplateFiles)
             {
@@ -81,7 +85,7 @@ namespace PaulAnimationViewer
                 }
             }
 
-            //
+            // set the flag to allow buttons to run code
             MyIsReady = true;
         }
 
@@ -219,7 +223,7 @@ namespace PaulAnimationViewer
             MyCanvas.Children.Clear();
         }
 
-        private void MyPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // get the input and model sketch, and set the duration
             List<InkStroke> strokes = new List<InkStroke>();
@@ -227,17 +231,6 @@ namespace PaulAnimationViewer
             Sketch input = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
             Sketch model = myTemplates[MyImageIndex];
             int duration = 30000;
-
-            // debug
-            for (int i = 0; i < strokes.Count; ++i)
-            {
-                var points = strokes[i].GetInkPoints();
-                var times = myTimeCollection[i];
-
-                Debug.WriteLine(points.Count + " | " + times.Count);
-            }
-            Debug.WriteLine("-----");
-            // end debug
 
             // animate the expert's model strokes
             if (MyImageButton.IsChecked.Value)
@@ -267,6 +260,16 @@ namespace PaulAnimationViewer
                     storyboard.Begin();
                 }
             }
+
+            //
+            int numModelPoints = 0;
+            foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
+            int delay = (numModelPoints * duration) / 10000;
+            MyPlayButton.IsEnabled = false;
+            MyInkCanvas.InkPresenter.IsInputEnabled = false;
+            await Task.Delay(delay);
+            MyPlayButton.IsEnabled = true;
+            MyInkCanvas.InkPresenter.IsInputEnabled = true;
         }
 
         #endregion
@@ -285,6 +288,10 @@ namespace PaulAnimationViewer
             {
                 InteractionTools.SetImage(MyImage, myImageFiles[MyImageIndex]);
             }
+
+            //
+            string promptedSymbol = MySymbolsComboBox.SelectedValue.ToString().ToUpper();
+            MyPrompText.Text = PROMPT_TEXT + promptedSymbol;
 
             //
             Clear();
@@ -315,6 +322,8 @@ namespace PaulAnimationViewer
 
         public readonly string IMAGES_PATH = @"Assets\Images";
         public readonly string TEMPLATES_PATH = @"Assets\Templates";
+
+        public readonly string PROMPT_TEXT = "Please draw the following symbol: ";
 
         #endregion
     }
