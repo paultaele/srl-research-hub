@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -94,7 +95,9 @@ namespace Srl
                 {
                     Width = 50,
                     Height = 50,
-                    Fill = color
+                    Fill = color,
+                    Stroke = new SolidColorBrush(Colors.DarkGray),
+                    StrokeThickness = 5,
                 };
 
                 // add the tracer to the canvas

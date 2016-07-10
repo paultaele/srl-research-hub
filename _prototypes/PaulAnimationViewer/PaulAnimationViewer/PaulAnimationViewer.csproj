@@ -221,7 +221,7 @@
   <ItemGroup>
     <Reference Include="Srl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Srl\Srl\bin\Release\Srl.dll</HintPath>
+      <HintPath>..\..\..\Srl.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
