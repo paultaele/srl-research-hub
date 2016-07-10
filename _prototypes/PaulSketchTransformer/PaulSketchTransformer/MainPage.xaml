@@ -45,17 +45,17 @@
             </Grid>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10">
-                <TextBlock Width="100" Text="Resample"/>
+                <CheckBox Name="MyResampleCheckBox" Width="100" IsChecked="True" Content="Resample"/>
                 <TextBox Name="MyResampleText" Width="50" Text="128"/>
             </StackPanel>
 
             <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10">
-                <TextBlock Width="100" Text="Scale"/>
+                <CheckBox Name="MyScaleCheckBox" Width="100" IsChecked="True" Content="Scale"/>
                 <TextBox Name="MyScaleText" Width="50" Text="500"/>
             </StackPanel>
 
             <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="10">
-                <TextBlock Width="100" Text="Translate"/>
+                <CheckBox Name="MyTranslateCheckBox"  Width="100" IsChecked="True" Content="Translate"/>
                 <TextBox Name="MyTranslateX" Width="50" Text="250"/>
                 <TextBox Name="MyTranslateY" Width="50" Text="250"/>
             </StackPanel>

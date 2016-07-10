@@ -99,9 +99,9 @@ namespace PaulSketchTransformer
                 string loadFileName = loadFile.Name;
                 Sketch sketch = await SketchTools.XmlToSketch(loadFile);
 
-                sketch = SketchTransformation.Resample(sketch, resample);
-                sketch = SketchTransformation.ScaleFrame(sketch, scale);
-                sketch = SketchTransformation.TranslateFrame(sketch, point);
+                if (MyResampleCheckBox.IsChecked.Value)     { sketch = SketchTransformation.Resample(sketch, resample); }
+                if (MyScaleCheckBox.IsChecked.Value)        { sketch = SketchTransformation.ScaleFrame(sketch, scale); }
+                if (MyTranslateCheckBox.IsChecked.Value)    { sketch = SketchTransformation.TranslateFrame(sketch, point); }
 
                 StorageFile saveFile = await mySaveFolder.CreateFileAsync(loadFileName, CreationCollisionOption.ReplaceExisting);
                 SketchTools.SketchToXml(saveFile, loadFileName, sketch.Strokes, sketch.Times, sketch.FrameMinX, sketch.FrameMinY, sketch.FrameMaxX, sketch.FrameMaxY);
