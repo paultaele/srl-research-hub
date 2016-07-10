@@ -237,9 +237,10 @@ namespace PaulAnimationViewer
             {
                 Sketch sketch = SketchTools.Clone(model);
                 double opacity = strokes.Count > 0 ? 0.8 : 1.0;
-                SolidColorBrush color = new SolidColorBrush(Colors.Green) { Opacity = opacity };
+                Color color = strokes.Count > 0 ? Colors.Black : Colors.Green;
+                SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
 
-                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, color, duration);
+                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, duration);
                 foreach (Storyboard storyboard in modelStoryboards)
                 {
                     storyboard.Begin();
@@ -252,14 +253,18 @@ namespace PaulAnimationViewer
                 Sketch sketch = SketchTools.Clone(input);
                 sketch = SketchTransformation.Resample(sketch, 128);
                 double opacity = 1.0;
-                SolidColorBrush color = new SolidColorBrush(Colors.Orange) { Opacity = opacity };
+                Color color = Colors.Red;
+                SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
 
-                List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, color, duration, model);
+                List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, duration, model);
                 foreach (Storyboard storyboard in inputStoryboards)
                 {
                     storyboard.Begin();
                 }
             }
+
+            //
+            if (strokes.Count == 0 && !MyImageButton.IsChecked.Value) { return; }
 
             //
             int numModelPoints = 0;

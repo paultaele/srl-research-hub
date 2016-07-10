@@ -69,7 +69,7 @@ namespace Srl
             image.Source = bitmap;
         }
 
-        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush color, int duration)
+        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration)
         {
             // set the timings of the animation
             List<List<long>> newTimesCollection = new List<List<long>>();
@@ -95,7 +95,7 @@ namespace Srl
                 {
                     Width = 50,
                     Height = 50,
-                    Fill = color,
+                    Fill = brush,
                     Stroke = new SolidColorBrush(Colors.DarkGray),
                     StrokeThickness = 5,
                 };
@@ -174,7 +174,7 @@ namespace Srl
             return storyboards;
         }
 
-        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush color, int duration, Sketch model)
+        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration, Sketch model)
         {
             // set the input duration
             int numModelPoints = 0;
@@ -185,7 +185,7 @@ namespace Srl
             int modelTotalDuration = modelDuration * numModelPoints;
             int newDuration = modelTotalDuration / numInputPoints;
 
-            return Trace(canvas, strokesCollection, timesCollection, color, newDuration);
+            return Trace(canvas, strokesCollection, timesCollection, brush, newDuration);
         }
     }
 }
