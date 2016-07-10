@@ -5,9 +5,60 @@
     xmlns:local="using:PaulTechniqueViewer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarToggleButton Name="MyImageButton" Icon="Pictures" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
+            <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MyPlayButton" Icon="Play" Label="Play" Click="MyPlayButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MyCheckButton" Icon="Accept" Label="Check" Click="MyCheckButton_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton Name="MySymbolsButton" Icon="List" Label="Symbols">
+                <Button.Flyout>
+                    <Flyout>
+                        <ComboBox Name="MySymbolsComboBox" SelectionChanged="MySymbolsComboBox_SelectionChanged"/>
+                    </Flyout>
+                </Button.Flyout>
+            </AppBarButton>
+
+            <CommandBar.Content>
+                <TextBlock Name="MyPrompText" Text="Hello..." Margin="12,14"/>
+            </CommandBar.Content>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid Name="MyGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="2.5*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Name="MyLeftSide" Grid.Column="0">
+            <Grid>
+                <Border Name="MyTest" Visibility="Collapsed" BorderBrush="Black" BorderThickness="10">
+                    <InkCanvas/>
+                </Border>
+            </Grid>
+        </Border>
+        
+        <Border Grid.Column="1" Name="MyBorder" BorderBrush="Black" BorderThickness="3">
+            <Grid>
+                <Image Name="MyImage"/>
+                <InkCanvas Name="MyInkCanvas"/>
+                <Canvas Name="MyCanvas"/>
+            </Grid>
+        </Border>
+
+        <Border Name="MyRightSide" Grid.Column="2">
+
+        </Border>
 
     </Grid>
 </Page>

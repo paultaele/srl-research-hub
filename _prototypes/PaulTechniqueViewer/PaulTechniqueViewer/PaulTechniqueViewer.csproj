@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{0c48742a-4757-40bd-98a6-1274fed29bf1}</ProjectGuid>
+    <ProjectGuid>{0C48742A-4757-40BD-98A6-1274FED29BF1}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PaulTechniqueViewer</RootNamespace>
@@ -16,9 +16,7 @@
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    
     <PackageCertificateKeyFile>PaulTechniqueViewer_TemporaryKey.pfx</PackageCertificateKeyFile>
-    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -106,11 +104,101 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    
     <None Include="PaulTechniqueViewer_TemporaryKey.pfx" />
-    
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Images\a.png" />
+    <Content Include="Assets\Images\chi.png" />
+    <Content Include="Assets\Images\e.png" />
+    <Content Include="Assets\Images\ha.png" />
+    <Content Include="Assets\Images\he.png" />
+    <Content Include="Assets\Images\hi.png" />
+    <Content Include="Assets\Images\ho.png" />
+    <Content Include="Assets\Images\hu.png" />
+    <Content Include="Assets\Images\i.png" />
+    <Content Include="Assets\Images\ka.png" />
+    <Content Include="Assets\Images\ke.png" />
+    <Content Include="Assets\Images\ki.png" />
+    <Content Include="Assets\Images\ko.png" />
+    <Content Include="Assets\Images\ku.png" />
+    <Content Include="Assets\Images\ma.png" />
+    <Content Include="Assets\Images\me.png" />
+    <Content Include="Assets\Images\mi.png" />
+    <Content Include="Assets\Images\mo.png" />
+    <Content Include="Assets\Images\mu.png" />
+    <Content Include="Assets\Images\n.png" />
+    <Content Include="Assets\Images\na.png" />
+    <Content Include="Assets\Images\ne.png" />
+    <Content Include="Assets\Images\ni.png" />
+    <Content Include="Assets\Images\no.png" />
+    <Content Include="Assets\Images\nu.png" />
+    <Content Include="Assets\Images\o.png" />
+    <Content Include="Assets\Images\ra.png" />
+    <Content Include="Assets\Images\re.png" />
+    <Content Include="Assets\Images\ri.png" />
+    <Content Include="Assets\Images\ro.png" />
+    <Content Include="Assets\Images\ru.png" />
+    <Content Include="Assets\Images\sa.png" />
+    <Content Include="Assets\Images\se.png" />
+    <Content Include="Assets\Images\shi.png" />
+    <Content Include="Assets\Images\so.png" />
+    <Content Include="Assets\Images\su.png" />
+    <Content Include="Assets\Images\ta.png" />
+    <Content Include="Assets\Images\te.png" />
+    <Content Include="Assets\Images\to.png" />
+    <Content Include="Assets\Images\tsu.png" />
+    <Content Include="Assets\Images\u.png" />
+    <Content Include="Assets\Images\wa.png" />
+    <Content Include="Assets\Images\wo.png" />
+    <Content Include="Assets\Images\ya.png" />
+    <Content Include="Assets\Images\yo.png" />
+    <Content Include="Assets\Images\yu.png" />
+    <Content Include="Assets\Templates\a_636008486897535994.xml" />
+    <Content Include="Assets\Templates\chi_636008487090575393.xml" />
+    <Content Include="Assets\Templates\e_636008487329144360.xml" />
+    <Content Include="Assets\Templates\ha_636008487625463400.xml" />
+    <Content Include="Assets\Templates\he_636008488014533443.xml" />
+    <Content Include="Assets\Templates\hi_636008489179055401.xml" />
+    <Content Include="Assets\Templates\ho_636008489474115956.xml" />
+    <Content Include="Assets\Templates\hu_636037504678295232.xml" />
+    <Content Include="Assets\Templates\i_636008490675202760.xml" />
+    <Content Include="Assets\Templates\ka_636008490920658262.xml" />
+    <Content Include="Assets\Templates\ke_636008491127968931.xml" />
+    <Content Include="Assets\Templates\ki_636008491369647591.xml" />
+    <Content Include="Assets\Templates\ko_636008491707475401.xml" />
+    <Content Include="Assets\Templates\ku_636008491838007402.xml" />
+    <Content Include="Assets\Templates\ma_636008492057766049.xml" />
+    <Content Include="Assets\Templates\me_636008492879372734.xml" />
+    <Content Include="Assets\Templates\mi_636008493503354389.xml" />
+    <Content Include="Assets\Templates\mo_636008494167307691.xml" />
+    <Content Include="Assets\Templates\mu_636008494317044806.xml" />
+    <Content Include="Assets\Templates\na_636008495343397575.xml" />
+    <Content Include="Assets\Templates\ne_636008495804839598.xml" />
+    <Content Include="Assets\Templates\ni_636008495991882922.xml" />
+    <Content Include="Assets\Templates\no_636008496280530660.xml" />
+    <Content Include="Assets\Templates\nu_636008496597265262.xml" />
+    <Content Include="Assets\Templates\n_636008494831037535.xml" />
+    <Content Include="Assets\Templates\o_636008497280864738.xml" />
+    <Content Include="Assets\Templates\ra_636008497626130581.xml" />
+    <Content Include="Assets\Templates\re_636008499041351518.xml" />
+    <Content Include="Assets\Templates\ri_636008499706240796.xml" />
+    <Content Include="Assets\Templates\ro_636008499885772654.xml" />
+    <Content Include="Assets\Templates\ru_636008500181403758.xml" />
+    <Content Include="Assets\Templates\sa_636008500603299442.xml" />
+    <Content Include="Assets\Templates\se_636008500935676709.xml" />
+    <Content Include="Assets\Templates\shi_636008501022079414.xml" />
+    <Content Include="Assets\Templates\so_636008501825892423.xml" />
+    <Content Include="Assets\Templates\su_636008502455302351.xml" />
+    <Content Include="Assets\Templates\ta_636008502631410668.xml" />
+    <Content Include="Assets\Templates\te_636008503629433333.xml" />
+    <Content Include="Assets\Templates\to_636008503999393676.xml" />
+    <Content Include="Assets\Templates\tsu_636008504105415312.xml" />
+    <Content Include="Assets\Templates\u_636008504197101306.xml" />
+    <Content Include="Assets\Templates\wa_636008504743185037.xml" />
+    <Content Include="Assets\Templates\wo_636008505055813627.xml" />
+    <Content Include="Assets\Templates\ya_636008505764821332.xml" />
+    <Content Include="Assets\Templates\yo_636008506617710177.xml" />
+    <Content Include="Assets\Templates\yu_636008507860108560.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -130,11 +218,14 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  
+  <ItemGroup>
+    <Reference Include="Srl">
+      <HintPath>..\..\..\Srl.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
-
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

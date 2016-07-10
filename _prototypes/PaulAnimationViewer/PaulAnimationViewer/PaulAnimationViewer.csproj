@@ -153,6 +153,12 @@
     <Content Include="Assets\Images\ya.png" />
     <Content Include="Assets\Images\yo.png" />
     <Content Include="Assets\Images\yu.png" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Templates\a_636008486897535994.xml" />
     <Content Include="Assets\Templates\chi_636008487090575393.xml" />
     <Content Include="Assets\Templates\e_636008487329144360.xml" />
@@ -199,14 +205,8 @@
     <Content Include="Assets\Templates\ya_636008505764821332.xml" />
     <Content Include="Assets\Templates\yo_636008506617710177.xml" />
     <Content Include="Assets\Templates\yu_636008507860108560.xml" />
-    <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
