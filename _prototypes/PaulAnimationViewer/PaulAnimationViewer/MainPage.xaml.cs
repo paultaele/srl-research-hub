@@ -257,6 +257,7 @@ namespace PaulAnimationViewer
             if (strokes.Count > 0)
             {
                 Sketch sketch = SketchTools.Clone(input);
+                sketch = SketchTransformation.Resample(sketch, 128);
                 double opacity = 1.0;
                 SolidColorBrush color = new SolidColorBrush(Colors.Orange) { Opacity = opacity };
 
