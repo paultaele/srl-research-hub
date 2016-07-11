@@ -7,8 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
 
+    <Page.TopAppBar>
+        <CommandBar Name="MyTopCommandBar" Visibility="Collapsed">
+            <AppBarButton Name="MyReturnButton" Label="Return" Icon="Accept" Click="MyReturnButton_Click"/>
+        </CommandBar>
+    </Page.TopAppBar>
+
     <Page.BottomAppBar>
-        <CommandBar>
+        <CommandBar Name="MyBottomCommandBar">
             <AppBarToggleButton Name="MyImageButton" Icon="Pictures" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
             <AppBarSeparator/>
             <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
@@ -41,11 +47,7 @@
         </Grid.ColumnDefinitions>
 
         <Border Name="MyLeftSide" Grid.Column="0">
-            <Grid>
-                <Border Name="MyTest" Visibility="Collapsed" BorderBrush="Black" BorderThickness="10">
-                    <InkCanvas/>
-                </Border>
-            </Grid>
+
         </Border>
         
         <Border Grid.Column="1" Name="MyBorder" BorderBrush="Black" BorderThickness="3">
@@ -57,7 +59,7 @@
         </Border>
 
         <Border Name="MyRightSide" Grid.Column="2">
-
+            <TextBlock Name="MyFeedbackText"/>
         </Border>
 
     </Grid>

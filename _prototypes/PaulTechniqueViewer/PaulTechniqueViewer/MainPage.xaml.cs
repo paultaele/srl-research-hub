@@ -44,8 +44,8 @@ namespace PaulTechniqueViewer
             // squarify the ink canvas' drawing area
             double width = MyBorder.ActualWidth;
             double height = MyBorder.ActualHeight;
-            MyBorderLength = width < height ? width : height;
-            MyBorder.Width = MyBorder.Height = MyBorderLength;
+            BorderLength = width < height ? width : height;
+            MyBorder.Width = MyBorder.Height = BorderLength;
 
             // initialize the external timing data structure and offset
             myTimeCollection = new List<List<long>>();
@@ -76,8 +76,8 @@ namespace PaulTechniqueViewer
                 Task task = Task.Run(async () => template = await SketchTools.XmlToSketch(file));
                 task.Wait();
 
-                template = SketchTransformation.ScaleFrame(template, MyBorderLength);
-                template = SketchTransformation.TranslateFrame(template, new Point(MyBorderLength / 2 - MyBorder.BorderThickness.Left, MyBorderLength / 2 - MyBorder.BorderThickness.Top));
+                template = SketchTransformation.ScaleFrame(template, BorderLength);
+                template = SketchTransformation.TranslateFrame(template, new Point(BorderLength / 2 - MyBorder.BorderThickness.Left, BorderLength / 2 - MyBorder.BorderThickness.Top));
                 myTemplates.Add(template);
                 foreach (InkStroke stroke in template.Strokes)
                 {
@@ -177,8 +177,8 @@ namespace PaulTechniqueViewer
 
             else
             {
-                InteractionTools.SetImage(MyImage, myImageFiles[MyImageIndex]);
-                MySymbolsComboBox.SelectedIndex = MyImageIndex;
+                InteractionTools.SetImage(MyImage, myImageFiles[MyCurrentIndex]);
+                MySymbolsComboBox.SelectedIndex = MyCurrentIndex;
             }
         }
 
@@ -228,8 +228,8 @@ namespace PaulTechniqueViewer
             // get the input and model sketch, and set the duration
             List<InkStroke> strokes = new List<InkStroke>();
             foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
-            Sketch input = new Sketch("", strokes, myTimeCollection, 0, 0, MyBorderLength, MyBorderLength);
-            Sketch model = myTemplates[MyImageIndex];
+            Sketch input = new Sketch("", strokes, myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch model = myTemplates[MyCurrentIndex];
             int duration = 30000;
 
             // animate the expert's model strokes
@@ -271,32 +271,49 @@ namespace PaulTechniqueViewer
             foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
             int delay = (numModelPoints * duration) / 10000;
             MyPlayButton.IsEnabled = false;
+            MyCheckButton.IsEnabled = false;
             MyInkCanvas.InkPresenter.IsInputEnabled = false;
             await Task.Delay(delay);
             MyPlayButton.IsEnabled = true;
+            MyCheckButton.IsEnabled = true;
             MyInkCanvas.InkPresenter.IsInputEnabled = true;
         }
 
         private void MyCheckButton_Click(object sender, RoutedEventArgs e)
         {
-            MyCheckFlag = !MyCheckFlag;
+            // hide the bottom command bar and shwo the top bar
+            MyTopCommandBar.Visibility = Visibility.Visible;
+            MyBottomCommandBar.Visibility = Visibility.Collapsed;
 
-            if (MyCheckFlag)
-            {
-                MyGrid.ColumnDefinitions[0].Width = new GridLength(5, GridUnitType.Star);
-                MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
-                MyGrid.ColumnDefinitions[2].Width = new GridLength(0);
+            // shift the ink canvas to the right
+            MyGrid.ColumnDefinitions[0].Width = new GridLength(0);
+            MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
+            MyGrid.ColumnDefinitions[2].Width = new GridLength(5, GridUnitType.Star);
 
-                MyTest.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                MyGrid.ColumnDefinitions[0].Width = new GridLength(2.5, GridUnitType.Star);
-                MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
-                MyGrid.ColumnDefinitions[2].Width = new GridLength(2.5, GridUnitType.Star);
+            // get the model and input sketches
+            Sketch model = myTemplates[MyCurrentIndex];
+            Sketch input = ToSketch(MyInkStrokes.GetStrokes(), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
-                MyTest.Visibility = Visibility.Collapsed;
-            }
+            //
+            TechniqueClassifier techniqueClassifier = new TechniqueClassifier();
+            techniqueClassifier.Train(model, input);
+            techniqueClassifier.Run();
+            bool strokeCountResult = techniqueClassifier.StrokeCountResult;
+
+            //
+            string text = "";
+            text += "Is stroke count correct? " + strokeCountResult;
+            MyFeedbackText.Text = text;
+        }
+
+        private void MyReturnButton_Click(object sender, RoutedEventArgs e)
+        {
+            MyTopCommandBar.Visibility = Visibility.Collapsed;
+            MyBottomCommandBar.Visibility = Visibility.Visible;
+
+            MyGrid.ColumnDefinitions[0].Width = new GridLength(2.5, GridUnitType.Star);
+            MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
+            MyGrid.ColumnDefinitions[2].Width = new GridLength(2.5, GridUnitType.Star);
         }
 
         #endregion
@@ -310,10 +327,10 @@ namespace PaulTechniqueViewer
 
             //
             MyImage.Source = null;
-            MyImageIndex = MySymbolsComboBox.SelectedIndex;
+            MyCurrentIndex = MySymbolsComboBox.SelectedIndex;
             if (MyImageButton.IsChecked.Value)
             {
-                InteractionTools.SetImage(MyImage, myImageFiles[MyImageIndex]);
+                InteractionTools.SetImage(MyImage, myImageFiles[MyCurrentIndex]);
             }
 
             //
@@ -326,15 +343,51 @@ namespace PaulTechniqueViewer
 
         #endregion
 
+        #region Helper Methods
+
+        private Sketch ToSketch(IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
+        {
+            //
+            InkStrokeBuilder builder = new InkStrokeBuilder();
+            List<InkStroke> newStrokeCollection = new List<InkStroke>();
+            List<List<long>> newTimeCollection = new List<List<long>>();
+            for (int i = 0; i < strokeCollection.Count; ++i)
+            {
+                IReadOnlyList<InkPoint> points = strokeCollection[i].GetInkPoints();
+                List<long> times = timeCollection[i];
+                int count = times.Count < points.Count ? times.Count : points.Count;
+
+                List<Point> newPoints = new List<Point>();
+                List<long> newTimes = new List<long>();
+                for (int j = 0; j < count; ++j)
+                {
+                    InkPoint point = points[j];
+                    long time = times[j];
+
+                    newPoints.Add(new Point(point.Position.X, point.Position.Y));
+                    newTimes.Add(time);
+                }
+
+                newStrokeCollection.Add(builder.CreateStroke(newPoints));
+                newTimeCollection.Add(newTimes);
+            }
+
+            //
+            Sketch sketch = new Sketch("", newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
+            return sketch;
+        }
+
+
+        #endregion
+
         #region Properties
 
+        public double BorderLength { get; private set; }
+
         private bool MyIsReady { get; set; }
-        private int MyImageIndex { get; set; }
-        public double MyBorderLength { get; private set; }
+        private int MyCurrentIndex { get; set; }
         private InkStrokeContainer MyInkStrokes { get; set; }
         private long MyDateTimeOffset { get; set; }
-
-        private bool MyCheckFlag { get; set; }
 
         #endregion
 
