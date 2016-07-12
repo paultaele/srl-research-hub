@@ -198,6 +198,11 @@ namespace PaulTechniqueViewer
 
             // clear the tracers
             MyCanvas.Children.Clear();
+
+            //
+            MyPlayButton.IsEnabled = true;
+            MyCheckButton.IsEnabled = true;
+            MyInkCanvas.InkPresenter.IsInputEnabled = true;
         }
 
         private void MyUndoButton_Click(object sender, RoutedEventArgs e)
@@ -221,6 +226,11 @@ namespace PaulTechniqueViewer
 
             // clear the canvas
             MyCanvas.Children.Clear();
+
+            //
+            MyPlayButton.IsEnabled = true;
+            MyCheckButton.IsEnabled = true;
+            MyInkCanvas.InkPresenter.IsInputEnabled = true;
         }
 
         private async void MyPlayButton_Click(object sender, RoutedEventArgs e)
@@ -299,10 +309,14 @@ namespace PaulTechniqueViewer
             techniqueClassifier.Train(model, input);
             techniqueClassifier.Run();
             bool strokeCountResult = techniqueClassifier.StrokeCountResult;
+            bool strokeOrderResult = techniqueClassifier.StrokeOrderResult;
 
             //
             string text = "";
-            text += "Is stroke count correct? " + strokeCountResult;
+            text += "Is stroke count correct? " + strokeCountResult + "\n";
+            text += "Is stroke order correct? " + strokeOrderResult + "\n";
+            foreach (int index in techniqueClassifier.StrokeOrder) { text += index + "|"; } text += "\n";
+            text += "Is stroke direction correct? " + strokeOrderResult + "\n";
             MyFeedbackText.Text = text;
         }
 
