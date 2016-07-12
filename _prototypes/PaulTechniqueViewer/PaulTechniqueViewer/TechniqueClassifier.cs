@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Input.Inking;
 
 namespace PaulTechniqueViewer
 {
@@ -26,6 +27,7 @@ namespace PaulTechniqueViewer
             StrokeCountResult = StrokeCountTest(myModel, myInput);
 
             // Stroke Order Test
+            StrokeOrderReslt = StrokeOrderTest(myModel, myInput);
 
             // Stroke Direction Test
 
@@ -34,14 +36,34 @@ namespace PaulTechniqueViewer
 
         private bool StrokeCountTest(Sketch model, Sketch input)
         {
+            // get the model and input stroke counts
             int modelStrokeCount = model.Strokes.Count;
             int inputStrokeCount = input.Strokes.Count;
+
+            // return the test result
             return modelStrokeCount == inputStrokeCount;
         }
 
-        #region
+        private bool StrokeOrderTest(Sketch model, Sketch input)
+        {
+            //
+            if (!StrokeCountResult) { return false; }
+
+            //
+            model = SketchTools.Clone(model);
+            input = SketchTools.Clone(input);
+
+            //
+            //use: double Distance(Sketch alphaSketch, Sketch betaSketch)
+
+            // return the test result (FIX)
+            return false;
+        }
+
+        #region Properties
 
         public bool StrokeCountResult { get; private set; }
+        public bool StrokeOrderReslt { get; private set; }
 
         #endregion
 

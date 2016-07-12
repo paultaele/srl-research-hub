@@ -230,7 +230,7 @@ namespace PaulTechniqueViewer
             foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
             Sketch input = new Sketch("", strokes, myTimeCollection, 0, 0, BorderLength, BorderLength);
             Sketch model = myTemplates[MyCurrentIndex];
-            int duration = 300000;//30000;
+            int duration = 300000;
 
             // animate the expert's model strokes
             if (MyImageButton.IsChecked.Value)
@@ -256,7 +256,7 @@ namespace PaulTechniqueViewer
                 Color color = Colors.Red;
                 SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
 
-                List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, duration);
+                List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, duration, model);
                 foreach (Storyboard storyboard in inputStoryboards)
                 {
                     storyboard.Begin();
@@ -314,6 +314,9 @@ namespace PaulTechniqueViewer
             MyGrid.ColumnDefinitions[0].Width = new GridLength(2.5, GridUnitType.Star);
             MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
             MyGrid.ColumnDefinitions[2].Width = new GridLength(2.5, GridUnitType.Star);
+
+            //
+            MyFeedbackText.Text = "";
         }
 
         #endregion

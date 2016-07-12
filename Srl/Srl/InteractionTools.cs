@@ -181,8 +181,7 @@ namespace Srl
             int numInputPoints = 0;
             foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
             foreach (InkStroke stroke in strokesCollection) { numInputPoints += stroke.GetInkPoints().Count; }
-            int modelDuration = 30000;
-            int modelTotalDuration = modelDuration * numModelPoints;
+            int modelTotalDuration = duration * numModelPoints;
             int newDuration = modelTotalDuration / numInputPoints;
 
             return Trace(canvas, strokesCollection, timesCollection, brush, newDuration);

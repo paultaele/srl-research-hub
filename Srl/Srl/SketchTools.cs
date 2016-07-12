@@ -194,7 +194,7 @@ public class SketchTools
 
         public static double Distance(Sketch alphaSketch, Sketch betaSketch)
         {
-            //
+            // initialize the distance
             double distances = 0.0;
 
             // get the alpha and beta points from their respective strokes
