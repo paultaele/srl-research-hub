@@ -291,6 +291,9 @@ namespace PaulTechniqueViewer
 
         private void MyCheckButton_Click(object sender, RoutedEventArgs e)
         {
+            //// don't do anythking if the canvas has no strokes
+            //if (MyInkStrokes.GetStrokes().Count == 0) { return; }
+
             // hide the bottom command bar and shwo the top bar
             MyTopCommandBar.Visibility = Visibility.Visible;
             MyBottomCommandBar.Visibility = Visibility.Collapsed;
@@ -310,13 +313,13 @@ namespace PaulTechniqueViewer
             techniqueClassifier.Run();
             bool strokeCountResult = techniqueClassifier.StrokeCountResult;
             bool strokeOrderResult = techniqueClassifier.StrokeOrderResult;
+            bool strokeDirectionResult = techniqueClassifier.StrokeDirectionResult;
 
             //
             string text = "";
             text += "Is stroke count correct? " + strokeCountResult + "\n";
             text += "Is stroke order correct? " + strokeOrderResult + "\n";
-            foreach (int index in techniqueClassifier.StrokeOrder) { text += index + "|"; } text += "\n";
-            text += "Is stroke direction correct? " + strokeOrderResult + "\n";
+            text += "Is stroke direction correct? " + strokeDirectionResult + "\n";
             MyFeedbackText.Text = text;
         }
 
