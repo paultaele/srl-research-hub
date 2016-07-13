@@ -39,6 +39,9 @@ namespace PaulTechniqueViewer
 
             // Stroke Speed Test
             StrokeSpeedResult = StrokeSpeedTest(myModel, myInput);
+
+            // Stroke Edits Test?
+            // the number of times that the user hit clear and undo?
         }
 
         private bool StrokeCountTest(Sketch model, Sketch input)
@@ -185,7 +188,41 @@ namespace PaulTechniqueViewer
 
         private bool StrokeSpeedTest(Sketch model, Sketch input)
         {
-            return false;
+            // skip this test if the stroke counts do not match up
+            if (!StrokeCountResult) { return false; }
+
+            // make copies of the model and input strokes
+            model = SketchTools.Clone(model);
+            input = SketchTools.Clone(input);
+
+            //
+            long modelTimespans = 0;
+            long factor = 2;
+            foreach (List<long> modelTimes in model.Times)
+            {
+                int modelCount = modelTimes.Count;
+                long modelFirst = modelTimes[0];
+                long modelLast = modelTimes[modelCount - 1];
+                long modelTimespan = modelLast - modelFirst;
+
+                modelTimespans += modelTimespan;
+            }
+            modelTimespans /= factor;
+
+            //
+            List<long> inputFirstTimes = input.Times[0];
+            List<long> inputLastTimes = input.Times[input.Times.Count - 1];
+            long inputFirstTime = inputFirstTimes[0];
+            long inputLastTime = inputLastTimes[inputLastTimes.Count - 1];
+            long inputTimespans = inputLastTime - inputFirstTime;
+
+            //
+            //Debug.WriteLine($"Model Timespan: {modelTimespans}");
+            //Debug.WriteLine($"Input Timespan: {inputTimespans}");
+            //Debug.WriteLine($"Difference: {modelTimespans - inputTimespans}");
+            //Debug.WriteLine("-----");
+
+            return modelTimespans - inputTimespans > 0;
         }
 
         #region Properties
@@ -197,6 +234,8 @@ namespace PaulTechniqueViewer
 
         public IReadOnlyList<int> StrokeOrders { get { return new List<int>(myStrokeOrders); } }
         public IReadOnlyList<bool> StrokeDirections { get { return new List<bool>(myStrokeDirections); } }
+
+        public Sketch RealTimeModel { get; private set; }
 
         #endregion
 

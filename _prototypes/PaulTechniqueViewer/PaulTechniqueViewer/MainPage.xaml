@@ -58,8 +58,155 @@
             </Grid>
         </Border>
 
-        <Border Name="MyRightSide" Grid.Column="2">
-            <TextBlock Name="MyFeedbackText"/>
+        <Border Name="MyRightSide" Visibility="Collapsed" Grid.Column="2" Margin="20">
+            <Grid>
+                <Grid Name="MyTechniqueGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="9*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="0">
+                        <TextBlock Text="Technique"/>
+                    </Viewbox>
+
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="6*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 1. Stroke Count Feedback-->
+                        <Grid Grid.Row="0" Margin="0,5,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0">
+                                <Button Content="▶"/>
+                            </Viewbox>
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5*"/>
+                                    <RowDefinition Height="5*"/>
+                                </Grid.RowDefinitions>
+
+                                <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                                    <TextBlock Text="Stroke Count Test: Is stroke count correct?"/>
+                                </Viewbox>
+
+                                <Viewbox Grid.Row="1" HorizontalAlignment="Left">
+                                    <TextBlock Name="MyStrokeCountResultText" Text=""/>
+                                </Viewbox>
+                            </Grid>
+                        </Grid>
+
+                        <!-- 2. Stroke Order Feedback-->
+                        <Grid Grid.Row="1" Margin="0,5,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0">
+                                <Button Content="▶"/>
+                            </Viewbox>
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5*"/>
+                                    <RowDefinition Height="5*"/>
+                                </Grid.RowDefinitions>
+
+                                <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                                    <TextBlock Text="Stroke Order Test: Is stroke order correct?"/>
+                                </Viewbox>
+
+                                <Viewbox Grid.Row="1" HorizontalAlignment="Left">
+                                    <TextBlock Name="MyStrokeOrderResultText" Text=""/>
+                                </Viewbox>
+                            </Grid>
+                        </Grid>
+
+                        <!-- 3. Stroke Direction Feedback-->
+                        <Grid Grid.Row="2" Margin="0,5,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0">
+                                <Button Content="▶"/>
+                            </Viewbox>
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5*"/>
+                                    <RowDefinition Height="5*"/>
+                                </Grid.RowDefinitions>
+
+                                <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                                    <TextBlock Text="Stroke Direction Test: Is stroke direction correct?"/>
+                                </Viewbox>
+
+                                <Viewbox Grid.Row="1" HorizontalAlignment="Left">
+                                    <TextBlock Name="MyStrokeDirectionResultText" Text=""/>
+                                </Viewbox>
+                            </Grid>
+                        </Grid>
+
+                        <!-- 4. Stroke Speed Feedback-->
+                        <Grid Grid.Row="3" Margin="0,5,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0">
+                                <Button Name="MyStrokeSpeedTestPlayButton" Content="▶" Click="MyStrokeSpeedTestPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5*"/>
+                                    <RowDefinition Height="5*"/>
+                                </Grid.RowDefinitions>
+
+                                <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                                    <TextBlock Text="Stroke Speed Test: Is stroke speed sufficient?"/>
+                                </Viewbox>
+
+                                <Viewbox Grid.Row="1" HorizontalAlignment="Left">
+                                    <TextBlock Name="MyStrokeSpeedResultText" Text=""/>
+                                </Viewbox>
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
+
+                </Grid>
+
+                <Grid Name="MyStructureGrid" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="9*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="0">
+                        <TextBlock Text="Structure"/>
+                    </Viewbox>
+
+                    <Grid Grid.Row="1">
+                        <TextBlock Text="Hello"/>
+                    </Grid>
+
+                </Grid>
+            </Grid>
         </Border>
 
     </Grid>

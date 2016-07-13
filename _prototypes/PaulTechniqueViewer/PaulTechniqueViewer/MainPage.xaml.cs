@@ -41,6 +41,9 @@ namespace PaulTechniqueViewer
 
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
+            //
+            myTechniqueClassifier = new TechniqueClassifier();
+
             // squarify the ink canvas' drawing area
             double width = MyBorder.ActualWidth;
             double height = MyBorder.ActualHeight;
@@ -166,7 +169,7 @@ namespace PaulTechniqueViewer
 
         #endregion
 
-        #region Button Interactions
+        #region Commandbar Button Interactions
 
         private void MyImageButton_Click(object sender, RoutedEventArgs e)
         {
@@ -291,12 +294,17 @@ namespace PaulTechniqueViewer
 
         private void MyCheckButton_Click(object sender, RoutedEventArgs e)
         {
-            //// don't do anythking if the canvas has no strokes
-            //if (MyInkStrokes.GetStrokes().Count == 0) { return; }
+            // show the image if the image is not enabled
+            if (!MyImageButton.IsChecked.Value)
+            {
+                InteractionTools.SetImage(MyImage, myImageFiles[MyCurrentIndex]);
+                MySymbolsComboBox.SelectedIndex = MyCurrentIndex;
+            }
 
             // hide the bottom command bar and shwo the top bar
             MyTopCommandBar.Visibility = Visibility.Visible;
             MyBottomCommandBar.Visibility = Visibility.Collapsed;
+            MyRightSide.Visibility = Visibility.Visible;
 
             // shift the ink canvas to the right
             MyGrid.ColumnDefinitions[0].Width = new GridLength(0);
@@ -308,35 +316,87 @@ namespace PaulTechniqueViewer
             Sketch input = ToSketch(MyInkStrokes.GetStrokes(), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
             //
-            TechniqueClassifier techniqueClassifier = new TechniqueClassifier();
-            techniqueClassifier.Train(model, input);
-            techniqueClassifier.Run();
-            bool strokeCountResult = techniqueClassifier.StrokeCountResult;
-            bool strokeOrderResult = techniqueClassifier.StrokeOrderResult;
-            bool strokeDirectionResult = techniqueClassifier.StrokeDirectionResult;
+            myTechniqueClassifier.Train(model, input);
+            myTechniqueClassifier.Run();
+            bool strokeCountResult = myTechniqueClassifier.StrokeCountResult;
+            bool strokeOrderResult = myTechniqueClassifier.StrokeOrderResult;
+            bool strokeDirectionResult = myTechniqueClassifier.StrokeDirectionResult;
+            bool strokeSpeedResult = myTechniqueClassifier.StrokeSpeedResult;
 
             //
-            string text = "";
-            text += "Is stroke count correct? " + strokeCountResult + "\n";
-            text += "Is stroke order correct? " + strokeOrderResult + "\n";
-            text += "Is stroke direction correct? " + strokeDirectionResult + "\n";
-            MyFeedbackText.Text = text;
+            MyStrokeCountResultText.Text = strokeCountResult ? "Success" : "Fail";
+            MyStrokeOrderResultText.Text = strokeOrderResult ? "Success" : "Fail";
+            MyStrokeDirectionResultText.Text = strokeDirectionResult ? "Success" : "Fail";
+            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "Success" : "Fail";
         }
 
         private void MyReturnButton_Click(object sender, RoutedEventArgs e)
         {
+            //
             MyTopCommandBar.Visibility = Visibility.Collapsed;
             MyBottomCommandBar.Visibility = Visibility.Visible;
+            MyRightSide.Visibility = Visibility.Collapsed;
 
+            //
             MyGrid.ColumnDefinitions[0].Width = new GridLength(2.5, GridUnitType.Star);
             MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
             MyGrid.ColumnDefinitions[2].Width = new GridLength(2.5, GridUnitType.Star);
 
             //
-            MyFeedbackText.Text = "";
+            Clear();
+
+            // reset to original image view defaults
+            MyImageButton_Click(null, null);
         }
 
         #endregion
+
+        #region Feedback Button Interactions
+
+        private void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            //
+            Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);
+
+            // get the converted model times
+            long modelOffset = model.Times[0][0];
+            long modelShift = 0;
+            List<List<long>> modelTimesCollection = new List<List<long>>();
+            long modelFactor = 2;
+            for (int i = 0; i < model.Times.Count; ++i)
+            {
+                //
+                List<long> modelTimes = new List<long>();
+                foreach (long modelTime in modelTimes)
+                {
+                    long newModelTime = (modelTime - modelOffset - modelShift) / modelFactor;
+                    modelTimes.Add(newModelTime);
+                }
+
+                //
+                if (i < model.Times.Count - 1)
+                {
+                    long nextStart = model.Times[i + 1][0];
+                    long prevLast = model.Times[i][model.Times[i].Count - 1];
+                    modelShift += nextStart - prevLast;
+                }
+
+                modelTimesCollection.Add(modelTimes);
+            }
+
+            //
+            model = new Sketch(model.Label, model.Strokes, modelTimesCollection, model.FrameMinX, model.FrameMinY, model.FrameMaxX, model.FrameMaxY);
+
+            //
+            SolidColorBrush brush = new SolidColorBrush(Colors.Black) { Opacity = 0.8 };
+            List<Storyboard> modelStoryboards = Helper.Playback(MyCanvas, model.Strokes, model.Times, brush);
+            foreach (Storyboard storyboard in modelStoryboards)
+            {
+                storyboard.Begin();
+            }
+        }
+
+        # endregion
 
         #region Combo Box Interactions
 
@@ -416,6 +476,8 @@ namespace PaulTechniqueViewer
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
 
+        private TechniqueClassifier myTechniqueClassifier;
+
         private List<StorageFile> myImageFiles;
         private List<StorageFile> myTemplateFiles;
         private List<Sketch> myTemplates;
@@ -428,5 +490,7 @@ namespace PaulTechniqueViewer
         public readonly string PROMPT_TEXT = "Please draw the following symbol: ";
 
         #endregion
+
+
     }
 }
