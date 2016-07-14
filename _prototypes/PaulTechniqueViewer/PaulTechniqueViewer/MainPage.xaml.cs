@@ -295,7 +295,7 @@ namespace PaulTechniqueViewer
 
             // get the model and input sketches
             Sketch model = myTemplates[MyCurrentIndex];
-            Sketch input = ToSketch("", MyInkStrokes.GetStrokes(), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
             //
             myTechniqueClassifier.Train(model, input);
@@ -315,7 +315,7 @@ namespace PaulTechniqueViewer
             MyStrokeDirectionResultText.Text = strokeDirectionResult ? "CORRECT" : "INCORRECT";
             MyStrokeDirectionResultText.Foreground = strokeDirectionResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
 
-            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "CORRECT" : "INCORRECT";
+            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "SUFFICIENT" : "INSUFFICIENT";
             MyStrokeSpeedResultText.Foreground = strokeSpeedResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
         }
 
@@ -342,16 +342,29 @@ namespace PaulTechniqueViewer
 
         #region Feedback Button Interactions
 
+        private void MyStrokeCountPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            SolidColorBrush brush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
+
+            List<Storyboard> storyboards = Helper.DisplayPaths(MyCanvas, input.Strokes, input.Times, brush, 5000000);
+            foreach (Storyboard storyboard in storyboards)
+            {
+                storyboard.Begin();
+            }
+        }
+
         private void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            // do not show feedback if canvas has no strokes
+            // do not show feedback if canvas has no strokes or incorrect stroke count
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
+            if (!myTechniqueClassifier.StrokeCountResult) { return; }
 
             // get the stroke direction statusess
             IReadOnlyList<bool> strokeDirections = myTechniqueClassifier.StrokeDirections;
 
             // get the model and input strokes
-            Sketch input = ToSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
             // iterate through each input stroke
             Sketch newInput = null;
@@ -415,8 +428,9 @@ namespace PaulTechniqueViewer
 
         private void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            // do not show feedback if canvas has no strokes
+            // do not show feedback if canvas has no strokes or incorrect stroke count
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
+            if (!myTechniqueClassifier.StrokeCountResult) { return; }
 
             //
             bool hasInput = false;
@@ -503,7 +517,7 @@ namespace PaulTechniqueViewer
 
         #region Helper Methods
 
-        private Sketch ToSketch(string label, IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
+        private Sketch BuildSketch(string label, List<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
         {
             //
             InkStrokeBuilder builder = new InkStrokeBuilder();
@@ -534,7 +548,6 @@ namespace PaulTechniqueViewer
             Sketch sketch = new Sketch(label, newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
             return sketch;
         }
-
 
         #endregion
 
@@ -572,9 +585,6 @@ namespace PaulTechniqueViewer
 
         public readonly int TICK_DURATION = 300000;
 
-
         #endregion
-
-
     }
 }

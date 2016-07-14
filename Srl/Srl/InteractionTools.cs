@@ -86,7 +86,7 @@ namespace Srl
                 newTimesCollection.Add(times);
             }
 
-            return AnimateStrokes(canvas, strokesCollection, newTimesCollection, brush);
+            return AnimateDot(canvas, strokesCollection, newTimesCollection, brush);
         }
 
         public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration, Sketch model)
@@ -119,10 +119,10 @@ namespace Srl
                 newTimesCollection.Add(times);
             }
 
-            return AnimateStrokes(canvas, strokesCollection, newTimesCollection, brush);
+            return AnimateDot(canvas, strokesCollection, newTimesCollection, brush);
         }
 
-        private static List<Storyboard> AnimateStrokes(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, Brush brush)
+        private static List<Storyboard> AnimateDot(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, Brush brush)
         {
             // iterate through each stroke
             List<Storyboard> storyboards = new List<Storyboard>();
