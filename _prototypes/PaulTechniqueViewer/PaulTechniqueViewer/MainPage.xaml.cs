@@ -238,51 +238,33 @@ namespace PaulTechniqueViewer
 
         private async void MyPlayButton_Click(object sender, RoutedEventArgs e)
         {
+            //
+            if (!MyImageButton.IsChecked.Value) { return; }
+
             // get the input and model sketch, and set the duration
             List<InkStroke> strokes = new List<InkStroke>();
             foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
-            Sketch input = new Sketch("", strokes, myTimeCollection, 0, 0, BorderLength, BorderLength);
             Sketch model = myTemplates[MyCurrentIndex];
-            int duration = 300000;
 
             // animate the expert's model strokes
             if (MyImageButton.IsChecked.Value)
             {
                 Sketch sketch = SketchTools.Clone(model);
-                double opacity = strokes.Count > 0 ? 0.8 : 1.0;
-                Color color = strokes.Count > 0 ? Colors.Black : Colors.Green;
+                double opacity = 0.8;
+                Color color = Colors.Green;
                 SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
 
-                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, duration);
+                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, TICK_DURATION);
                 foreach (Storyboard storyboard in modelStoryboards)
                 {
                     storyboard.Begin();
                 }
             }
 
-            // animate the user's input strokes
-            if (strokes.Count > 0)
-            {
-                Sketch sketch = SketchTools.Clone(input);
-                sketch = SketchTransformation.Resample(sketch, 128);
-                double opacity = 1.0;
-                Color color = Colors.Red;
-                SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
-
-                List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, duration, model);
-                foreach (Storyboard storyboard in inputStoryboards)
-                {
-                    storyboard.Begin();
-                }
-            }
-
-            //
-            if (strokes.Count == 0 && !MyImageButton.IsChecked.Value) { return; }
-
             //
             int numModelPoints = 0;
             foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
-            int delay = (numModelPoints * duration) / 10000;
+            int delay = (numModelPoints * TICK_DURATION) / 10000;
             MyPlayButton.IsEnabled = false;
             MyCheckButton.IsEnabled = false;
             MyInkCanvas.InkPresenter.IsInputEnabled = false;
@@ -324,10 +306,17 @@ namespace PaulTechniqueViewer
             bool strokeSpeedResult = myTechniqueClassifier.StrokeSpeedResult;
 
             //
-            MyStrokeCountResultText.Text = strokeCountResult ? "Success" : "Fail";
-            MyStrokeOrderResultText.Text = strokeOrderResult ? "Success" : "Fail";
-            MyStrokeDirectionResultText.Text = strokeDirectionResult ? "Success" : "Fail";
-            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "Success" : "Fail";
+            MyStrokeCountResultText.Text = strokeCountResult ? "CORRECT" : "INCORRECT";
+            MyStrokeCountResultText.Foreground = strokeCountResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeOrderResultText.Text = strokeOrderResult ? "CORRECT" : "INCORRECT";
+            MyStrokeOrderResultText.Foreground = strokeOrderResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeDirectionResultText.Text = strokeDirectionResult ? "CORRECT" : "INCORRECT";
+            MyStrokeDirectionResultText.Foreground = strokeDirectionResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "CORRECT" : "INCORRECT";
+            MyStrokeSpeedResultText.Foreground = strokeSpeedResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
         }
 
         private void MyReturnButton_Click(object sender, RoutedEventArgs e)
@@ -356,7 +345,14 @@ namespace PaulTechniqueViewer
         private void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
         {
             //
+            bool hasInput = false;
             Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);
+            Sketch input = null;
+            if (MyInkStrokes.GetStrokes().Count > 0)
+            {
+                input = new Sketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+                hasInput = true;
+            }
 
             // get the converted model times
             long modelOffset = model.Times[0][0];
@@ -366,11 +362,11 @@ namespace PaulTechniqueViewer
             for (int i = 0; i < model.Times.Count; ++i)
             {
                 //
-                List<long> modelTimes = new List<long>();
-                foreach (long modelTime in modelTimes)
+                List<long> newModelTimes = new List<long>();
+                foreach (long modelTime in model.Times[i])
                 {
                     long newModelTime = (modelTime - modelOffset - modelShift) / modelFactor;
-                    modelTimes.Add(newModelTime);
+                    newModelTimes.Add(newModelTime);
                 }
 
                 //
@@ -381,16 +377,24 @@ namespace PaulTechniqueViewer
                     modelShift += nextStart - prevLast;
                 }
 
-                modelTimesCollection.Add(modelTimes);
+                modelTimesCollection.Add(newModelTimes);
             }
 
             //
             model = new Sketch(model.Label, model.Strokes, modelTimesCollection, model.FrameMinX, model.FrameMinY, model.FrameMaxX, model.FrameMaxY);
+            SolidColorBrush modelBrush = new SolidColorBrush(Colors.Black) { Opacity = 0.8 };
+            List<Storyboard> modelStoryboards = InteractionTools.Playback(MyCanvas, model.Strokes, model.Times, modelBrush);
+            foreach (Storyboard storyboard in modelStoryboards)
+            {
+                storyboard.Begin();
+            }
 
             //
-            SolidColorBrush brush = new SolidColorBrush(Colors.Black) { Opacity = 0.8 };
-            List<Storyboard> modelStoryboards = Helper.Playback(MyCanvas, model.Strokes, model.Times, brush);
-            foreach (Storyboard storyboard in modelStoryboards)
+            if (!hasInput) { return; }
+            input = SketchTools.Clone(input);
+            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
+            List<Storyboard> inputStoryboards = InteractionTools.Playback(MyCanvas, input.Strokes, input.Times, inputBrush);
+            foreach (Storyboard storyboard in inputStoryboards)
             {
                 storyboard.Begin();
             }
@@ -488,6 +492,11 @@ namespace PaulTechniqueViewer
         public readonly string TEMPLATES_PATH = @"Assets\Templates";
 
         public readonly string PROMPT_TEXT = "Please draw the following symbol: ";
+
+        public readonly SolidColorBrush CORRECT_BRUSH = new SolidColorBrush(Colors.Green);
+        public readonly SolidColorBrush INCORRECT_BRUSH = new SolidColorBrush(Colors.Red);
+
+        public readonly int TICK_DURATION = 300000;
 
         #endregion
 

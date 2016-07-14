@@ -86,12 +86,50 @@ namespace Srl
                 newTimesCollection.Add(times);
             }
 
+            return AnimateStrokes(canvas, strokesCollection, newTimesCollection, brush);
+        }
+
+        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration, Sketch model)
+        {
+            // set the input duration
+            int numModelPoints = 0;
+            int numInputPoints = 0;
+            foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
+            foreach (InkStroke stroke in strokesCollection) { numInputPoints += stroke.GetInkPoints().Count; }
+            int modelTotalDuration = duration * numModelPoints;
+            int newDuration = modelTotalDuration / numInputPoints;
+
+            return Trace(canvas, strokesCollection, timesCollection, brush, newDuration);
+        }
+
+        public static List<Storyboard> Playback(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush)
+        {
+            // set the timings of the animation
+            List<List<long>> newTimesCollection = new List<List<long>>();
+            long offset = timesCollection[0][0];
+            for (int i = 0; i < timesCollection.Count; ++i)
+            {
+                List<long> times = new List<long>();
+                for (int j = 0; j < timesCollection[i].Count; ++j)
+                {
+                    long time = timesCollection[i][j] - offset;
+                    times.Add(time);
+                }
+
+                newTimesCollection.Add(times);
+            }
+
+            return AnimateStrokes(canvas, strokesCollection, newTimesCollection, brush);
+        }
+
+        private static List<Storyboard> AnimateStrokes(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, Brush brush)
+        {
             // iterate through each stroke
             List<Storyboard> storyboards = new List<Storyboard>();
             for (int i = 0; i < strokesCollection.Count; ++i)
             {
                 // set the visuals of the stroke's corresponding tracer
-                Ellipse tracer = new Ellipse()
+                Ellipse animator = new Ellipse()
                 {
                     Width = 50,
                     Height = 50,
@@ -102,12 +140,12 @@ namespace Srl
 
                 // add the tracer to the canvas
                 // note: the tracer is moved up and left its radius to center
-                Canvas.SetLeft(tracer, -tracer.Width / 2);
-                Canvas.SetTop(tracer, -tracer.Height / 2);
-                canvas.Children.Add(tracer);
+                Canvas.SetLeft(animator, -animator.Width / 2);
+                Canvas.SetTop(animator, -animator.Height / 2);
+                canvas.Children.Add(animator);
 
                 // initialize the storyboard and animations
-                tracer.RenderTransform = new CompositeTransform();
+                animator.RenderTransform = new CompositeTransform();
                 Storyboard storyboard = new Storyboard();
                 DoubleAnimationUsingKeyFrames translateXAnimation = new DoubleAnimationUsingKeyFrames();
                 DoubleAnimationUsingKeyFrames translateYAnimation = new DoubleAnimationUsingKeyFrames();
@@ -117,7 +155,7 @@ namespace Srl
 
                 // get the current stroke and times
                 InkStroke stroke = strokesCollection[i];
-                List<long> times = newTimesCollection[i];
+                List<long> times = timesCollection[i];
                 int pointsCount = stroke.GetInkPoints().Count;
                 int count = pointsCount < times.Count ? pointsCount : times.Count;
 
@@ -153,9 +191,9 @@ namespace Srl
                 fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(lastTime), Value = 0 });
 
                 // assign the animations to the tracer
-                Storyboard.SetTarget(translateXAnimation, tracer);
-                Storyboard.SetTarget(translateYAnimation, tracer);
-                Storyboard.SetTarget(fadeAnimation, tracer);
+                Storyboard.SetTarget(translateXAnimation, animator);
+                Storyboard.SetTarget(translateYAnimation, animator);
+                Storyboard.SetTarget(fadeAnimation, animator);
 
                 // assign the animations to their behavior's properties
                 Storyboard.SetTargetProperty(translateXAnimation, "(UIElement.RenderTransform).(CompositeTransform.TranslateX)");
@@ -172,19 +210,6 @@ namespace Srl
             }
 
             return storyboards;
-        }
-
-        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration, Sketch model)
-        {
-            // set the input duration
-            int numModelPoints = 0;
-            int numInputPoints = 0;
-            foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
-            foreach (InkStroke stroke in strokesCollection) { numInputPoints += stroke.GetInkPoints().Count; }
-            int modelTotalDuration = duration * numModelPoints;
-            int newDuration = modelTotalDuration / numInputPoints;
-
-            return Trace(canvas, strokesCollection, timesCollection, brush, newDuration);
         }
     }
 }
