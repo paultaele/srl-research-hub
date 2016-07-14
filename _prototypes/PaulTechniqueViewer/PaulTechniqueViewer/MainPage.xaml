@@ -135,7 +135,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Viewbox Grid.Column="0" Margin="0,0,10,0">
-                                <Button Content="▶"/>
+                                <Button Name="MyStrokeDirectionPlayButton" Content="▶" Click="MyStrokeDirectionPlayButton_Click"/>
                             </Viewbox>
 
                             <Viewbox Grid.Column="1" HorizontalAlignment="Left">

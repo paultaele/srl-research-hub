@@ -295,7 +295,7 @@ namespace PaulTechniqueViewer
 
             // get the model and input sketches
             Sketch model = myTemplates[MyCurrentIndex];
-            Sketch input = ToSketch(MyInkStrokes.GetStrokes(), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = ToSketch("", MyInkStrokes.GetStrokes(), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
             //
             myTechniqueClassifier.Train(model, input);
@@ -342,8 +342,82 @@ namespace PaulTechniqueViewer
 
         #region Feedback Button Interactions
 
+        private void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            // do not show feedback if canvas has no strokes
+            if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
+
+            // get the stroke direction statusess
+            IReadOnlyList<bool> strokeDirections = myTechniqueClassifier.StrokeDirections;
+
+            // get the model and input strokes
+            Sketch input = ToSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+
+            // iterate through each input stroke
+            Sketch newInput = null;
+            List<InkStroke> newStrokes = new List<InkStroke>();
+            List<List<long>> newTimesCollection = new List<List<long>>();
+            InkStrokeBuilder builder = new InkStrokeBuilder();
+            for (int i = 0; i < input.Strokes.Count; ++i)
+            {
+                // get the current stroke direction, input stroke, and input times
+                bool strokeDirection = strokeDirections[i];
+                InkStroke inputStroke = input.Strokes[i];
+                List<long> inputTimes = input.Times[i];
+
+                // iterate through each input point
+                List<InkPoint> inputPoints = new List<InkPoint>(input.Strokes[i].GetInkPoints());
+                List<Point> newPoints = new List<Point>();
+                List<long> newTimes = new List<long>();
+                for (int j = 0; j < inputPoints.Count; ++j)
+                {
+                    // set the current new point and time
+                    Point newPoint = new Point(inputPoints[j].Position.X, inputPoints[j].Position.Y);
+                    long newTime = inputTimes[j]; // TODO: buggy
+
+                    // add the new point and time to their respective lists
+                    newPoints.Add(newPoint);
+                    newTimes.Add(newTime);
+                }
+
+                // reverse the stroke if the stroke direction is incorrect
+                if (!strokeDirection) { newPoints.Reverse(); }
+                InkStroke newStroke = builder.CreateStroke(newPoints);
+
+                // add the new stroke and times to their respective lists
+                newStrokes.Add(newStroke);
+                newTimesCollection.Add(newTimes);
+            }
+
+            // create the new input with the correct stroke directions
+            newInput = new Sketch("", newStrokes, newTimesCollection, 0, 0, BorderLength, BorderLength);
+
+            // display original
+            input = SketchTools.Clone(input);
+            input = SketchTransformation.Resample(input, 128);
+            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
+            List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, input.Strokes, input.Times, inputBrush, TICK_DURATION);
+            foreach (Storyboard storyboard in inputStoryboards)
+            {
+                storyboard.Begin();
+            }
+
+            // display solution (if any)
+            newInput = SketchTools.Clone(newInput);
+            newInput = SketchTransformation.Resample(newInput, 128);
+            SolidColorBrush newInputBrush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
+            List<Storyboard> newInputStoryboards = InteractionTools.Trace(MyCanvas, newInput.Strokes, newInput.Times, newInputBrush, TICK_DURATION);
+            foreach (Storyboard storyboard in newInputStoryboards)
+            {
+                storyboard.Begin();
+            }
+        }
+
         private void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
         {
+            // do not show feedback if canvas has no strokes
+            if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
+
             //
             bool hasInput = false;
             Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);
@@ -429,7 +503,7 @@ namespace PaulTechniqueViewer
 
         #region Helper Methods
 
-        private Sketch ToSketch(IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
+        private Sketch ToSketch(string label, IReadOnlyList<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
         {
             //
             InkStrokeBuilder builder = new InkStrokeBuilder();
@@ -457,7 +531,7 @@ namespace PaulTechniqueViewer
             }
 
             //
-            Sketch sketch = new Sketch("", newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
+            Sketch sketch = new Sketch(label, newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
             return sketch;
         }
 
@@ -497,6 +571,7 @@ namespace PaulTechniqueViewer
         public readonly SolidColorBrush INCORRECT_BRUSH = new SolidColorBrush(Colors.Red);
 
         public readonly int TICK_DURATION = 300000;
+
 
         #endregion
 

@@ -233,9 +233,7 @@ namespace PaulTechniqueViewer
         public bool StrokeSpeedResult { get; private set; }
 
         public IReadOnlyList<int> StrokeOrders { get { return new List<int>(myStrokeOrders); } }
-        public IReadOnlyList<bool> StrokeDirections { get { return new List<bool>(myStrokeDirections); } }
-
-        public Sketch RealTimeModel { get; private set; }
+        public IReadOnlyList<bool> StrokeDirections { get { return myStrokeDirections != null ? new List<bool>(myStrokeDirections) : null; } }
 
         #endregion
 
