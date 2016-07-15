@@ -383,8 +383,8 @@ namespace PaulTechniqueViewer
             SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
 
             // get the animations
-            List<Storyboard> modelStoryboards = Helper.DisplayEndpoints(MyCanvas, model.Strokes, modelBrush, LARGE_DOT_SIZE, STROKE_DURATION);
-            List<Storyboard> inputStoryboards = Helper.DisplayEndpoints(MyCanvas, input.Strokes, inputBrush, SMALL_DOT_SIZE, STROKE_DURATION, model);
+            List<Storyboard> modelStoryboards = InteractionTools.DisplayEndpoints(MyCanvas, model.Strokes, modelBrush, LARGE_DOT_SIZE, STROKE_DURATION);
+            List<Storyboard> inputStoryboards = InteractionTools.DisplayEndpoints(MyCanvas, input.Strokes, inputBrush, SMALL_DOT_SIZE, STROKE_DURATION, model);
 
             // animate the feedback
             foreach (Storyboard storyboard in modelStoryboards) { storyboard.Begin(); }
@@ -422,8 +422,8 @@ namespace PaulTechniqueViewer
             SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
 
             // get the animations
-            List<Storyboard> modelStoryboards = Helper.DisplayPaths(MyCanvas, model.Strokes, modelBrush, LARGE_STROKE_SIZE, STROKE_DURATION);
-            List<Storyboard> inputStoryboards = Helper.DisplayPaths(MyCanvas, input.Strokes, inputBrush, SMALL_STROKE_SIZE, STROKE_DURATION);
+            List<Storyboard> modelStoryboards = InteractionTools.DisplayPaths(MyCanvas, model.Strokes, modelBrush, LARGE_STROKE_SIZE, STROKE_DURATION);
+            List<Storyboard> inputStoryboards = InteractionTools.DisplayPaths(MyCanvas, input.Strokes, inputBrush, SMALL_STROKE_SIZE, STROKE_DURATION);
 
             // animate the feedback
             foreach (Storyboard storyboard in modelStoryboards) { storyboard.Begin(); }
