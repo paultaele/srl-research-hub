@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Srl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,71 +15,152 @@ namespace PaulTechniqueViewer
 {
     public class Helper
     {
-        public static List<Storyboard> DisplayPaths(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, Brush brush, int duration)
+        public static List<Storyboard> DisplayPaths(Canvas canvas, List<InkStroke> strokesCollection, Brush brush, double size, int duration)
         {
+            // set the initial time
             long time = 0;
 
             // iterate through each stroke
             List<Storyboard> storyboards = new List<Storyboard>();
             for (int i = 0; i < strokesCollection.Count; ++i)
             {
-                // set the visuals of the stroke's corresponding tracer
-                Ellipse animator = new Ellipse()
+                List<InkPoint> points = new List<InkPoint>(strokesCollection[i].GetInkPoints());
+                for (int j = 0; j < points.Count; ++j)
                 {
-                    Width = 50,
-                    Height = 50,
-                    Fill = brush,
-                    Stroke = new SolidColorBrush(Colors.DarkGray),
-                    StrokeThickness = 5,
-                };
+                    InkPoint point = points[j];
 
-                // add the tracer to the canvas
-                // note: the tracer is moved up and left its radius to center
-                double x = strokesCollection[i].GetInkPoints()[0].Position.X;
-                double y = strokesCollection[i].GetInkPoints()[0].Position.Y;
-                Canvas.SetLeft(animator, (-animator.Width / 2) + x);
-                Canvas.SetTop(animator, (-animator.Height / 2) + y);
-                canvas.Children.Add(animator);
+                    // set the visuals of the stroke's corresponding dot
+                    Ellipse dot = new Ellipse()
+                    {
+                        Width = size,
+                        Height = size,
+                        Fill = brush,
+                        Stroke = brush,
+                        //StrokeThickness = 5,
+                    };
 
-                // initialize the storyboard and animations
-                animator.RenderTransform = new CompositeTransform();
-                Storyboard storyboard = new Storyboard();
-                DoubleAnimationUsingKeyFrames fadeAnimation = new DoubleAnimationUsingKeyFrames();
+                    // add the dot to the canvas
+                    // note: the tracer is moved up and left its radius to center
+                    Canvas.SetLeft(dot, (-dot.Width / 2) + point.Position.X);
+                    Canvas.SetTop(dot, (-dot.Height / 2) + point.Position.Y);
+                    canvas.Children.Add(dot);
 
-                // --------------------------------------------------
+                    // initialize the storyboard and animations
+                    dot.RenderTransform = new CompositeTransform();
+                    Storyboard storyboard = new Storyboard();
+                    DoubleAnimationUsingKeyFrames fadeAnimation = new DoubleAnimationUsingKeyFrames();
 
-                // get the current stroke and times
-                InkStroke stroke = strokesCollection[i];
-                List<long> times = timesCollection[i];
-                int pointsCount = stroke.GetInkPoints().Count;
-                int count = pointsCount < times.Count ? pointsCount : times.Count;
+                    // --------------------------------------------------
 
-                // create the animator's fade animations
-                //long firstTime = times[0];
-                //long lastTime = times[times.Count - 1];
-                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 1 });           // visible
-                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 0 });           // inivisible
-                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(time), Value = 0 });   // inivisible
-                fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(time), Value = 1 });   // visible
-                //fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(lastTime), Value = 1 });    // visible
-                //fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(lastTime), Value = 0 });    // inivisible
+                    // create the animator's fade animations
+                    long appear = time;
+                    long disappear = time + duration;
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 1 });               // visible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 0 });               // inivisible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(appear), Value = 0 });            // inivisible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(appear), Value = 1 });            // visible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(disappear), Value = 1 });   // visible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(disappear), Value = 0 });   // inivisible
 
+                    // assign the animations to the animator
+                    Storyboard.SetTarget(fadeAnimation, dot);
+
+                    // assign the animations to their behavior's properties
+                    Storyboard.SetTargetProperty(fadeAnimation, "(UIElement.Opacity)");
+
+                    // add the animations to the storyboard
+                    storyboard.Children.Add(fadeAnimation);
+
+                    // add the storyboard to the collection
+                    storyboards.Add(storyboard);
+                }
+
+                // update the time for the next stroke
                 time += duration;
-
-                // assign the animations to the animator
-                Storyboard.SetTarget(fadeAnimation, animator);
-
-                // assign the animations to their behavior's properties
-                Storyboard.SetTargetProperty(fadeAnimation, "(UIElement.Opacity)");
-
-                // add the animations to the storyboard
-                storyboard.Children.Add(fadeAnimation);
-
-                // add the storyboard to the collection
-                storyboards.Add(storyboard);
             }
 
             return storyboards;
+        }
+
+        public static List<Storyboard> DisplayPaths(Canvas canvas, List<InkStroke> strokesCollection, Brush brush, double size, int duration, Sketch sketch)
+        {
+            int newDuration = duration * sketch.Strokes.Count / strokesCollection.Count;
+
+            return DisplayPaths(canvas, strokesCollection, brush, size, newDuration);
+        }
+
+        public static List<Storyboard> DisplayEndpoints(Canvas canvas, List<InkStroke> strokesCollection, Brush brush, double size, int duration)
+        {
+            // set the initial time
+            long time = 0;
+
+            // iterate through each stroke
+            List<Storyboard> storyboards = new List<Storyboard>();
+            for (int i = 0; i < strokesCollection.Count; ++i)
+            {
+                List<InkPoint> points = new List<InkPoint>(strokesCollection[i].GetInkPoints());
+                for (int j = 0; j < points.Count; j = j + points.Count - 1)
+                {
+                    InkPoint point = points[j];
+
+                    // set the visuals of the stroke's corresponding dot
+                    Ellipse dot = new Ellipse()
+                    {
+                        Width = size,
+                        Height = size,
+                        Fill = brush,
+                        Stroke = new SolidColorBrush(Colors.DarkGray),
+                        StrokeThickness = 5,
+                    };
+
+                    // add the dot to the canvas
+                    // note: the tracer is moved up and left its radius to center
+                    Canvas.SetLeft(dot, (-dot.Width / 2) + point.Position.X);
+                    Canvas.SetTop(dot, (-dot.Height / 2) + point.Position.Y);
+                    canvas.Children.Add(dot);
+
+                    // initialize the storyboard and animations
+                    dot.RenderTransform = new CompositeTransform();
+                    Storyboard storyboard = new Storyboard();
+                    DoubleAnimationUsingKeyFrames fadeAnimation = new DoubleAnimationUsingKeyFrames();
+
+                    // --------------------------------------------------
+
+                    // create the animator's fade animations
+                    long appear = time;
+                    long disappear = time + duration;
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 1 });               // visible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(0), Value = 0 });               // inivisible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(appear), Value = 0 });            // inivisible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(appear), Value = 1 });            // visible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(disappear), Value = 1 });   // visible
+                    fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(disappear), Value = 0 });   // inivisible
+
+                    // assign the animations to the animator
+                    Storyboard.SetTarget(fadeAnimation, dot);
+
+                    // assign the animations to their behavior's properties
+                    Storyboard.SetTargetProperty(fadeAnimation, "(UIElement.Opacity)");
+
+                    // add the animations to the storyboard
+                    storyboard.Children.Add(fadeAnimation);
+
+                    // add the storyboard to the collection
+                    storyboards.Add(storyboard);
+                }
+
+                // update the time for the next stroke
+                time += duration;
+            }
+
+            return storyboards;
+        }
+
+        public static List<Storyboard> DisplayEndpoints(Canvas canvas, List<InkStroke> strokesCollection, Brush brush, double size, int duration, Sketch sketch)
+        {
+            int newDuration = duration * sketch.Strokes.Count / strokesCollection.Count;
+
+            return DisplayEndpoints(canvas, strokesCollection, brush, size, newDuration);
         }
     }
 }

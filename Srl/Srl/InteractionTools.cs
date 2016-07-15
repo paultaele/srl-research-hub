@@ -69,7 +69,13 @@ namespace Srl
             image.Source = bitmap;
         }
 
-        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration)
+        public async static Task Delay(int delay)
+        {
+            // note: 10000 is to convert from ticks to milliseconds
+            await Task.Delay(delay / 10000);
+        }
+
+        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, double size, SolidColorBrush brush, int duration)
         {
             // set the timings of the animation
             List<List<long>> newTimesCollection = new List<List<long>>();
@@ -86,10 +92,10 @@ namespace Srl
                 newTimesCollection.Add(times);
             }
 
-            return AnimateDot(canvas, strokesCollection, newTimesCollection, brush);
+            return AnimateDot(canvas, strokesCollection, newTimesCollection, size, brush);
         }
 
-        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush, int duration, Sketch model)
+        public static List<Storyboard> Trace(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, double size, SolidColorBrush brush, int duration, Sketch model)
         {
             // set the input duration
             int numModelPoints = 0;
@@ -99,10 +105,10 @@ namespace Srl
             int modelTotalDuration = duration * numModelPoints;
             int newDuration = modelTotalDuration / numInputPoints;
 
-            return Trace(canvas, strokesCollection, timesCollection, brush, newDuration);
+            return Trace(canvas, strokesCollection, timesCollection, size, brush, newDuration);
         }
 
-        public static List<Storyboard> Playback(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, SolidColorBrush brush)
+        public static List<Storyboard> Playback(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, double size, SolidColorBrush brush)
         {
             // set the timings of the animation
             List<List<long>> newTimesCollection = new List<List<long>>();
@@ -119,10 +125,10 @@ namespace Srl
                 newTimesCollection.Add(times);
             }
 
-            return AnimateDot(canvas, strokesCollection, newTimesCollection, brush);
+            return AnimateDot(canvas, strokesCollection, newTimesCollection, size, brush);
         }
 
-        private static List<Storyboard> AnimateDot(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, Brush brush)
+        private static List<Storyboard> AnimateDot(Canvas canvas, List<InkStroke> strokesCollection, List<List<long>> timesCollection, double size, Brush brush)
         {
             // iterate through each stroke
             List<Storyboard> storyboards = new List<Storyboard>();
@@ -131,8 +137,8 @@ namespace Srl
                 // set the visuals of the stroke's corresponding tracer
                 Ellipse animator = new Ellipse()
                 {
-                    Width = 50,
-                    Height = 50,
+                    Width = size,
+                    Height = size,
                     Fill = brush,
                     Stroke = new SolidColorBrush(Colors.DarkGray),
                     StrokeThickness = 5,

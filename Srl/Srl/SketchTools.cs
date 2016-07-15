@@ -157,20 +157,7 @@ public class SketchTools
             string label = sketch.Label;
 
             //
-            List<InkStroke> newStrokesCollection = new List<InkStroke>();
-            InkStrokeBuilder builder = new InkStrokeBuilder();
-            foreach (InkStroke stroke in sketch.Strokes)
-            {
-                List<Point> newPoints = new List<Point>();
-                foreach (InkPoint point in stroke.GetInkPoints())
-                {
-                    Point newPoint = new Point(point.Position.X, point.Position.Y);
-                    newPoints.Add(newPoint);
-                }
-                InkStroke newStroke = builder.CreateStroke(newPoints);
-                newStroke.DrawingAttributes = stroke.DrawingAttributes;
-                newStrokesCollection.Add(newStroke);
-            }
+            List<InkStroke> newStrokesCollection = Clone(sketch.Strokes);
 
             //
             List<List<long>> newTimesCollection = new List<List<long>>();
@@ -190,6 +177,35 @@ public class SketchTools
             double frameMaxX = sketch.FrameMaxX;
             double frameMaxY = sketch.FrameMaxY;
             return new Sketch(label, newStrokesCollection, newTimesCollection, frameMinX, frameMinY, frameMaxX, frameMaxY);
+        }
+
+        public static InkStroke Clone(InkStroke stroke)
+        {
+            List<InkStroke> newStrokesCollection = new List<InkStroke>();
+            InkStrokeBuilder builder = new InkStrokeBuilder();
+
+            List<Point> newPoints = new List<Point>();
+            foreach (InkPoint point in stroke.GetInkPoints())
+            {
+                Point newPoint = new Point(point.Position.X, point.Position.Y);
+                newPoints.Add(newPoint);
+            }
+            InkStroke newStroke = builder.CreateStroke(newPoints);
+            newStroke.DrawingAttributes = stroke.DrawingAttributes;
+
+            return newStroke;
+        }
+
+        public static List<InkStroke> Clone(List<InkStroke> strokes)
+        {
+            List<InkStroke> newStrokesCollection = new List<InkStroke>();
+            foreach (InkStroke stroke in strokes)
+            {
+                InkStroke newStroke = Clone(stroke);
+                newStrokesCollection.Add(newStroke);
+            }
+
+            return newStrokesCollection;
         }
 
         public static double Distance(Sketch alphaSketch, Sketch betaSketch)

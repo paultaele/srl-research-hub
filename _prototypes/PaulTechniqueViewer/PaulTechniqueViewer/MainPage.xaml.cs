@@ -254,7 +254,7 @@ namespace PaulTechniqueViewer
                 Color color = Colors.Green;
                 SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
 
-                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, brush, TICK_DURATION);
+                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, LARGE_DOT_SIZE, brush, POINT_DURATION);
                 foreach (Storyboard storyboard in modelStoryboards)
                 {
                     storyboard.Begin();
@@ -264,11 +264,11 @@ namespace PaulTechniqueViewer
             //
             int numModelPoints = 0;
             foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
-            int delay = (numModelPoints * TICK_DURATION) / 10000;
+            int delay = (numModelPoints * POINT_DURATION) / 10000;
             MyPlayButton.IsEnabled = false;
             MyCheckButton.IsEnabled = false;
             MyInkCanvas.InkPresenter.IsInputEnabled = false;
-            await Task.Delay(delay);
+            await Task.Delay(delay / 10000);
             MyPlayButton.IsEnabled = true;
             MyCheckButton.IsEnabled = true;
             MyInkCanvas.InkPresenter.IsInputEnabled = true;
@@ -284,8 +284,8 @@ namespace PaulTechniqueViewer
             }
 
             // hide the bottom command bar and shwo the top bar
-            MyTopCommandBar.Visibility = Visibility.Visible;
-            MyBottomCommandBar.Visibility = Visibility.Collapsed;
+            CommandBarVisibility(true);
+            MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.None;
             MyRightSide.Visibility = Visibility.Visible;
 
             // shift the ink canvas to the right
@@ -322,8 +322,10 @@ namespace PaulTechniqueViewer
         private void MyReturnButton_Click(object sender, RoutedEventArgs e)
         {
             //
-            MyTopCommandBar.Visibility = Visibility.Collapsed;
-            MyBottomCommandBar.Visibility = Visibility.Visible;
+            //MyTopCommandBar.Visibility = Visibility.Collapsed;
+            //MyBottomCommandBar.Visibility = Visibility.Visible;
+            CommandBarVisibility(false);
+            MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen | CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Touch;
             MyRightSide.Visibility = Visibility.Collapsed;
 
             //
@@ -338,20 +340,100 @@ namespace PaulTechniqueViewer
             MyImageButton_Click(null, null);
         }
 
+        private void CommandBarVisibility(bool isFeedbackMode)
+        {
+            Visibility hide = Visibility.Collapsed;
+            Visibility show = Visibility.Visible;
+
+            MyImageButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator1.Visibility = isFeedbackMode ? hide : show;
+            MyPlayButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator2.Visibility = isFeedbackMode ? hide : show;
+            MyClearButton.Visibility = isFeedbackMode ? hide : show;
+            MyUndoButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator3.Visibility = isFeedbackMode ? hide : show;
+            MyCheckButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator4.Visibility = isFeedbackMode ? hide : show;
+            MySymbolsButton.Visibility = isFeedbackMode ? hide : show;
+
+            MyReturnButton.Visibility = isFeedbackMode ? show : hide;
+        }
+
         #endregion
 
         #region Feedback Button Interactions
 
-        private void MyStrokeCountPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MyStrokeCountPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
-            SolidColorBrush brush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
+            // do not show feedback if canvas has no strokes
+            if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
 
-            List<Storyboard> storyboards = Helper.DisplayPaths(MyCanvas, input.Strokes, input.Times, brush, 5000000);
-            foreach (Storyboard storyboard in storyboards)
-            {
-                storyboard.Begin();
-            }
+            // disable return button during animation
+            MyReturnButton.IsEnabled = false;
+
+            // get the model and input strokes
+            Sketch model = myTemplates[MyCurrentIndex];
+            model = SketchTools.Clone(model);
+            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            input = SketchTools.Clone(input);
+            input = SketchTransformation.Resample(input, 128);
+
+            // set the animation colors
+            SolidColorBrush modelBrush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
+            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
+
+            // get the animations
+            List<Storyboard> modelStoryboards = Helper.DisplayEndpoints(MyCanvas, model.Strokes, modelBrush, LARGE_DOT_SIZE, STROKE_DURATION);
+            List<Storyboard> inputStoryboards = Helper.DisplayEndpoints(MyCanvas, input.Strokes, inputBrush, SMALL_DOT_SIZE, STROKE_DURATION, model);
+
+            // animate the feedback
+            foreach (Storyboard storyboard in modelStoryboards) { storyboard.Begin(); }
+            foreach (Storyboard storyboard in inputStoryboards) { storyboard.Begin(); }
+
+            // re-add the original strokes to the ink canvas and re-enable return button
+            int delay = STROKE_DURATION * model.Strokes.Count;
+            await InteractionTools.Delay(delay);
+            MyReturnButton.IsEnabled = true;
+        }
+
+        private async void MyStrokeOrderPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            // do not show feedback if canvas has no strokes
+            if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
+            if (!myTechniqueClassifier.StrokeCountResult) { return; }
+
+            // disable return button during animation
+            MyReturnButton.IsEnabled = false;
+
+            // get the model and input strokes
+            Sketch model = myTemplates[MyCurrentIndex];
+            model = SketchTools.Clone(model);
+            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            input = SketchTools.Clone(input);
+            input = SketchTransformation.Resample(input, 128);
+
+            // store and remove the original strokes from the ink canvas
+            List<InkStroke> originalStrokes = SketchTools.Clone(new List<InkStroke>(MyInkStrokes.GetStrokes()));
+            foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { stroke.Selected = true; }
+            MyInkStrokes.DeleteSelected();
+
+            // set the animation colors
+            SolidColorBrush modelBrush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
+            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
+
+            // get the animations
+            List<Storyboard> modelStoryboards = Helper.DisplayPaths(MyCanvas, model.Strokes, modelBrush, LARGE_STROKE_SIZE, STROKE_DURATION);
+            List<Storyboard> inputStoryboards = Helper.DisplayPaths(MyCanvas, input.Strokes, inputBrush, SMALL_STROKE_SIZE, STROKE_DURATION);
+
+            // animate the feedback
+            foreach (Storyboard storyboard in modelStoryboards) { storyboard.Begin(); }
+            foreach (Storyboard storyboard in inputStoryboards) { storyboard.Begin(); }
+
+            // re-add the original strokes to the ink canvas and re-enable return button
+            int delay = STROKE_DURATION * model.Strokes.Count;
+            await InteractionTools.Delay(delay);
+            MyInkStrokes.AddStrokes(originalStrokes);
+            MyReturnButton.IsEnabled = true;
         }
 
         private void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
@@ -405,22 +487,22 @@ namespace PaulTechniqueViewer
             // create the new input with the correct stroke directions
             newInput = new Sketch("", newStrokes, newTimesCollection, 0, 0, BorderLength, BorderLength);
 
-            // display original
-            input = SketchTools.Clone(input);
-            input = SketchTransformation.Resample(input, 128);
-            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
-            List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, input.Strokes, input.Times, inputBrush, TICK_DURATION);
-            foreach (Storyboard storyboard in inputStoryboards)
+            // display solution
+            newInput = SketchTools.Clone(newInput);
+            newInput = SketchTransformation.Resample(newInput, 128);
+            SolidColorBrush newInputBrush = new SolidColorBrush(Colors.Black) { Opacity = 1.0 };
+            List<Storyboard> newInputStoryboards = InteractionTools.Trace(MyCanvas, newInput.Strokes, newInput.Times, LARGE_DOT_SIZE, newInputBrush, POINT_DURATION);
+            foreach (Storyboard storyboard in newInputStoryboards)
             {
                 storyboard.Begin();
             }
 
-            // display solution (if any)
-            newInput = SketchTools.Clone(newInput);
-            newInput = SketchTransformation.Resample(newInput, 128);
-            SolidColorBrush newInputBrush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
-            List<Storyboard> newInputStoryboards = InteractionTools.Trace(MyCanvas, newInput.Strokes, newInput.Times, newInputBrush, TICK_DURATION);
-            foreach (Storyboard storyboard in newInputStoryboards)
+            // display original
+            input = SketchTools.Clone(input);
+            input = SketchTransformation.Resample(input, 128);
+            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
+            List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, input.Strokes, input.Times, LARGE_DOT_SIZE, inputBrush, POINT_DURATION);
+            foreach (Storyboard storyboard in inputStoryboards)
             {
                 storyboard.Begin();
             }
@@ -471,7 +553,7 @@ namespace PaulTechniqueViewer
             //
             model = new Sketch(model.Label, model.Strokes, modelTimesCollection, model.FrameMinX, model.FrameMinY, model.FrameMaxX, model.FrameMaxY);
             SolidColorBrush modelBrush = new SolidColorBrush(Colors.Black) { Opacity = 0.8 };
-            List<Storyboard> modelStoryboards = InteractionTools.Playback(MyCanvas, model.Strokes, model.Times, modelBrush);
+            List<Storyboard> modelStoryboards = InteractionTools.Playback(MyCanvas, model.Strokes, model.Times, LARGE_DOT_SIZE, modelBrush);
             foreach (Storyboard storyboard in modelStoryboards)
             {
                 storyboard.Begin();
@@ -481,7 +563,7 @@ namespace PaulTechniqueViewer
             if (!hasInput) { return; }
             input = SketchTools.Clone(input);
             SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
-            List<Storyboard> inputStoryboards = InteractionTools.Playback(MyCanvas, input.Strokes, input.Times, inputBrush);
+            List<Storyboard> inputStoryboards = InteractionTools.Playback(MyCanvas, input.Strokes, input.Times, SMALL_DOT_SIZE, inputBrush);
             foreach (Storyboard storyboard in inputStoryboards)
             {
                 storyboard.Begin();
@@ -583,7 +665,13 @@ namespace PaulTechniqueViewer
         public readonly SolidColorBrush CORRECT_BRUSH = new SolidColorBrush(Colors.Green);
         public readonly SolidColorBrush INCORRECT_BRUSH = new SolidColorBrush(Colors.Red);
 
-        public readonly int TICK_DURATION = 300000;
+        public readonly int POINT_DURATION = 300000;
+        public readonly int STROKE_DURATION = 15000000;
+
+        public readonly int LARGE_DOT_SIZE = 50;
+        public readonly int SMALL_DOT_SIZE = 30;
+        public readonly int LARGE_STROKE_SIZE = 30;
+        public readonly int SMALL_STROKE_SIZE = 10;
 
         #endregion
     }

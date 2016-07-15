@@ -7,23 +7,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
 
-    <Page.TopAppBar>
-        <CommandBar Name="MyTopCommandBar" Visibility="Collapsed">
-            <AppBarButton Name="MyReturnButton" Label="Return" Icon="Accept" Click="MyReturnButton_Click"/>
-        </CommandBar>
-    </Page.TopAppBar>
-
     <Page.BottomAppBar>
         <CommandBar Name="MyBottomCommandBar">
             <AppBarToggleButton Name="MyImageButton" Icon="Pictures" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
-            <AppBarSeparator/>
+            <AppBarSeparator Name="MySeparator1"/>
             <AppBarButton Name="MyPlayButton" Icon="Play" Label="Play" Click="MyPlayButton_Click"/>
-            <AppBarSeparator/>
+            <AppBarSeparator Name="MySeparator2"/>
             <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
             <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>
-            <AppBarSeparator/>
+            <AppBarSeparator Name="MySeparator3"/>
             <AppBarButton Name="MyCheckButton" Icon="Accept" Label="Check" Click="MyCheckButton_Click"/>
-            <AppBarSeparator/>
+            <AppBarSeparator Name="MySeparator4"/>
             <AppBarButton Name="MySymbolsButton" Icon="List" Label="Symbols">
                 <Button.Flyout>
                     <Flyout>
@@ -31,9 +25,11 @@
                     </Flyout>
                 </Button.Flyout>
             </AppBarButton>
+            
+            <AppBarButton Name="MyReturnButton" Label="Return" Icon="Cancel" Click="MyReturnButton_Click" Visibility="Collapsed"/>
 
             <CommandBar.Content>
-                <TextBlock Name="MyPrompText" Text="Hello..." Margin="12,14"/>
+                <TextBlock Name="MyPrompText" Text="" Margin="12,14"/>
             </CommandBar.Content>
         </CommandBar>
     </Page.BottomAppBar>
@@ -115,7 +111,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Viewbox Grid.Column="0" Margin="0,0,10,0">
-                                <Button Content="▶"/>
+                                <Button Name="MyStrokeOrderPlayButton" Content="▶" Click="MyStrokeOrderPlayButton_Click"/>
                             </Viewbox>
 
                             <Viewbox Grid.Column="1" HorizontalAlignment="Left">
