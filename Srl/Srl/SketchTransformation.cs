@@ -95,6 +95,20 @@ namespace Srl
             return newSketch;
         }
 
+        public static InkStroke Resample(InkStroke stroke, int n)
+        {
+            // create dummy times
+            List<long> times = new List<long>();
+            foreach (InkPoint point in stroke.GetInkPoints()) { times.Add(0); }
+
+            // wrap stroke into sketch and resample
+            Sketch sketch = new Sketch("", new List<InkStroke> { stroke }, new List<List<long>> { times }, 0, 0, 0, 0);
+            sketch = Resample(sketch, n);
+
+            // return the sole resampled stroke of the sketch
+            return sketch.Strokes[0];
+        }
+
         public static Sketch ScaleSquare(Sketch sketch, double size)
         {
             //

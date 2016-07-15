@@ -39,9 +39,6 @@ namespace PaulTechniqueViewer
 
             // Stroke Speed Test
             StrokeSpeedResult = StrokeSpeedTest(myModel, myInput);
-
-            // Stroke Edits Test?
-            // the number of times that the user hit clear and undo?
         }
 
         private bool StrokeCountTest(Sketch model, Sketch input)
@@ -59,65 +56,65 @@ namespace PaulTechniqueViewer
             // skip this test if the stroke counts do not match up
             if (!StrokeCountResult) { return false; }
 
-            // make copies of the model and input strokes
+            // clone the model and input strokes
             model = SketchTools.Clone(model);
             input = SketchTools.Clone(input);
 
-            // iterate through each model stroke
+            // iterate through each input stroke
             myStrokeOrders = new List<int>();
-            for (int i = 0; i < model.Strokes.Count; ++i)
+            for (int i = 0; i < input.Strokes.Count; ++i)
             {
-                // wrap a sketch around the current model stroke
-                InkStroke modelStroke = model.Strokes[i];
-                List<long> modelTimes = model.Times[i];
-                Sketch modelStrokeSketch = new Sketch("", new List<InkStroke>() { modelStroke }, new List<List<long>> { modelTimes }, 0, 0, 0, 0);
-                int numModelPoints = modelStroke.GetInkPoints().Count;
+                // get the current input stroke and times
+                InkStroke inputStroke = input.Strokes[i];
+                List<long> inputTimes = input.Times[i];
 
-                // iterate through each input stroke
-                List<double> distances = new List<double>();
-                for (int j = 0; j < input.Strokes.Count; ++j)
+                // iterate through each model stroke
+                double minValue = double.MaxValue;
+                int minIndex = -1;
+                for (int j = 0; j < model.Strokes.Count; ++j)
                 {
-                    // wrap a sketch around the current input stroke
-                    InkStroke inputStroke = input.Strokes[j];
-                    List<long> inputTimes = input.Times[j];
-                    Sketch inputStrokeSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>> { inputTimes }, 0, 0, 0, 0);
+                    // get the current model stroke and point count
+                    InkStroke modelStroke = model.Strokes[j];
+                    List<long> modelTimes = model.Times[j];
+                    int numModelPoints = modelStroke.GetInkPoints().Count;
 
-                    // resample the input stroke's points to match the current model stroke's points
-                    inputStrokeSketch = SketchTools.Clone(inputStrokeSketch);
-                    inputStrokeSketch = SketchTransformation.Resample(inputStrokeSketch, numModelPoints);
+                    // clone the current input stroke and wrap into sketch
+                    inputStroke = SketchTools.Clone(inputStroke);
+                    Sketch inputSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
+                    inputSketch = SketchTransformation.Resample(inputSketch, numModelPoints);
+                    Sketch modelSketch = new Sketch("", new List<InkStroke>() { modelStroke }, new List<List<long>>() { modelTimes }, model.FrameMinX, model.FrameMinY, model.FrameMaxX, model.FrameMaxY);
 
-                    // get the minimum distance between the current model and input stroke
-                    double distance1 = SketchTools.Distance(modelStrokeSketch, inputStrokeSketch);
-                    double distance2 = SketchTools.Distance(inputStrokeSketch, modelStrokeSketch);
+                    // calculate the distance between the two sketches and add to the list
+                    double distance1 = SketchTools.Distance(inputSketch, modelSketch);
+                    double distance2 = SketchTools.Distance(modelSketch, inputSketch);
                     double distance = Math.Min(distance1, distance2);
 
-                    // add to the list of distances
-                    distances.Add(distance);
-                }
-
-                // get the index of the input stroke with the closest distance to the current mdoel stroke
-                double minValue = double.MaxValue;
-                int minIndex = 0;
-                for (int j = 0; j < distances.Count; ++j)
-                {
-                    if (distances[j] < minValue)
+                    // determine minimum property
+                    if (distance < minValue)
                     {
-                        minValue = distances[j];
+                        minValue = distance;
                         minIndex = j;
                     }
                 }
 
-                // add the index of the input stroke that matches to the current model stroke
+                // add the stroke index to the list
                 myStrokeOrders.Add(minIndex);
             }
 
-            // determine stroke order correctness by the ordering of the stroke order
-            // if the order is not in ascending order, then the stroke order is incorrect
+            // determine stroke order correctness
+            bool isOrdered = true;
             for (int i = 1; i < myStrokeOrders.Count; ++i)
             {
-                if (myStrokeOrders[i-1] >= myStrokeOrders[i]) { return false; }
+                int prevIndex = myStrokeOrders[i-1];
+                int currIndex = myStrokeOrders[i];
+
+                if (prevIndex >= currIndex)
+                {
+                    isOrdered = false;
+                    break;
+                }
             }
-            return true;
+            return isOrdered;
         }
 
         private bool StrokeDirectionTest(Sketch model, Sketch input)
@@ -131,59 +128,53 @@ namespace PaulTechniqueViewer
 
             // iterate through each model stroke
             myStrokeDirections = new List<bool>();
-            bool isCorrect = true;
-            for (int i = 0; i < model.Strokes.Count; ++i)
-            {
-                // wrap a sketch around the current model stroke
-                InkStroke modelStroke = model.Strokes[i];
-                List<long> modelTimes = model.Times[i];
-                //Sketch modelStrokeSketch = new Sketch("", new List<InkStroke>() { modelStroke }, new List<List<long>> { modelTimes }, 0, 0, 0, 0);
-                int numModelPoints = modelStroke.GetInkPoints().Count;
 
-                // find and wrap the matching input stroke into a sketch
-                InkStroke inputStroke = null;
-                List<long> inputTimes = null;
-                for (int j = 0; j < myStrokeOrders.Count; ++j)
-                {
-                    if (myStrokeOrders[j] == i)
-                    {
-                        inputStroke = input.Strokes[j];
-                        inputTimes = input.Times[j];
-                    }
-                }
-                Sketch inputStrokeSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>> { inputTimes }, 0, 0, 0, 0);
+            // iterate through each input stroke
+            bool isDirected = true;
+            for (int i = 0; i < input.Strokes.Count; ++i)
+            {
+                // get the corresponding model stroke, points, and point count
+                int modelIndex = myStrokeOrders[i];
+                InkStroke modelStroke = model.Strokes[modelIndex];
+                List<InkPoint> modelPoints = new List<InkPoint>(modelStroke.GetInkPoints());
+                int numModelPoints = modelPoints.Count;
+
+                // wrap the current input stroke into a sketch, then resample to match model stroke
+                InkStroke inputStroke = input.Strokes[i];
+                List<long> inputTimes = input.Times[i];
+                Sketch inputSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>> { inputTimes }, 0, 0, 0, 0);
 
                 // resample the input stroke's points to match the current model stroke's points
-                inputStrokeSketch = SketchTools.Clone(inputStrokeSketch);
-                inputStrokeSketch = SketchTransformation.Resample(inputStrokeSketch, numModelPoints);
-                inputStroke = inputStrokeSketch.Strokes[0];
+                inputSketch = SketchTools.Clone(inputSketch);
+                inputSketch = SketchTransformation.Resample(inputSketch, modelPoints.Count);
+                inputStroke = inputSketch.Strokes[0];
 
                 // get the number of points to iterate between the corresponding model and input stroke
                 int numInputPoints = inputStroke.GetInkPoints().Count;
                 int count = numModelPoints < numInputPoints ? numModelPoints : numInputPoints;
 
                 // calculate the distances both forward and backwards between the model and input strokes
-                double distance1 = 0.0;
-                double distance2 = 0.0;
+                double distances1 = 0.0;
+                double distances2 = 0.0;
                 for (int j = 0, k = count - 1; j < count; ++j, --k)
                 {
                     InkPoint modelPoint = modelStroke.GetInkPoints()[j];
                     InkPoint inputPoint1 = inputStroke.GetInkPoints()[j];
                     InkPoint inputPoint2 = inputStroke.GetInkPoints()[k];
 
-                    distance1 += SketchTransformation.Distance(modelPoint, inputPoint1);
-                    distance2 += SketchTransformation.Distance(modelPoint, inputPoint2);
+                    distances1 += SketchTransformation.Distance(modelPoint, inputPoint1);
+                    distances2 += SketchTransformation.Distance(modelPoint, inputPoint2);
                 }
 
                 // get the stroke direction correctness for each corresponding model and input strokes
-                bool result = distance1 < distance2 ? true : false;
+                bool result = distances1 < distances2 ? true : false;
                 myStrokeDirections.Add(result);
 
                 // flag the entire stroke direction as incorrect if one stroke direction is incorrect
-                if (!result) { isCorrect = false; }
+                if (!result) { isDirected = false; }
             }
 
-            return isCorrect;
+            return isDirected;
         }
 
         private bool StrokeSpeedTest(Sketch model, Sketch input)

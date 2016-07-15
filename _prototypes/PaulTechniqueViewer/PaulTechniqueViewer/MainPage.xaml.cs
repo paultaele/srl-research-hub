@@ -442,64 +442,44 @@ namespace PaulTechniqueViewer
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
             if (!myTechniqueClassifier.StrokeCountResult) { return; }
 
-            // get the stroke direction statusess
-            IReadOnlyList<bool> strokeDirections = myTechniqueClassifier.StrokeDirections;
-
-            // get the model and input strokes
+            // get the input sketch and stroke directions
             Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            input = SketchTools.Clone(input);
+            input = SketchTransformation.Resample(input, 128);
+            List<bool> strokeDirections = new List<bool>(myTechniqueClassifier.StrokeDirections);
 
-            // iterate through each input stroke
-            Sketch newInput = null;
-            List<InkStroke> newStrokes = new List<InkStroke>();
-            List<List<long>> newTimesCollection = new List<List<long>>();
+            // create solution
             InkStrokeBuilder builder = new InkStrokeBuilder();
+            List<InkStroke> solutionStrokes = new List<InkStroke>();
             for (int i = 0; i < input.Strokes.Count; ++i)
             {
-                // get the current stroke direction, input stroke, and input times
-                bool strokeDirection = strokeDirections[i];
+                // get the current input stroke and times
                 InkStroke inputStroke = input.Strokes[i];
                 List<long> inputTimes = input.Times[i];
 
-                // iterate through each input point
-                List<InkPoint> inputPoints = new List<InkPoint>(input.Strokes[i].GetInkPoints());
-                List<Point> newPoints = new List<Point>();
-                List<long> newTimes = new List<long>();
-                for (int j = 0; j < inputPoints.Count; ++j)
-                {
-                    // set the current new point and time
-                    Point newPoint = new Point(inputPoints[j].Position.X, inputPoints[j].Position.Y);
-                    long newTime = inputTimes[j]; // TODO: buggy
+                // get current input points and stroke direction status
+                List<InkPoint> inputPoints = new List<InkPoint>(inputStroke.GetInkPoints());
+                bool strokeDirection = strokeDirections[i];
 
-                    // add the new point and time to their respective lists
-                    newPoints.Add(newPoint);
-                    newTimes.Add(newTime);
-                }
+                // create the solution stroke
+                List<Point> solutionPoints = new List<Point>();
+                foreach (InkPoint inputPoint in inputPoints) { solutionPoints.Add(new Point(inputPoint.Position.X, inputPoint.Position.Y)); }
+                if (!strokeDirection) { solutionPoints.Reverse(); }
+                InkStroke solutionStroke = builder.CreateStroke(solutionPoints);
 
-                // reverse the stroke if the stroke direction is incorrect
-                if (!strokeDirection) { newPoints.Reverse(); }
-                InkStroke newStroke = builder.CreateStroke(newPoints);
-
-                // add the new stroke and times to their respective lists
-                newStrokes.Add(newStroke);
-                newTimesCollection.Add(newTimes);
+                // add the solution stroke to the list
+                solutionStrokes.Add(solutionStroke);
             }
 
-            // create the new input with the correct stroke directions
-            newInput = new Sketch("", newStrokes, newTimesCollection, 0, 0, BorderLength, BorderLength);
-
             // display solution
-            newInput = SketchTools.Clone(newInput);
-            newInput = SketchTransformation.Resample(newInput, 128);
             SolidColorBrush newInputBrush = new SolidColorBrush(Colors.Black) { Opacity = 1.0 };
-            List<Storyboard> newInputStoryboards = InteractionTools.Trace(MyCanvas, newInput.Strokes, newInput.Times, LARGE_DOT_SIZE, newInputBrush, POINT_DURATION);
+            List<Storyboard> newInputStoryboards = InteractionTools.Trace(MyCanvas, solutionStrokes, input.Times, LARGE_DOT_SIZE, newInputBrush, POINT_DURATION);
             foreach (Storyboard storyboard in newInputStoryboards)
             {
                 storyboard.Begin();
             }
 
             // display original
-            input = SketchTools.Clone(input);
-            input = SketchTransformation.Resample(input, 128);
             SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
             List<Storyboard> inputStoryboards = InteractionTools.Trace(MyCanvas, input.Strokes, input.Times, LARGE_DOT_SIZE, inputBrush, POINT_DURATION);
             foreach (Storyboard storyboard in inputStoryboards)
