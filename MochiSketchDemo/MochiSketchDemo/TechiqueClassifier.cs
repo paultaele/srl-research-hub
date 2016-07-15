@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Input.Inking;
 
-namespace PaulTechniqueViewer
+namespace MochiSketchDemo
 {
     public class TechniqueClassifier
     {
@@ -101,17 +101,11 @@ namespace PaulTechniqueViewer
                 myStrokeOrders.Add(minIndex);
             }
 
-            for (int i = 0; i < myStrokeOrders.Count; ++i)
-            {
-                Debug.WriteLine($"{i}. {myStrokeOrders[i]}");
-            }
-            Debug.WriteLine("---");
-
             // determine stroke order correctness
             bool isOrdered = true;
             for (int i = 1; i < myStrokeOrders.Count; ++i)
             {
-                int prevIndex = myStrokeOrders[i-1];
+                int prevIndex = myStrokeOrders[i - 1];
                 int currIndex = myStrokeOrders[i];
 
                 if (prevIndex >= currIndex)

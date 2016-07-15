@@ -1,0 +1,185 @@
+﻿<Page
+    x:Class="MochiSketchDemo.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MochiSketchDemo"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
+
+    <Page.BottomAppBar>
+        <CommandBar Name="MyBottomCommandBar">
+            <AppBarToggleButton Name="MyImageButton" Icon="Pictures" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
+            <AppBarSeparator Name="MySeparator1"/>
+            <AppBarButton Name="MyPlayButton" Icon="Play" Label="Play" Click="MyPlayButton_Click"/>
+            <AppBarSeparator Name="MySeparator2"/>
+            <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
+            <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>
+            <AppBarSeparator Name="MySeparator3"/>
+            <AppBarButton Name="MyCheckButton" Icon="Accept" Label="Check" Click="MyCheckButton_Click"/>
+            <AppBarSeparator Name="MySeparator4"/>
+            <AppBarButton Name="MySymbolsButton" Icon="List" Label="Symbols">
+                <Button.Flyout>
+                    <Flyout>
+                        <ComboBox Name="MySymbolsComboBox" SelectionChanged="MySymbolsComboBox_SelectionChanged"/>
+                    </Flyout>
+                </Button.Flyout>
+            </AppBarButton>
+
+            <AppBarButton Name="MyReturnButton" Label="Return" Icon="Cancel" Click="MyReturnButton_Click" Visibility="Collapsed"/>
+
+            <CommandBar.Content>
+                <TextBlock Name="MyPrompText" Text="" Margin="12,14"/>
+            </CommandBar.Content>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid Name="MyGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="2.5*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Name="MyLeftSide" Grid.Column="0">
+
+        </Border>
+
+        <Border Grid.Column="1" Name="MyBorder" BorderBrush="Black" BorderThickness="3">
+            <Grid>
+                <Image Name="MyImage"/>
+                <InkCanvas Name="MyInkCanvas"/>
+                <Canvas Name="MyCanvas"/>
+            </Grid>
+        </Border>
+
+        <Border Name="MyRightSide" Visibility="Collapsed" Grid.Column="2" Margin="20">
+            <Grid>
+                <Grid Name="MyTechniqueGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="9*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="0">
+                        <TextBlock Text="Technique"/>
+                    </Viewbox>
+
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="4*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 1. Stroke Count Feedback-->
+                        <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Text="Is the stroke count correct?"/>
+                        </Viewbox>
+
+                        <Grid Grid.Row="1" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0" Margin="0,0,10,0">
+                                <Button Name="MyStrokeCountPlayButton" Content="▶" Click="MyStrokeCountPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Viewbox Grid.Column="1" HorizontalAlignment="Left">
+                                <TextBlock Name="MyStrokeCountResultText" Text=""/>
+                            </Viewbox>
+                        </Grid>
+
+                        <!-- 2. Stroke Order Feedback-->
+                        <Viewbox Grid.Row="2" HorizontalAlignment="Left">
+                            <TextBlock Text="Is the stroke order correct?"/>
+                        </Viewbox>
+
+                        <Grid Grid.Row="3" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0" Margin="0,0,10,0">
+                                <Button Name="MyStrokeOrderPlayButton" Content="▶" Click="MyStrokeOrderPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Viewbox Grid.Column="1" HorizontalAlignment="Left">
+                                <TextBlock Name="MyStrokeOrderResultText" Text=""/>
+                            </Viewbox>
+                        </Grid>
+
+                        <!-- 3. Stroke Direction Feedback-->
+                        <Viewbox Grid.Row="4" HorizontalAlignment="Left">
+                            <TextBlock Text="Is the stroke direction correct?"/>
+                        </Viewbox>
+
+                        <Grid Grid.Row="5" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0" Margin="0,0,10,0">
+                                <Button Name="MyStrokeDirectionPlayButton" Content="▶" Click="MyStrokeDirectionPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Viewbox Grid.Column="1" HorizontalAlignment="Left">
+                                <TextBlock Name="MyStrokeDirectionResultText" Text=""/>
+                            </Viewbox>
+                        </Grid>
+
+                        <!-- 4. Stroke Speed Feedback-->
+                        <Viewbox Grid.Row="6" HorizontalAlignment="Left">
+                            <TextBlock Text="Is stroke speed sufficient?"/>
+                        </Viewbox>
+
+                        <Grid Grid.Row="7" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0" Margin="0,0,10,0">
+                                <Button Name="MyStrokeSpeedTestPlayButton" Content="▶" Click="MyStrokeSpeedTestPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Viewbox Grid.Column="1" HorizontalAlignment="Left">
+                                <TextBlock Name="MyStrokeSpeedResultText" Text=""/>
+                            </Viewbox>
+                        </Grid>
+
+                    </Grid>
+
+                </Grid>
+
+                <Grid Name="MyStructureGrid" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="9*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="0">
+                        <TextBlock Text="Structure"/>
+                    </Viewbox>
+
+                    <Grid Grid.Row="1">
+                        <TextBlock Text="Hello"/>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Page>
