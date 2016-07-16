@@ -267,5 +267,51 @@ public class SketchTools
 
             return distance;
         }
+
+        public static InkStroke Reverse(InkStroke stroke)
+        {
+            // clone the original stroke
+            InkStroke original = Clone(stroke);
+
+            // get the raw points from the original ink stroke
+            List<Point> points = new List<Point>();
+            foreach (InkPoint originalPoint in original.GetInkPoints())
+            {
+                Point point = new Point(originalPoint.Position.X, originalPoint.Position.Y);
+                points.Add(point);
+            }
+
+            // reverse the points and create the reverse stroke
+            points.Reverse();
+            InkStrokeBuilder builder = new InkStrokeBuilder();
+            InkStroke reverse = builder.CreateStroke(points);
+
+            return reverse;
+        }
+
+        public static double PairwiseDistance(InkStroke stroke, InkStroke other)
+        {
+            //
+            List<InkPoint> strokePoints = new List<InkPoint>(stroke.GetInkPoints());
+            List<InkPoint> otherPoints = new List<InkPoint>(other.GetInkPoints());
+
+            //
+            int strokeCount = strokePoints.Count;
+            int otherCount = otherPoints.Count;
+            int count = strokeCount < otherCount ? strokeCount : otherCount;
+
+            //
+            double distances = 0.0;
+            for (int i = 0; i < count; ++i)
+            {
+                InkPoint strokePoint = strokePoints[i];
+                InkPoint otherPoint = otherPoints[i];
+
+                double distance = Distance(strokePoint, otherPoint);
+                distances += distance;
+            }
+
+            return distances;
+        }
     }
 }

@@ -295,7 +295,7 @@ namespace PaulTechniqueViewer
 
             // get the model and input sketches
             Sketch model = myTemplates[MyCurrentIndex];
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
             //
             myTechniqueClassifier.Train(model, input);
@@ -374,7 +374,7 @@ namespace PaulTechniqueViewer
             // get the model and input strokes
             Sketch model = myTemplates[MyCurrentIndex];
             model = SketchTools.Clone(model);
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
             input = SketchTools.Clone(input);
             input = SketchTransformation.Resample(input, 128);
 
@@ -408,7 +408,7 @@ namespace PaulTechniqueViewer
             // get the model and input strokes
             Sketch model = myTemplates[MyCurrentIndex];
             model = SketchTools.Clone(model);
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
             input = SketchTools.Clone(input);
             input = SketchTransformation.Resample(input, 128);
 
@@ -436,14 +436,17 @@ namespace PaulTechniqueViewer
             MyReturnButton.IsEnabled = true;
         }
 
-        private void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // do not show feedback if canvas has no strokes or incorrect stroke count
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
             if (!myTechniqueClassifier.StrokeCountResult) { return; }
 
+            // disable return button during animation
+            MyReturnButton.IsEnabled = false;
+
             // get the input sketch and stroke directions
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
             input = SketchTools.Clone(input);
             input = SketchTransformation.Resample(input, 128);
             List<bool> strokeDirections = new List<bool>(myTechniqueClassifier.StrokeDirections);
@@ -486,13 +489,22 @@ namespace PaulTechniqueViewer
             {
                 storyboard.Begin();
             }
+
+            // re-enable return button
+            int delay = 0;
+            foreach (InkStroke inputStroke in input.Strokes) { delay += POINT_DURATION * inputStroke.GetInkPoints().Count; }
+            await InteractionTools.Delay(delay);
+            MyReturnButton.IsEnabled = true;
         }
 
-        private void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // do not show feedback if canvas has no strokes or incorrect stroke count
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
             if (!myTechniqueClassifier.StrokeCountResult) { return; }
+
+            // disable return button during animation
+            MyReturnButton.IsEnabled = false;
 
             //
             bool hasInput = false;
@@ -548,6 +560,13 @@ namespace PaulTechniqueViewer
             {
                 storyboard.Begin();
             }
+
+            // re-enable return button
+            int inputDelay = (int)((input.Times[input.Times.Count - 1])[input.Times[input.Times.Count - 1].Count - 1] - (input.Times[0])[0]);
+            int modelDelay = (int)((model.Times[model.Times.Count - 1])[model.Times[model.Times.Count - 1].Count - 1] - (model.Times[0])[0]);
+            int delay = inputDelay > modelDelay ? inputDelay : modelDelay;
+            await InteractionTools.Delay(delay);
+            MyReturnButton.IsEnabled = true;
         }
 
         # endregion
@@ -573,42 +592,6 @@ namespace PaulTechniqueViewer
 
             //
             Clear();
-        }
-
-        #endregion
-
-        #region Helper Methods
-
-        private Sketch BuildSketch(string label, List<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
-        {
-            //
-            InkStrokeBuilder builder = new InkStrokeBuilder();
-            List<InkStroke> newStrokeCollection = new List<InkStroke>();
-            List<List<long>> newTimeCollection = new List<List<long>>();
-            for (int i = 0; i < strokeCollection.Count; ++i)
-            {
-                IReadOnlyList<InkPoint> points = strokeCollection[i].GetInkPoints();
-                List<long> times = timeCollection[i];
-                int count = times.Count < points.Count ? times.Count : points.Count;
-
-                List<Point> newPoints = new List<Point>();
-                List<long> newTimes = new List<long>();
-                for (int j = 0; j < count; ++j)
-                {
-                    InkPoint point = points[j];
-                    long time = times[j];
-
-                    newPoints.Add(new Point(point.Position.X, point.Position.Y));
-                    newTimes.Add(time);
-                }
-
-                newStrokeCollection.Add(builder.CreateStroke(newPoints));
-                newTimeCollection.Add(newTimes);
-            }
-
-            //
-            Sketch sketch = new Sketch(label, newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
-            return sketch;
         }
 
         #endregion

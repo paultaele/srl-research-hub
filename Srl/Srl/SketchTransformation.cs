@@ -433,6 +433,38 @@ namespace Srl
             FrameMaxY = maxY;
         }
 
+        public static Sketch CreateStroke(string label, List<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
+        {
+            //
+            InkStrokeBuilder builder = new InkStrokeBuilder();
+            List<InkStroke> newStrokeCollection = new List<InkStroke>();
+            List<List<long>> newTimeCollection = new List<List<long>>();
+            for (int i = 0; i < strokeCollection.Count; ++i)
+            {
+                IReadOnlyList<InkPoint> points = strokeCollection[i].GetInkPoints();
+                List<long> times = timeCollection[i];
+                int count = times.Count < points.Count ? times.Count : points.Count;
+
+                List<Point> newPoints = new List<Point>();
+                List<long> newTimes = new List<long>();
+                for (int j = 0; j < count; ++j)
+                {
+                    InkPoint point = points[j];
+                    long time = times[j];
+
+                    newPoints.Add(new Point(point.Position.X, point.Position.Y));
+                    newTimes.Add(time);
+                }
+
+                newStrokeCollection.Add(builder.CreateStroke(newPoints));
+                newTimeCollection.Add(newTimes);
+            }
+
+            //
+            Sketch sketch = new Sketch(label, newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
+            return sketch;
+        }
+
         public string Label { get; set; }
         public List<InkStroke> Strokes { get; set; }
         public List<List<long>> Times { get; set; }

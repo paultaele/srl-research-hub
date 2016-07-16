@@ -56,37 +56,71 @@ namespace PaulTechniqueViewer
             // skip this test if the stroke counts do not match up
             if (!StrokeCountResult) { return false; }
 
-            // clone the model and input strokes
-            model = SketchTools.Clone(model);
+            // clone the model and input sketches
             input = SketchTools.Clone(input);
+            model = SketchTools.Clone(model);
+
+            // get the corresponding model and input strokes
+            List<InkStroke> inputStrokes = new List<InkStroke>(input.Strokes);
+            List<InkStroke> modelStrokes = new List<InkStroke>(model.Strokes);
+
+            // sort the input strokes by corresponding model strokes' path length
+            var tuples = new List<Tuple<double, int, InkStroke>>();
+            for (int i = 0; i < inputStrokes.Count; ++i)
+            {
+                InkStroke modelStroke = modelStrokes[i];
+                InkStroke inputStroke = inputStrokes[i];
+                double pathLength = SketchTransformation.PathLength(modelStroke);
+
+                var tuple = new Tuple<double, int, InkStroke>(pathLength, i, inputStroke);
+                tuples.Add(tuple);
+            }
+            tuples.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+
+            // test code
+            inputStrokes = new List<InkStroke>();
+            List<int> temporalOrders = new List<int>();
+            foreach (var tuple in tuples)
+            {
+                inputStrokes.Add(tuple.Item3);
+                temporalOrders.Add(tuple.Item2);
+            }
 
             // iterate through each input stroke
-            myStrokeOrders = new List<int>();
-            for (int i = 0; i < input.Strokes.Count; ++i)
+            List<int> strokeOrders = new List<int>();
+            InkStrokeBuilder builder = new InkStrokeBuilder();
+            for (int i = 0; i < inputStrokes.Count; ++i)
             {
-                // get the current input stroke and times
-                InkStroke inputStroke = input.Strokes[i];
+                // get the current input stroke and times, and its reverse
+                InkStroke inputStroke = inputStrokes[i];
                 List<long> inputTimes = input.Times[i];
+                InkStroke reverseStroke = SketchTools.Reverse(inputStroke);
 
                 // iterate through each model stroke
                 double minValue = double.MaxValue;
                 int minIndex = -1;
-                for (int j = 0; j < model.Strokes.Count; ++j)
+                for (int j = 0; j < modelStrokes.Count; ++j)
                 {
-                    // get the current model stroke and point count
+                    // skip nullified model strokes
+                    if (modelStrokes[j] == null) { continue; }
+
+                    // get the current model stroke, point count, and sketch
                     InkStroke modelStroke = model.Strokes[j];
                     List<long> modelTimes = model.Times[j];
                     int numModelPoints = modelStroke.GetInkPoints().Count;
-
-                    // clone the current input stroke and wrap into sketch
-                    inputStroke = SketchTools.Clone(inputStroke);
-                    Sketch inputSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
-                    inputSketch = SketchTransformation.Resample(inputSketch, numModelPoints);
                     Sketch modelSketch = new Sketch("", new List<InkStroke>() { modelStroke }, new List<List<long>>() { modelTimes }, model.FrameMinX, model.FrameMinY, model.FrameMaxX, model.FrameMaxY);
 
+                    // clone the current input and reverse strokes, and wrap into sketch
+                    inputStroke = SketchTools.Clone(inputStroke);
+                    reverseStroke = SketchTools.Clone(reverseStroke);
+                    Sketch inputSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
+                    Sketch reverseSketch = new Sketch("", new List<InkStroke>() { reverseStroke}, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
+                    inputSketch = SketchTransformation.Resample(inputSketch, numModelPoints);
+                    reverseSketch = SketchTransformation.Resample(reverseSketch, numModelPoints);
+
                     // calculate the distance between the two sketches and add to the list
-                    double distance1 = SketchTools.Distance(inputSketch, modelSketch);
-                    double distance2 = SketchTools.Distance(modelSketch, inputSketch);
+                    double distance1 = SketchTools.PairwiseDistance(inputSketch.Strokes[0], modelStroke);
+                    double distance2 = SketchTools.PairwiseDistance(reverseSketch.Strokes[0], modelStroke);
                     double distance = Math.Min(distance1, distance2);
 
                     // determine minimum property
@@ -98,20 +132,39 @@ namespace PaulTechniqueViewer
                 }
 
                 // add the stroke index to the list
-                myStrokeOrders.Add(minIndex);
+                strokeOrders.Add(minIndex);
+
+                // nullify the stroke for comparison
+                modelStrokes[minIndex] = null;
             }
 
-            for (int i = 0; i < myStrokeOrders.Count; ++i)
+            // test code
+            var pairs = new List<Tuple<int, int>>();
+            for (int i = 0; i < temporalOrders.Count; ++i)
             {
-                Debug.WriteLine($"{i}. {myStrokeOrders[i]}");
+                int temporalOrder = temporalOrders[i];
+                int strokeOrder = strokeOrders[i];
+
+                var pair = new Tuple<int, int>(temporalOrder, strokeOrder);
+                pairs.Add(pair);
             }
-            Debug.WriteLine("---");
+            pairs.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+
+            // test code
+            strokeOrders = new List<int>();
+            foreach (var pair in pairs)
+            {
+                strokeOrders.Add(pair.Item2);
+            }
+
+            //
+            myStrokeOrders = strokeOrders;
 
             // determine stroke order correctness
             bool isOrdered = true;
             for (int i = 1; i < myStrokeOrders.Count; ++i)
             {
-                int prevIndex = myStrokeOrders[i-1];
+                int prevIndex = myStrokeOrders[i - 1];
                 int currIndex = myStrokeOrders[i];
 
                 if (prevIndex >= currIndex)
