@@ -9,22 +9,17 @@ using Windows.UI.Input.Inking;
 
 namespace PaulTechniqueViewer
 {
-    public class TechniqueClassifier
+    public class TechniqueRecognizer
     {
-        #region Initializers
 
-        public TechniqueClassifier()
-        {
-
-        }
+        #region Core Methods
 
         public void Train(Sketch model, Sketch input)
         {
+            // set the model and input sketches
             myModel = SketchTools.Clone(model);
             myInput = SketchTools.Clone(input);
         }
-
-        #endregion
 
         public void Run()
         {
@@ -40,6 +35,8 @@ namespace PaulTechniqueViewer
             // Stroke Speed Test
             StrokeSpeedResult = StrokeSpeedTest(myModel, myInput);
         }
+
+        #endregion
 
         private bool StrokeCountTest(Sketch model, Sketch input)
         {
@@ -114,7 +111,7 @@ namespace PaulTechniqueViewer
                     inputStroke = SketchTools.Clone(inputStroke);
                     reverseStroke = SketchTools.Clone(reverseStroke);
                     Sketch inputSketch = new Sketch("", new List<InkStroke>() { inputStroke }, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
-                    Sketch reverseSketch = new Sketch("", new List<InkStroke>() { reverseStroke}, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
+                    Sketch reverseSketch = new Sketch("", new List<InkStroke>() { reverseStroke }, new List<List<long>>() { inputTimes }, input.FrameMinX, input.FrameMinY, input.FrameMaxX, input.FrameMaxY);
                     inputSketch = SketchTransformation.Resample(inputSketch, numModelPoints);
                     reverseSketch = SketchTransformation.Resample(reverseSketch, numModelPoints);
 
