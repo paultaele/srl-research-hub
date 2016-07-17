@@ -31,6 +31,7 @@ namespace MochiSketchDemo
         {
             InitializeComponent();
 
+            // set the screen size to full
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
 
             // initialize the stroke event handlers
@@ -42,7 +43,7 @@ namespace MochiSketchDemo
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
             //
-            myTechniqueClassifier = new TechniqueClassifier();
+            myTechniqueRecognizer = new TechniqueRecognizer();
 
             // squarify the ink canvas' drawing area
             double width = MyBorder.ActualWidth;
@@ -152,6 +153,9 @@ namespace MochiSketchDemo
             if (hasStarted)
             {
                 myTimes = new List<long>();
+
+                //
+                MyCheckButton.IsEnabled = true;
             }
 
             // calibrate recorded time
@@ -190,24 +194,6 @@ namespace MochiSketchDemo
             Clear();
         }
 
-        private void Clear()
-        {
-            // clear the canvas
-            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
-
-            // clear the stroke and timing data
-            myTimeCollection = new List<List<long>>();
-            MyDateTimeOffset = 0;
-
-            // clear the tracers
-            MyCanvas.Children.Clear();
-
-            //
-            MyPlayButton.IsEnabled = true;
-            MyCheckButton.IsEnabled = true;
-            MyInkCanvas.InkPresenter.IsInputEnabled = true;
-        }
-
         private void MyUndoButton_Click(object sender, RoutedEventArgs e)
         {
             // get the strokes
@@ -234,6 +220,9 @@ namespace MochiSketchDemo
             MyPlayButton.IsEnabled = true;
             MyCheckButton.IsEnabled = true;
             MyInkCanvas.InkPresenter.IsInputEnabled = true;
+
+            //
+            if (MyInkStrokes.GetStrokes().Count <= 0) { MyCheckButton.IsEnabled = false; }
         }
 
         private async void MyPlayButton_Click(object sender, RoutedEventArgs e)
@@ -241,36 +230,32 @@ namespace MochiSketchDemo
             //
             if (!MyImageButton.IsChecked.Value) { return; }
 
-            // get the input and model sketch, and set the duration
-            List<InkStroke> strokes = new List<InkStroke>();
-            foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { strokes.Add(stroke); }
+            //
+            EnableAppBarButtons(false);
+            MyInkCanvas.InkPresenter.IsInputEnabled = false;
+
+            //
             Sketch model = myTemplates[MyCurrentIndex];
+            model = SketchTools.Clone(model);
+            double opacity = 0.8;
+            Color color = Colors.Green;
+            SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
 
             // animate the expert's model strokes
-            if (MyImageButton.IsChecked.Value)
+            List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, model.Strokes, model.Times, LARGE_DOT_SIZE, brush, POINT_DURATION);
+            foreach (Storyboard storyboard in modelStoryboards)
             {
-                Sketch sketch = SketchTools.Clone(model);
-                double opacity = 0.8;
-                Color color = Colors.Green;
-                SolidColorBrush brush = new SolidColorBrush(color) { Opacity = opacity };
-
-                List<Storyboard> modelStoryboards = InteractionTools.Trace(MyCanvas, sketch.Strokes, sketch.Times, LARGE_DOT_SIZE, brush, POINT_DURATION);
-                foreach (Storyboard storyboard in modelStoryboards)
-                {
-                    storyboard.Begin();
-                }
+                storyboard.Begin();
             }
 
             //
             int numModelPoints = 0;
             foreach (InkStroke stroke in model.Strokes) { numModelPoints += stroke.GetInkPoints().Count; }
-            int delay = (numModelPoints * POINT_DURATION) / 10000;
-            MyPlayButton.IsEnabled = false;
-            MyCheckButton.IsEnabled = false;
-            MyInkCanvas.InkPresenter.IsInputEnabled = false;
-            await Task.Delay(delay / 10000);
-            MyPlayButton.IsEnabled = true;
-            MyCheckButton.IsEnabled = true;
+            int delay = numModelPoints * POINT_DURATION;
+            await InteractionTools.Delay(delay);
+
+            //
+            EnableAppBarButtons(true);
             MyInkCanvas.InkPresenter.IsInputEnabled = true;
         }
 
@@ -284,7 +269,7 @@ namespace MochiSketchDemo
             }
 
             // hide the bottom command bar and shwo the top bar
-            CommandBarVisibility(true);
+            ShowAppBarButtons(true);
             MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.None;
             MyRightSide.Visibility = Visibility.Visible;
 
@@ -295,15 +280,15 @@ namespace MochiSketchDemo
 
             // get the model and input sketches
             Sketch model = myTemplates[MyCurrentIndex];
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
             //
-            myTechniqueClassifier.Train(model, input);
-            myTechniqueClassifier.Run();
-            bool strokeCountResult = myTechniqueClassifier.StrokeCountResult;
-            bool strokeOrderResult = myTechniqueClassifier.StrokeOrderResult;
-            bool strokeDirectionResult = myTechniqueClassifier.StrokeDirectionResult;
-            bool strokeSpeedResult = myTechniqueClassifier.StrokeSpeedResult;
+            myTechniqueRecognizer.Train(model, input);
+            myTechniqueRecognizer.Run();
+            bool strokeCountResult = myTechniqueRecognizer.StrokeCountResult;
+            bool strokeOrderResult = myTechniqueRecognizer.StrokeOrderResult;
+            bool strokeDirectionResult = myTechniqueRecognizer.StrokeDirectionResult;
+            bool strokeSpeedResult = myTechniqueRecognizer.StrokeSpeedResult;
 
             //
             MyStrokeCountResultText.Text = strokeCountResult ? "CORRECT" : "INCORRECT";
@@ -319,12 +304,20 @@ namespace MochiSketchDemo
             MyStrokeSpeedResultText.Foreground = strokeSpeedResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
         }
 
+        private void MyRandomButton_Click(object sender, RoutedEventArgs e)
+        {
+            //
+            Random random = new Random();
+            int index = random.Next(0, MySymbolsComboBox.Items.Count);
+
+            //
+            UpdateSymbol(index);
+        }
+
         private void MyReturnButton_Click(object sender, RoutedEventArgs e)
         {
             //
-            //MyTopCommandBar.Visibility = Visibility.Collapsed;
-            //MyBottomCommandBar.Visibility = Visibility.Visible;
-            CommandBarVisibility(false);
+            ShowAppBarButtons(false);
             MyInkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Pen | CoreInputDeviceTypes.Mouse | CoreInputDeviceTypes.Touch;
             MyRightSide.Visibility = Visibility.Collapsed;
 
@@ -340,25 +333,6 @@ namespace MochiSketchDemo
             MyImageButton_Click(null, null);
         }
 
-        private void CommandBarVisibility(bool isFeedbackMode)
-        {
-            Visibility hide = Visibility.Collapsed;
-            Visibility show = Visibility.Visible;
-
-            MyImageButton.Visibility = isFeedbackMode ? hide : show;
-            MySeparator1.Visibility = isFeedbackMode ? hide : show;
-            MyPlayButton.Visibility = isFeedbackMode ? hide : show;
-            MySeparator2.Visibility = isFeedbackMode ? hide : show;
-            MyClearButton.Visibility = isFeedbackMode ? hide : show;
-            MyUndoButton.Visibility = isFeedbackMode ? hide : show;
-            MySeparator3.Visibility = isFeedbackMode ? hide : show;
-            MyCheckButton.Visibility = isFeedbackMode ? hide : show;
-            MySeparator4.Visibility = isFeedbackMode ? hide : show;
-            MySymbolsButton.Visibility = isFeedbackMode ? hide : show;
-
-            MyReturnButton.Visibility = isFeedbackMode ? show : hide;
-        }
-
         #endregion
 
         #region Feedback Button Interactions
@@ -368,13 +342,13 @@ namespace MochiSketchDemo
             // do not show feedback if canvas has no strokes
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
 
-            // disable return button during animation
-            MyReturnButton.IsEnabled = false;
+            //
+            EnableTechniqueButtons(false);
 
             // get the model and input strokes
             Sketch model = myTemplates[MyCurrentIndex];
             model = SketchTools.Clone(model);
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
             input = SketchTools.Clone(input);
             input = SketchTransformation.Resample(input, 128);
 
@@ -393,22 +367,24 @@ namespace MochiSketchDemo
             // re-add the original strokes to the ink canvas and re-enable return button
             int delay = STROKE_DURATION * model.Strokes.Count;
             await InteractionTools.Delay(delay);
-            MyReturnButton.IsEnabled = true;
+
+            //
+            EnableTechniqueButtons(true);
         }
 
         private async void MyStrokeOrderPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // do not show feedback if canvas has no strokes
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
-            if (!myTechniqueClassifier.StrokeCountResult) { return; }
+            if (!myTechniqueRecognizer.StrokeCountResult) { return; }
 
-            // disable return button during animation
-            MyReturnButton.IsEnabled = false;
+            //
+            EnableTechniqueButtons(false);
 
             // get the model and input strokes
             Sketch model = myTemplates[MyCurrentIndex];
             model = SketchTools.Clone(model);
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
             input = SketchTools.Clone(input);
             input = SketchTransformation.Resample(input, 128);
 
@@ -433,20 +409,25 @@ namespace MochiSketchDemo
             int delay = STROKE_DURATION * model.Strokes.Count;
             await InteractionTools.Delay(delay);
             MyInkStrokes.AddStrokes(originalStrokes);
-            MyReturnButton.IsEnabled = true;
+
+            //
+            EnableTechniqueButtons(true);
         }
 
-        private void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MyStrokeDirectionPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // do not show feedback if canvas has no strokes or incorrect stroke count
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
-            if (!myTechniqueClassifier.StrokeCountResult) { return; }
+            if (!myTechniqueRecognizer.StrokeCountResult) { return; }
+
+            //
+            EnableTechniqueButtons(false);
 
             // get the input sketch and stroke directions
-            Sketch input = BuildSketch("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
             input = SketchTools.Clone(input);
             input = SketchTransformation.Resample(input, 128);
-            List<bool> strokeDirections = new List<bool>(myTechniqueClassifier.StrokeDirections);
+            List<bool> strokeDirections = new List<bool>(myTechniqueRecognizer.StrokeDirections);
 
             // create solution
             InkStrokeBuilder builder = new InkStrokeBuilder();
@@ -486,13 +467,24 @@ namespace MochiSketchDemo
             {
                 storyboard.Begin();
             }
+
+            // re-enable return button
+            int delay = 0;
+            foreach (InkStroke inputStroke in input.Strokes) { delay += POINT_DURATION * inputStroke.GetInkPoints().Count; }
+            await InteractionTools.Delay(delay);
+
+            //
+            EnableTechniqueButtons(true);
         }
 
-        private void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MyStrokeSpeedTestPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // do not show feedback if canvas has no strokes or incorrect stroke count
             if (MyInkStrokes.GetStrokes().Count <= 0) { return; }
-            if (!myTechniqueClassifier.StrokeCountResult) { return; }
+            if (!myTechniqueRecognizer.StrokeCountResult) { return; }
+
+            //
+            EnableTechniqueButtons(false);
 
             //
             bool hasInput = false;
@@ -548,6 +540,16 @@ namespace MochiSketchDemo
             {
                 storyboard.Begin();
             }
+
+            // 
+            int inputDelay = (int)((input.Times[input.Times.Count - 1])[input.Times[input.Times.Count - 1].Count - 1] - (input.Times[0])[0]);
+            int modelDelay = (int)((model.Times[model.Times.Count - 1])[model.Times[model.Times.Count - 1].Count - 1] - (model.Times[0])[0]);
+            int delay = inputDelay > modelDelay ? inputDelay : modelDelay;
+            await InteractionTools.Delay(delay);
+
+
+            //
+            EnableTechniqueButtons(true);
         }
 
         # endregion
@@ -560,14 +562,22 @@ namespace MochiSketchDemo
             if (!MyIsReady) { return; }
 
             //
+            UpdateSymbol(MySymbolsComboBox.SelectedIndex);
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private void UpdateSymbol(int index)
+        {
+            //
             MyImage.Source = null;
-            MyCurrentIndex = MySymbolsComboBox.SelectedIndex;
-            if (MyImageButton.IsChecked.Value)
-            {
-                InteractionTools.SetImage(MyImage, myImageFiles[MyCurrentIndex]);
-            }
+            MyCurrentIndex = index;
+            if (MyImageButton.IsChecked.Value) { InteractionTools.SetImage(MyImage, myImageFiles[MyCurrentIndex]); }
 
             //
+            MySymbolsComboBox.SelectedIndex = index;
             string promptedSymbol = MySymbolsComboBox.SelectedValue.ToString().ToUpper();
             MyPrompText.Text = PROMPT_TEXT + promptedSymbol;
 
@@ -575,40 +585,65 @@ namespace MochiSketchDemo
             Clear();
         }
 
-        #endregion
-
-        #region Helper Methods
-
-        private Sketch BuildSketch(string label, List<InkStroke> strokeCollection, List<List<long>> timeCollection, double minX, double minY, double maxX, double maxY)
+        private void Clear()
         {
-            //
-            InkStrokeBuilder builder = new InkStrokeBuilder();
-            List<InkStroke> newStrokeCollection = new List<InkStroke>();
-            List<List<long>> newTimeCollection = new List<List<long>>();
-            for (int i = 0; i < strokeCollection.Count; ++i)
-            {
-                IReadOnlyList<InkPoint> points = strokeCollection[i].GetInkPoints();
-                List<long> times = timeCollection[i];
-                int count = times.Count < points.Count ? times.Count : points.Count;
+            // clear the canvas
+            MyInkCanvas.InkPresenter.StrokeContainer.Clear();
 
-                List<Point> newPoints = new List<Point>();
-                List<long> newTimes = new List<long>();
-                for (int j = 0; j < count; ++j)
-                {
-                    InkPoint point = points[j];
-                    long time = times[j];
+            // clear the stroke and timing data
+            myTimeCollection = new List<List<long>>();
+            MyDateTimeOffset = 0;
 
-                    newPoints.Add(new Point(point.Position.X, point.Position.Y));
-                    newTimes.Add(time);
-                }
-
-                newStrokeCollection.Add(builder.CreateStroke(newPoints));
-                newTimeCollection.Add(newTimes);
-            }
+            // clear the tracers
+            MyCanvas.Children.Clear();
 
             //
-            Sketch sketch = new Sketch(label, newStrokeCollection, newTimeCollection, minX, minY, maxX, maxY);
-            return sketch;
+            MyPlayButton.IsEnabled = true;
+            MyCheckButton.IsEnabled = true;
+            MyInkCanvas.InkPresenter.IsInputEnabled = true;
+
+            //
+            MyCheckButton.IsEnabled = false;
+        }
+
+        private void ShowAppBarButtons(bool isFeedbackMode)
+        {
+            Visibility hide = Visibility.Collapsed;
+            Visibility show = Visibility.Visible;
+
+            MyImageButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator1.Visibility = isFeedbackMode ? hide : show;
+            MyPlayButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator2.Visibility = isFeedbackMode ? hide : show;
+            MyClearButton.Visibility = isFeedbackMode ? hide : show;
+            MyUndoButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator3.Visibility = isFeedbackMode ? hide : show;
+            MyCheckButton.Visibility = isFeedbackMode ? hide : show;
+            MySeparator4.Visibility = isFeedbackMode ? hide : show;
+            MyRandomButton.Visibility = isFeedbackMode ? hide : show;
+            MySymbolsButton.Visibility = isFeedbackMode ? hide : show;
+
+            MyReturnButton.Visibility = isFeedbackMode ? show : hide;
+        }
+
+        private void EnableAppBarButtons(bool isVisible)
+        {
+            MyImageButton.IsEnabled = isVisible;
+            MyPlayButton.IsEnabled = isVisible;
+            MyClearButton.IsEnabled = isVisible;
+            MyUndoButton.IsEnabled = isVisible;
+            MyCheckButton.IsEnabled = isVisible;
+            MyRandomButton.IsEnabled = isVisible;
+            MySymbolsButton.IsEnabled = isVisible;
+        }
+
+        private void EnableTechniqueButtons(bool isVisible)
+        {
+            MyReturnButton.IsEnabled = isVisible;
+            MyStrokeCountPlayButton.IsEnabled = isVisible;
+            MyStrokeOrderPlayButton.IsEnabled = isVisible;
+            MyStrokeDirectionPlayButton.IsEnabled = isVisible;
+            MyStrokeSpeedTestPlayButton.IsEnabled = isVisible;
         }
 
         #endregion
@@ -629,7 +664,7 @@ namespace MochiSketchDemo
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
 
-        private TechniqueClassifier myTechniqueClassifier;
+        private TechniqueRecognizer myTechniqueRecognizer;
 
         private List<StorageFile> myImageFiles;
         private List<StorageFile> myTemplateFiles;

@@ -1,0 +1,2 @@
+MainPackage=C:\Users\pault\Documents\GitHub\srl-research-hub\MochiSketchDemo\MochiSketchDemo\bin\x64\Release\MochiSketchDemo_1.0.0.0_x64.appx
+SymbolPackage=C:\Users\pault\Documents\GitHub\srl-research-hub\MochiSketchDemo\MochiSketchDemo\AppPackages\MochiSketchDemo_1.0.0.0_Test\MochiSketchDemo_1.0.0.0_x64.appxsym

@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="b17811cf-7126-4b14-bf23-dc52742a97b3" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>MochiSketchDemo</DisplayName>
-    <PublisherDisplayName>pault</PublisherDisplayName>
+    <PublisherDisplayName>Sketch Recognition Lab</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

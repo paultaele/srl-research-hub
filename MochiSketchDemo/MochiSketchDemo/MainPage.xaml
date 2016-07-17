@@ -5,19 +5,20 @@
     xmlns:local="using:MochiSketchDemo"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
+        mc:Ignorable="d" Name="MyPage" Loaded="MyPage_Loaded">
 
     <Page.BottomAppBar>
         <CommandBar Name="MyBottomCommandBar">
-            <AppBarToggleButton Name="MyImageButton" Icon="Pictures" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
+            <AppBarToggleButton Name="MyImageButton" Icon="View" Label="Show Image" IsChecked="False" Click="MyImageButton_Click"/>
             <AppBarSeparator Name="MySeparator1"/>
             <AppBarButton Name="MyPlayButton" Icon="Play" Label="Play" Click="MyPlayButton_Click"/>
             <AppBarSeparator Name="MySeparator2"/>
             <AppBarButton Name="MyClearButton" Icon="Delete" Label="Clear" Click="MyClearButton_Click"/>
             <AppBarButton Name="MyUndoButton" Icon="Undo" Label="Undo" Click="MyUndoButton_Click"/>
             <AppBarSeparator Name="MySeparator3"/>
-            <AppBarButton Name="MyCheckButton" Icon="Accept" Label="Check" Click="MyCheckButton_Click"/>
+            <AppBarButton Name="MyCheckButton" Icon="Accept" Label="Check" IsEnabled="False" Click="MyCheckButton_Click"/>
             <AppBarSeparator Name="MySeparator4"/>
+            <AppBarButton Name="MyRandomButton" Icon="Switch" Label="Random" Click="MyRandomButton_Click"/>
             <AppBarButton Name="MySymbolsButton" Icon="List" Label="Symbols">
                 <Button.Flyout>
                     <Flyout>
