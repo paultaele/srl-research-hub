@@ -38,6 +38,8 @@ namespace Srl
 
         #endregion
 
+        #region Test Methods
+
         private bool StrokeCountTest(Sketch model, Sketch input)
         {
             // get the model and input stroke counts
@@ -271,6 +273,8 @@ namespace Srl
 
             return modelTimespans - inputTimespans > 0;
         }
+
+        #endregion
 
         #region Properties
 
