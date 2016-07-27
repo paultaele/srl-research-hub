@@ -60,35 +60,87 @@
         <!-- Right Section: Feedback -->
         <Border Name="MyRightSide" Visibility="Collapsed" Grid.Column="2" Margin="20">
             <Grid>
+                
+                <!-- Summary Feedback -->
                 <Grid Name="MySummaryGrid" Visibility="Collapsed">
 
                 </Grid>
 
-                <Grid Name="MyStructureGrid" Visibility="Collapsed">
+                <!-- Structure Feedback -->
+                <Grid Name="MyStructureGrid" Visibility="Visible">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="9*"/>
                     </Grid.RowDefinitions>
 
-                    <Viewbox Grid.Row="0">
-                        <TextBlock Text="Structure"/>
-                    </Viewbox>
+                    <Grid Grid.Row="0">
+                        <Viewbox>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="Structure"/>
+                                <TextBlock Grid.Column="1" Text="|"/>
+                                <TextBlock Grid.Column="2" Name="MyTechniqueTitleText" Text="Technique" Foreground="Blue" Tapped="MyTechniqueTitleText_Tapped"/>
+                            </Grid>
+                        </Viewbox>
+                    </Grid>
 
                     <Grid Grid.Row="1">
-                        <TextBlock Text="Hello"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="8.5*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 1. Symbol Correctness Feedback-->
+                        <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Text="Is the symbol correct?"/>
+                        </Viewbox>
+
+                        <Grid Grid.Row="1" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0" Margin="0,0,10,0">
+                                <Button Name="MySymbolCorrectnessPlayButton" Content="▶" Click="MySymbolCorrectnessPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Viewbox Grid.Column="1" HorizontalAlignment="Left">
+                                <TextBlock Name="MySymbolCorrectnessResultText" Text=""/>
+                            </Viewbox>
+                        </Grid>
                     </Grid>
 
                 </Grid>
-                
-                <Grid Name="MyTechniqueGrid" Visibility="Visible">
+
+                <!-- Technique Feedback -->
+                <Grid Name="MyTechniqueGrid" Visibility="Collapsed">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="9*"/>
                     </Grid.RowDefinitions>
 
-                    <Viewbox Grid.Row="0">
-                        <TextBlock Text="Technique"/>
-                    </Viewbox>
+                    <Grid Grid.Row="0">
+                        <Viewbox>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Name="MyStructureTitleText" Text="Structure" Foreground="Blue" Tapped="MyStructureTitleText_Tapped"/>
+                                <TextBlock Grid.Column="1" Text="|"/>
+                                <TextBlock Grid.Column="2" Text="Technique"/>
+                            </Grid>
+                        </Viewbox>
+                    </Grid>
 
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
@@ -187,7 +239,6 @@
 
                 </Grid>
 
-                
             </Grid>
         </Border>
 

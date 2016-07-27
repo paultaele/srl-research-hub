@@ -104,7 +104,7 @@ namespace PaulSketchTransformer
                 if (MyTranslateCheckBox.IsChecked.Value)    { sketch = SketchTransformation.TranslateFrame(sketch, point); }
 
                 StorageFile saveFile = await mySaveFolder.CreateFileAsync(loadFileName, CreationCollisionOption.ReplaceExisting);
-                SketchTools.SketchToXml(saveFile, loadFileName, sketch.Strokes, sketch.Times, sketch.FrameMinX, sketch.FrameMinY, sketch.FrameMaxX, sketch.FrameMaxY);
+                SketchTools.SketchToXml(saveFile, sketch.Label, sketch.Strokes, sketch.Times, sketch.FrameMinX, sketch.FrameMinY, sketch.FrameMaxX, sketch.FrameMaxY);
             }
         }
 

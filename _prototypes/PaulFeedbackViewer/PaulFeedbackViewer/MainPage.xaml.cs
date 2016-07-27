@@ -42,7 +42,8 @@ namespace PaulFeedbackViewer
 
         private void MyPage_Loaded(object sender, RoutedEventArgs e)
         {
-            //
+            // initializer the feedback recognizers
+            myStructureRecognizer = new StructureRecognizer();
             myTechniqueRecognizer = new TechniqueRecognizer();
 
             // squarify the ink canvas' drawing area
@@ -282,40 +283,11 @@ namespace PaulFeedbackViewer
             Sketch model = myTemplates[MyCurrentIndex];
             Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
-            //
+            // check the visual structure
+            CheckStructure(model, myTemplates, input);
 
-
-            //
+            // check the written technique
             CheckTechnique(model, input);
-        }
-
-        private void CheckStructure(Sketch model, Sketch input)
-        {
-            ;
-        }
-
-        private void CheckTechnique(Sketch model, Sketch input)
-        {
-            //
-            myTechniqueRecognizer.Train(model, input);
-            myTechniqueRecognizer.Run();
-            bool strokeCountResult = myTechniqueRecognizer.StrokeCountResult;
-            bool strokeOrderResult = myTechniqueRecognizer.StrokeOrderResult;
-            bool strokeDirectionResult = myTechniqueRecognizer.StrokeDirectionResult;
-            bool strokeSpeedResult = myTechniqueRecognizer.StrokeSpeedResult;
-
-            //
-            MyStrokeCountResultText.Text = strokeCountResult ? "CORRECT" : "INCORRECT";
-            MyStrokeCountResultText.Foreground = strokeCountResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
-
-            MyStrokeOrderResultText.Text = strokeOrderResult ? "CORRECT" : "INCORRECT";
-            MyStrokeOrderResultText.Foreground = strokeOrderResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
-
-            MyStrokeDirectionResultText.Text = strokeDirectionResult ? "CORRECT" : "INCORRECT";
-            MyStrokeDirectionResultText.Foreground = strokeDirectionResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
-
-            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "SUFFICIENT" : "INSUFFICIENT";
-            MyStrokeSpeedResultText.Foreground = strokeSpeedResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
         }
 
         private void MyRandomButton_Click(object sender, RoutedEventArgs e)
@@ -349,7 +321,28 @@ namespace PaulFeedbackViewer
 
         #endregion
 
-        #region Feedback Button Interactions
+        #region Structure Feedback Button Interactions
+
+        private void MySymbolCorrectnessPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            // restore canvas to original strokes (perhaps record it earlier in its own instance variable at the MyCheckButton_Click method?)
+            // idea: create a Restore method?
+
+
+            // clone the original canvas strokes
+
+            // clone the expected template strokes
+
+            // clear the original strokes
+
+            // add the expected template strokes with thicker visuals
+
+            // add the cloned original strokes with thinner visuals
+        }
+
+        #endregion
+
+        #region Technique Feedback Button Interactions
 
         private async void MyStrokeCountPlayButton_Click(object sender, RoutedEventArgs e)
         {
@@ -583,6 +576,46 @@ namespace PaulFeedbackViewer
 
         #region Helper Methods
 
+        private void CheckStructure(Sketch model, List<Sketch> templates, Sketch input)
+        {
+            // train and run the structure feedback recognizer
+            myStructureRecognizer.Train(model, templates, input);
+            myStructureRecognizer.Run();
+
+            // get the structure feedback results
+            bool symbolCorrectnessResult = myStructureRecognizer.SymbolCorrectnessResult;
+
+            // display the structure feedback results
+            MySymbolCorrectnessResultText.Text = symbolCorrectnessResult ? "CORRECT" : "INCORRECT";
+            MySymbolCorrectnessResultText.Foreground = symbolCorrectnessResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+        }
+
+        private void CheckTechnique(Sketch model, Sketch input)
+        {
+            // train and run the technique feedback recognizer
+            myTechniqueRecognizer.Train(model, input);
+            myTechniqueRecognizer.Run();
+
+            // get the technique feedback results
+            bool strokeCountResult = myTechniqueRecognizer.StrokeCountResult;
+            bool strokeOrderResult = myTechniqueRecognizer.StrokeOrderResult;
+            bool strokeDirectionResult = myTechniqueRecognizer.StrokeDirectionResult;
+            bool strokeSpeedResult = myTechniqueRecognizer.StrokeSpeedResult;
+
+            // display the technique feedback results
+            MyStrokeCountResultText.Text = strokeCountResult ? "CORRECT" : "INCORRECT";
+            MyStrokeCountResultText.Foreground = strokeCountResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeOrderResultText.Text = strokeOrderResult ? "CORRECT" : "INCORRECT";
+            MyStrokeOrderResultText.Foreground = strokeOrderResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeDirectionResultText.Text = strokeDirectionResult ? "CORRECT" : "INCORRECT";
+            MyStrokeDirectionResultText.Foreground = strokeDirectionResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeSpeedResultText.Text = strokeSpeedResult ? "SUFFICIENT" : "INSUFFICIENT";
+            MyStrokeSpeedResultText.Foreground = strokeSpeedResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+        }
+
         private void UpdateSymbol(int index)
         {
             //
@@ -654,10 +687,29 @@ namespace PaulFeedbackViewer
         private void EnableTechniqueButtons(bool isVisible)
         {
             MyReturnButton.IsEnabled = isVisible;
+
+            MySymbolCorrectnessPlayButton.IsEnabled = isVisible;
+
             MyStrokeCountPlayButton.IsEnabled = isVisible;
             MyStrokeOrderPlayButton.IsEnabled = isVisible;
             MyStrokeDirectionPlayButton.IsEnabled = isVisible;
             MyStrokeSpeedTestPlayButton.IsEnabled = isVisible;
+        }
+
+        #endregion
+
+        #region Text Tap Interactions
+
+        private void MyTechniqueTitleText_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            MyStructureGrid.Visibility = Visibility.Collapsed;
+            MyTechniqueGrid.Visibility = Visibility.Visible;
+        }
+
+        private void MyStructureTitleText_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            MyStructureGrid.Visibility = Visibility.Visible;
+            MyTechniqueGrid.Visibility = Visibility.Collapsed;
         }
 
         #endregion
@@ -678,6 +730,7 @@ namespace PaulFeedbackViewer
         private List<long> myTimes;
         private List<List<long>> myTimeCollection;
 
+        private StructureRecognizer myStructureRecognizer;
         private TechniqueRecognizer myTechniqueRecognizer;
 
         private List<StorageFile> myImageFiles;
