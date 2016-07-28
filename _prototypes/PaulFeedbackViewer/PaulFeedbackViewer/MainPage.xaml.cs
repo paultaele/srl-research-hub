@@ -323,21 +323,35 @@ namespace PaulFeedbackViewer
 
         #region Structure Feedback Button Interactions
 
-        private void MySymbolCorrectnessPlayButton_Click(object sender, RoutedEventArgs e)
+        private async void MySymbolCorrectnessPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            // restore canvas to original strokes (perhaps record it earlier in its own instance variable at the MyCheckButton_Click method?)
-            // idea: create a Restore method?
+            //
+            EnableTechniqueButtons(false);
 
+            // get the model and input strokes
+            Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
-            // clone the original canvas strokes
+            // set the animation colors
+            SolidColorBrush modelBrush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
+            SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
 
-            // clone the expected template strokes
+            // get the animations
+            int dotSize = 15;
+            List<Storyboard> modelStoryboards = Helper.DisplaySymbol(MyCanvas, model.Strokes, modelBrush, dotSize, STROKE_DURATION);
+            //List<Storyboard> modelStoryboards = Helper.DisplaySymbol(MyCanvas, model.Strokes, modelBrush, SMALL_DOT_SIZE, STROKE_DURATION);
+            //List<Storyboard> inputStoryboards = Helper.DisplaySymbol(MyCanvas, input.Strokes, inputBrush, SMALL_DOT_SIZE, STROKE_DURATION, model);
 
-            // clear the original strokes
+            // animate the feedback
+            foreach (Storyboard storyboard in modelStoryboards) { storyboard.Begin(); }
+            //foreach (Storyboard storyboard in inputStoryboards) { storyboard.Begin(); }
 
-            // add the expected template strokes with thicker visuals
+            // re-add the original strokes to the ink canvas and re-enable return button
+            int delay = STROKE_DURATION;
+            await InteractionTools.Delay(delay);
 
-            // add the cloned original strokes with thinner visuals
+            //
+            EnableTechniqueButtons(true);
         }
 
         #endregion
