@@ -18,32 +18,40 @@ namespace PaulFeedbackViewer
     {
         public static List<Storyboard> DisplaySymbol(Canvas canvas, List<InkStroke> strokesCollection, Brush brush, double size, int duration)
         {
-            // iterate through each stroke
+            // initialize list of storyboards
             List<Storyboard> storyboards = new List<Storyboard>();
+
+            // iterate through each stroke
             for (int i = 0; i < strokesCollection.Count; ++i)
             {
+                // get the current stroke's points
                 List<InkPoint> points = new List<InkPoint>(strokesCollection[i].GetInkPoints());
-                for (int j = 0; j < points.Count; ++j)
-                {
-                    InkPoint point = points[j];
 
-                    // set the visuals of the stroke's corresponding dot
-                    Ellipse dot = new Ellipse()
+                // iterate through each point
+                for (int j = 0; j < points.Count - 1; ++j)
+                {
+                    // get the start and end point
+                    InkPoint startPoint = points[j];
+                    InkPoint endPoint = points[j + 1];
+
+                    Line segment = new Line()
                     {
-                        Width = size,
-                        Height = size,
+                        StrokeThickness = size,
                         Fill = brush,
                         Stroke = brush,
+                        X1 = startPoint.Position.X,
+                        Y1 = startPoint.Position.Y,
+                        X2 = endPoint.Position.X,
+                        Y2 = endPoint.Position.Y,
+                        StrokeStartLineCap = PenLineCap.Round,
+                        StrokeEndLineCap = PenLineCap.Round,
                     };
 
                     // add the dot to the canvas
-                    // note: the tracer is moved up and left its radius to center
-                    Canvas.SetLeft(dot, (-dot.Width / 2) + point.Position.X);
-                    Canvas.SetTop(dot, (-dot.Height / 2) + point.Position.Y);
-                    canvas.Children.Add(dot);
+                    canvas.Children.Add(segment);
 
                     // initialize the storyboard and animations
-                    dot.RenderTransform = new CompositeTransform();
+                    segment.RenderTransform = new CompositeTransform();
                     Storyboard storyboard = new Storyboard();
                     DoubleAnimationUsingKeyFrames fadeAnimation = new DoubleAnimationUsingKeyFrames();
 
@@ -55,7 +63,7 @@ namespace PaulFeedbackViewer
                     fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(duration), Value = 0 });   // inivisible
 
                     // assign the animations to the animator
-                    Storyboard.SetTarget(fadeAnimation, dot);
+                    Storyboard.SetTarget(fadeAnimation, segment);
 
                     // assign the animations to their behavior's properties
                     Storyboard.SetTargetProperty(fadeAnimation, "(UIElement.Opacity)");

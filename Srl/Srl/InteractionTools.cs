@@ -229,28 +229,29 @@ namespace Srl
             for (int i = 0; i < strokesCollection.Count; ++i)
             {
                 List<InkPoint> points = new List<InkPoint>(strokesCollection[i].GetInkPoints());
-                for (int j = 0; j < points.Count; ++j)
+                for (int j = 0; j < points.Count - 1; ++j)
                 {
-                    InkPoint point = points[j];
+                    InkPoint startPoint = points[j];
+                    InkPoint endPoint = points[j + 1];
 
-                    // set the visuals of the stroke's corresponding dot
-                    Ellipse dot = new Ellipse()
+                    // set the visuals of the stroke's corresponding segment
+                    Line segment = new Line()
                     {
-                        Width = size,
-                        Height = size,
+                        StrokeThickness = size,
                         Fill = brush,
                         Stroke = brush,
-                        //StrokeThickness = 5,
+                        X1 = startPoint.Position.X,
+                        Y1 = startPoint.Position.Y,
+                        X2 = endPoint.Position.X,
+                        Y2 = endPoint.Position.Y,
+                        StrokeEndLineCap = PenLineCap.Round,
                     };
 
-                    // add the dot to the canvas
-                    // note: the tracer is moved up and left its radius to center
-                    Canvas.SetLeft(dot, (-dot.Width / 2) + point.Position.X);
-                    Canvas.SetTop(dot, (-dot.Height / 2) + point.Position.Y);
-                    canvas.Children.Add(dot);
+                    // add the segment to the canvas
+                    canvas.Children.Add(segment);
 
                     // initialize the storyboard and animations
-                    dot.RenderTransform = new CompositeTransform();
+                    segment.RenderTransform = new CompositeTransform();
                     Storyboard storyboard = new Storyboard();
                     DoubleAnimationUsingKeyFrames fadeAnimation = new DoubleAnimationUsingKeyFrames();
 
@@ -267,7 +268,7 @@ namespace Srl
                     fadeAnimation.KeyFrames.Add(new EasingDoubleKeyFrame() { KeyTime = new TimeSpan(disappear), Value = 0 });   // inivisible
 
                     // assign the animations to the animator
-                    Storyboard.SetTarget(fadeAnimation, dot);
+                    Storyboard.SetTarget(fadeAnimation, segment);
 
                     // assign the animations to their behavior's properties
                     Storyboard.SetTargetProperty(fadeAnimation, "(UIElement.Opacity)");

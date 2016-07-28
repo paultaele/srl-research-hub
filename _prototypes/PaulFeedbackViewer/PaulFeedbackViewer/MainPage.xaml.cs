@@ -326,32 +326,38 @@ namespace PaulFeedbackViewer
         private async void MySymbolCorrectnessPlayButton_Click(object sender, RoutedEventArgs e)
         {
             //
-            EnableTechniqueButtons(false);
+            //EnableStructureButtons(false);
+            MyImage.Visibility = Visibility.Collapsed;
 
             // get the model and input strokes
             Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);
             Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
+
+            // store and remove the original strokes from the ink canvas
+            List<InkStroke> originalStrokes = SketchTools.Clone(new List<InkStroke>(MyInkStrokes.GetStrokes()));
+            foreach (InkStroke stroke in MyInkStrokes.GetStrokes()) { stroke.Selected = true; }
+            MyInkStrokes.DeleteSelected();
 
             // set the animation colors
             SolidColorBrush modelBrush = new SolidColorBrush(Colors.Green) { Opacity = 1.0 };
             SolidColorBrush inputBrush = new SolidColorBrush(Colors.Red) { Opacity = 1.0 };
 
             // get the animations
-            int dotSize = 15;
-            List<Storyboard> modelStoryboards = Helper.DisplaySymbol(MyCanvas, model.Strokes, modelBrush, dotSize, STROKE_DURATION);
-            //List<Storyboard> modelStoryboards = Helper.DisplaySymbol(MyCanvas, model.Strokes, modelBrush, SMALL_DOT_SIZE, STROKE_DURATION);
-            //List<Storyboard> inputStoryboards = Helper.DisplaySymbol(MyCanvas, input.Strokes, inputBrush, SMALL_DOT_SIZE, STROKE_DURATION, model);
+            List<Storyboard> modelStoryboards = Helper.DisplaySymbol(MyCanvas, model.Strokes, modelBrush, SMALL_DOT_SIZE, STROKE_DURATION);
+            List<Storyboard> inputStoryboards = Helper.DisplaySymbol(MyCanvas, input.Strokes, inputBrush, StrokeVisuals.Size.Width, STROKE_DURATION);
 
             // animate the feedback
             foreach (Storyboard storyboard in modelStoryboards) { storyboard.Begin(); }
-            //foreach (Storyboard storyboard in inputStoryboards) { storyboard.Begin(); }
+            foreach (Storyboard storyboard in inputStoryboards) { storyboard.Begin(); }
 
             // re-add the original strokes to the ink canvas and re-enable return button
             int delay = STROKE_DURATION;
             await InteractionTools.Delay(delay);
+            MyInkStrokes.AddStrokes(originalStrokes);
 
             //
-            EnableTechniqueButtons(true);
+            //EnableStructureButtons(true);
+            MyImage.Visibility = Visibility.Visible;
         }
 
         #endregion
@@ -760,6 +766,7 @@ namespace PaulFeedbackViewer
 
         public readonly SolidColorBrush CORRECT_BRUSH = new SolidColorBrush(Colors.Green);
         public readonly SolidColorBrush INCORRECT_BRUSH = new SolidColorBrush(Colors.Red);
+        //public readonly SolidColorBrush SOLUTION_BRUSH = new SolidColorBrush(Colors.Black) { Opacity = 0.8, };
 
         public readonly int POINT_DURATION = 300000;
         public readonly int STROKE_DURATION = 15000000;
