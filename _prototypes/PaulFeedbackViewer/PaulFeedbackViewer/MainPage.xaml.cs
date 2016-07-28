@@ -720,14 +720,23 @@ namespace PaulFeedbackViewer
 
         #region Text Tap Interactions
 
+        private void MySummaryTitleText_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            MySummaryGrid.Visibility = Visibility.Visible;
+            MyStructureGrid.Visibility = Visibility.Collapsed;
+            MyTechniqueGrid.Visibility = Visibility.Collapsed;
+        }
+
         private void MyTechniqueTitleText_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            MySummaryGrid.Visibility = Visibility.Collapsed;
             MyStructureGrid.Visibility = Visibility.Collapsed;
             MyTechniqueGrid.Visibility = Visibility.Visible;
         }
 
         private void MyStructureTitleText_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
+            MySummaryGrid.Visibility = Visibility.Collapsed;
             MyStructureGrid.Visibility = Visibility.Visible;
             MyTechniqueGrid.Visibility = Visibility.Collapsed;
         }
