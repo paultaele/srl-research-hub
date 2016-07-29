@@ -76,7 +76,7 @@ namespace Srl
             }
             tuples.Sort((x, y) => x.Item1.CompareTo(y.Item1));
 
-            // test code
+            // pair the input strokes with their corresponding temporal stroke order
             inputStrokes = new List<InkStroke>();
             List<int> temporalOrders = new List<int>();
             foreach (var tuple in tuples)
@@ -137,7 +137,7 @@ namespace Srl
                 modelStrokes[minIndex] = null;
             }
 
-            // test code
+            // pair the temporal stroke order with the actual stroke order, and then sort by the temporal stroke order
             var pairs = new List<Tuple<int, int>>();
             for (int i = 0; i < temporalOrders.Count; ++i)
             {
@@ -149,14 +149,12 @@ namespace Srl
             }
             pairs.Sort((x, y) => x.Item1.CompareTo(y.Item1));
 
-            // test code
+            // get the list of assigned stroke order
             strokeOrders = new List<int>();
             foreach (var pair in pairs)
             {
                 strokeOrders.Add(pair.Item2);
             }
-
-            //
             myStrokeOrders = strokeOrders;
 
             // determine stroke order correctness

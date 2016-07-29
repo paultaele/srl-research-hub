@@ -283,11 +283,17 @@ namespace PaulFeedbackViewer
             Sketch model = myTemplates[MyCurrentIndex];
             Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
+            // train and run the recognizers
+            myStructureRecognizer.Train(model, myTemplates, input);
+            myTechniqueRecognizer.Train(model, input);
+            myStructureRecognizer.Run();
+            myTechniqueRecognizer.Run();
+
             // check the visual structure
-            CheckStructure(model, myTemplates, input);
+            CheckStructure(myStructureRecognizer);
 
             // check the written technique
-            CheckTechnique(model, input);
+            CheckTechnique(myTechniqueRecognizer);
         }
 
         private void MyRandomButton_Click(object sender, RoutedEventArgs e)
@@ -362,7 +368,11 @@ namespace PaulFeedbackViewer
 
         private void MyStrokeMatchPlayButton_Click(object sender, RoutedEventArgs e)
         {
+            // get the model and input strokes
+            Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);
+            Sketch input = Sketch.CreateStroke("", new List<InkStroke>(MyInkStrokes.GetStrokes()), myTimeCollection, 0, 0, BorderLength, BorderLength);
 
+            // TODO
         }
 
         #endregion
@@ -601,31 +611,27 @@ namespace PaulFeedbackViewer
 
         #region Helper Methods
 
-        private void CheckStructure(Sketch model, List<Sketch> templates, Sketch input)
+        private void CheckStructure(StructureRecognizer recognizer)
         {
-            // train and run the structure feedback recognizer
-            myStructureRecognizer.Train(model, templates, input);
-            myStructureRecognizer.Run();
-
             // get the structure feedback results
-            bool symbolCorrectnessResult = myStructureRecognizer.SymbolCorrectnessResult;
+            bool symbolCorrectnessResult = recognizer.SymbolCorrectnessResult;
+            bool strokeMatchResult = recognizer.StrokeMatchResult;
 
             // display the structure feedback results
             MySymbolCorrectnessResultText.Text = symbolCorrectnessResult ? "CORRECT" : "INCORRECT";
             MySymbolCorrectnessResultText.Foreground = symbolCorrectnessResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
+
+            MyStrokeMatchResultText.Text = strokeMatchResult ? "CORRECT" : "INCORRECT";
+            MyStrokeMatchResultText.Foreground = strokeMatchResult ? CORRECT_BRUSH : INCORRECT_BRUSH;
         }
 
-        private void CheckTechnique(Sketch model, Sketch input)
+        private void CheckTechnique(TechniqueRecognizer recognizer)
         {
-            // train and run the technique feedback recognizer
-            myTechniqueRecognizer.Train(model, input);
-            myTechniqueRecognizer.Run();
-
             // get the technique feedback results
-            bool strokeCountResult = myTechniqueRecognizer.StrokeCountResult;
-            bool strokeOrderResult = myTechniqueRecognizer.StrokeOrderResult;
-            bool strokeDirectionResult = myTechniqueRecognizer.StrokeDirectionResult;
-            bool strokeSpeedResult = myTechniqueRecognizer.StrokeSpeedResult;
+            bool strokeCountResult = recognizer.StrokeCountResult;
+            bool strokeOrderResult = recognizer.StrokeOrderResult;
+            bool strokeDirectionResult = recognizer.StrokeDirectionResult;
+            bool strokeSpeedResult = recognizer.StrokeSpeedResult;
 
             // display the technique feedback results
             MyStrokeCountResultText.Text = strokeCountResult ? "CORRECT" : "INCORRECT";
