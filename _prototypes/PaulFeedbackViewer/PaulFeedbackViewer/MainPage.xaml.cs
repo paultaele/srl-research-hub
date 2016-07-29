@@ -360,6 +360,11 @@ namespace PaulFeedbackViewer
             MyImage.Visibility = Visibility.Visible;
         }
 
+        private void MyStrokeMatchPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         #endregion
 
         #region Technique Feedback Button Interactions

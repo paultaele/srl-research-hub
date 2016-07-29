@@ -89,6 +89,10 @@
                             </Grid>
                         </Viewbox>
                     </Grid>
+
+                    <Grid Grid.Row="1">
+
+                    </Grid>
                 </Grid>
 
                 <!-- Structure Feedback -->
@@ -122,14 +126,15 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="0.75*"/>
                             <RowDefinition Height="0.75*"/>
-                            <RowDefinition Height="8.5*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="7*"/>
                         </Grid.RowDefinitions>
 
                         <!-- 1. Symbol Correctness Feedback-->
                         <Viewbox Grid.Row="0" HorizontalAlignment="Left">
                             <TextBlock Text="Is the symbol correct?"/>
                         </Viewbox>
-
                         <Grid Grid.Row="1" Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -142,6 +147,25 @@
 
                             <Viewbox Grid.Column="1" HorizontalAlignment="Left">
                                 <TextBlock Name="MySymbolCorrectnessResultText" Text=""/>
+                            </Viewbox>
+                        </Grid>
+                        
+                        <!-- 2. Stroke Match Feedback -->
+                        <Viewbox Grid.Row="2" HorizontalAlignment="Left">
+                            <TextBlock Text="Do the strokes match?"/>
+                        </Viewbox>
+                        <Grid Grid.Row="3" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Viewbox Grid.Column="0" Margin="0,0,10,0">
+                                <Button Name="MyStrokeMatchPlayButton" Content="▶" Click="MyStrokeMatchPlayButton_Click"/>
+                            </Viewbox>
+
+                            <Viewbox Grid.Column="1" HorizontalAlignment="Left">
+                                <TextBlock Name="MyStrokeMatchResultText" Text=""/>
                             </Viewbox>
                         </Grid>
                     </Grid>

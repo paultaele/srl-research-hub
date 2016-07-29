@@ -59,6 +59,11 @@ namespace PaulFeedbackViewer
             return isCorrect;
         }
 
+        private bool StrokeMatchTest(Sketch model, Sketch input)
+        {
+            return false;
+        }
+
         #endregion
 
         #region Fields
