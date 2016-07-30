@@ -128,7 +128,13 @@
                             <RowDefinition Height="0.75*"/>
                             <RowDefinition Height="0.75*"/>
                             <RowDefinition Height="0.75*"/>
-                            <RowDefinition Height="7*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="2.5*"/>
                         </Grid.RowDefinitions>
 
                         <!-- 1. Symbol Correctness Feedback-->
@@ -150,9 +156,9 @@
                             </Viewbox>
                         </Grid>
                         
-                        <!-- 2. Stroke Match Feedback -->
+                        <!-- 2. Stroke Bounds Feedback -->
                         <Viewbox Grid.Row="2" HorizontalAlignment="Left">
-                            <TextBlock Text="Do the strokes match?"/>
+                            <TextBlock Text="Do the strokes bounds strongly overlap?"/>
                         </Viewbox>
                         <Grid Grid.Row="3" Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
@@ -161,13 +167,29 @@
                             </Grid.ColumnDefinitions>
 
                             <Viewbox Grid.Column="0" Margin="0,0,10,0">
-                                <Button Name="MyStrokeMatchPlayButton" Content="▶" Click="MyStrokeMatchPlayButton_Click"/>
+                                <Button Name="MyStrokeBoundsPlayButton" Content="▶" Click="MyStrokeBoundsPlayButton_Click"/>
                             </Viewbox>
 
                             <Viewbox Grid.Column="1" HorizontalAlignment="Left">
                                 <TextBlock Name="MyStrokeMatchResultText" Text=""/>
                             </Viewbox>
                         </Grid>
+                        
+                        <!-- 3. Stroke Lengths Feedback -->
+                        <Viewbox Grid.Row="4" HorizontalAlignment="Left">
+                            <TextBlock Text="Do the stroke lengths within range?"/>
+                        </Viewbox>
+                        
+                        <!-- 4. Symbol Accuracy Feedback -->
+                        <Viewbox Grid.Row="6" HorizontalAlignment="Left">
+                            <TextBlock Text="Are the strokes drawn accurately?"/>
+                        </Viewbox>
+
+                        <!-- 5. Symbol Precision Feedback -->
+                        <Viewbox Grid.Row="8" HorizontalAlignment="Left">
+                            <TextBlock Text="Are the strokes drawn precisely?"/>
+                        </Viewbox>
+                        
                     </Grid>
 
                 </Grid>

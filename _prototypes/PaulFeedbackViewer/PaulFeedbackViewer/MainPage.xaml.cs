@@ -366,7 +366,7 @@ namespace PaulFeedbackViewer
             MyImage.Visibility = Visibility.Visible;
         }
 
-        private void MyStrokeMatchPlayButton_Click(object sender, RoutedEventArgs e)
+        private void MyStrokeBoundsPlayButton_Click(object sender, RoutedEventArgs e)
         {
             // get the model and input strokes
             Sketch model = SketchTools.Clone(myTemplates[MyCurrentIndex]);

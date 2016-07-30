@@ -31,7 +31,7 @@ namespace PaulFeedbackViewer
         {
             // Symbol Correctness Test
             SymbolCorrectnessResult = SymbolCorrectnessTest(myModel, myTemplates, myInput);
-            StrokeMatchResult = StrokeMatchTest(myModel, myInput);
+            StrokeMatchResult = StrokeBoundsTest(myModel, myInput);
         }
 
         #endregion
@@ -61,7 +61,7 @@ namespace PaulFeedbackViewer
         }
 
         // TODO
-        private bool StrokeMatchTest(Sketch model, Sketch input)
+        private bool StrokeBoundsTest(Sketch model, Sketch input)
         {
             // NOTE: refer to TechniqueRecognizer's StrokeOrderTest(...) method
 
