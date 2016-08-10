@@ -314,6 +314,11 @@ namespace PaulFeedbackViewer
             MyRightSide.Visibility = Visibility.Collapsed;
 
             //
+            MySummaryGrid.Visibility = Visibility.Visible;
+            MyStructureGrid.Visibility = Visibility.Collapsed;
+            MyTechniqueGrid.Visibility = Visibility.Collapsed;
+
+            //
             MyGrid.ColumnDefinitions[0].Width = new GridLength(2.5, GridUnitType.Star);
             MyGrid.ColumnDefinitions[1].Width = new GridLength(5, GridUnitType.Star);
             MyGrid.ColumnDefinitions[2].Width = new GridLength(2.5, GridUnitType.Star);

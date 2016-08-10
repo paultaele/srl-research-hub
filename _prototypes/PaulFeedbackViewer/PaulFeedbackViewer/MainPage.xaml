@@ -91,7 +91,45 @@
                     </Grid>
 
                     <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="0.75*"/>
+                            <RowDefinition Height="3.25*"/>
+                        </Grid.RowDefinitions>
 
+                        <Viewbox Grid.Row="0" HorizontalAlignment="Left">
+                            <TextBlock Text="STRUCTURE OVERVIEW" FontWeight="Bold"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="1" HorizontalAlignment="Left">
+                            <TextBlock Text="Stroke Correctness"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="2" HorizontalAlignment="Left">
+                            <TextBlock Text="Stroke Bounds"/>
+                        </Viewbox>
+
+                        <Viewbox Grid.Row="4" HorizontalAlignment="Left">
+                            <TextBlock Text="TECHNIQUE OVERVIEW" FontWeight="Bold"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="5" HorizontalAlignment="Left">
+                            <TextBlock Text="Stroke Count"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="6" HorizontalAlignment="Left">
+                            <TextBlock Text="Stroke Order"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="7" HorizontalAlignment="Left">
+                            <TextBlock Text="Stroke Direction"/>
+                        </Viewbox>
+                        <Viewbox Grid.Row="8" HorizontalAlignment="Left">
+                            <TextBlock Text="Stroke Speed"/>
+                        </Viewbox>
+                        
                     </Grid>
                 </Grid>
 
