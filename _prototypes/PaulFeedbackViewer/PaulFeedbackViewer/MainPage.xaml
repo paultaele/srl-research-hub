@@ -111,7 +111,7 @@
                             <TextBlock Text="Stroke Correctness"/>
                         </Viewbox>
                         <Viewbox Grid.Row="2" HorizontalAlignment="Left">
-                            <TextBlock Text="Stroke Bounds"/>
+                            <TextBlock Text="Stroke Proportion"/>
                         </Viewbox>
 
                         <Viewbox Grid.Row="4" HorizontalAlignment="Left">
@@ -199,7 +199,7 @@
                         
                         <!-- 2. Stroke Bounds Feedback -->
                         <Viewbox Grid.Row="2" HorizontalAlignment="Left">
-                            <TextBlock Text="Do the strokes' bounds closely match?"/>
+                            <TextBlock Text="Are the strokes' bounds proportionally correct?"/>
                         </Viewbox>
                         <Grid Grid.Row="3" Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>

@@ -620,7 +620,7 @@ namespace PaulFeedbackViewer
         {
             // get the structure feedback results
             bool symbolCorrectnessResult = recognizer.SymbolCorrectnessResult;
-            bool strokeMatchResult = recognizer.StrokeMatchResult;
+            bool strokeMatchResult = recognizer.StrokeBoundsResult;
 
             // display the structure feedback results
             MySymbolCorrectnessResultText.Text = symbolCorrectnessResult ? "CORRECT" : "INCORRECT";
