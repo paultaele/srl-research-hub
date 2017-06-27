@@ -55,6 +55,9 @@
             <StackPanel Grid.Row="2" Margin="0 30 0 0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Button Name="AddPromptElementsButton" Margin="10 0 10 0" Click="AddPromptElementsButton_Click">Add</Button>
                 <Button Name="RemovePromptElementsButton" Margin="10 0 10 0" Click="RemovePromptElementsButton_Click">Remove</Button>
+                <Button Name="InsertPromptElementsButton" Margin="10 0 0 0" Click="InsertPromptElementsButton_Click">Insert</Button>
+                <TextBlock>@</TextBlock>
+                <TextBox Name="InsertIndexText"></TextBox>
             </StackPanel>
 
         </Grid>

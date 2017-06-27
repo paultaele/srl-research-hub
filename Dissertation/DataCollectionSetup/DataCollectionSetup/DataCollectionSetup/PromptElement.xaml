@@ -12,76 +12,76 @@
     <Border BorderBrush="Black" BorderThickness="1">
         <Grid Background="LightGray" Padding="10" VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>      <!-- REMOVE CHECKBOX -->
-                <ColumnDefinition Width="5*"/>     <!-- POSITION -->
-                <ColumnDefinition Width="30*"/>     <!-- LOAD IMAGE -->
-                <ColumnDefinition Width="10*"/>     <!-- LABEL -->
-                <ColumnDefinition Width="10*"/>     <!-- COUNT -->
-                <ColumnDefinition Width="30*"/>     <!-- DISPLAY TYPE -->
+                <ColumnDefinition Width=".5*"/>      <!-- REMOVE CHECKBOX -->
+                <ColumnDefinition Width=".5*"/>     <!-- POSITION -->
+                <ColumnDefinition Width="3.5*"/>     <!-- LOAD IMAGE -->
+                <ColumnDefinition Width="1*"/>     <!-- LABEL -->
+                <ColumnDefinition Width="1*"/>     <!-- COUNT -->
+                <ColumnDefinition Width="3.5*"/>     <!-- DISPLAY TYPE -->
             </Grid.ColumnDefinitions>
 
             <!-- REMOVE CHECKBOX-->
             <StackPanel Grid.Column="0">
-            <TextBlock>Remove?</TextBlock>
-            <CheckBox Name="MyRemoveCheckBox"/>
-        </StackPanel>
+                <TextBlock>Remove?</TextBlock>
+                <CheckBox Name="MyRemoveCheckBox"/>
+            </StackPanel>
 
             <!-- POSITION TEXTBOX-->
             <StackPanel Grid.Column="1">
-            <TextBlock>Position:</TextBlock>
-            <TextBlock Name="MyPositionText"/>
-        </StackPanel>
+                <TextBlock>Position:</TextBlock>
+                <TextBlock Name="MyPositionText"/>
+            </StackPanel>
 
             <!-- LOAD IMAGE-->
             <Grid Grid.Column="2" Padding="10">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0">
-                <TextBlock>Load Image:</TextBlock>
-            </StackPanel>
+                <StackPanel Grid.Row="0">
+                    <TextBlock>Load Image:</TextBlock>
+                </StackPanel>
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0">Open</Button>
-                <TextBox Grid.Column="1" Name="MyLoadText"></TextBox>
+                    <Button Grid.Column="0">Load</Button>
+                    <TextBox Grid.Column="1" Name="MyLoadText"></TextBox>
+                </Grid>
             </Grid>
-        </Grid>
 
             <!-- LABEL TEXTBOX-->
             <Grid Grid.Column="3" Padding="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0">Label:</TextBlock>
-            <TextBox Grid.Row="1" Name="MyLabelText"/>
-        </Grid>
+                <TextBlock Grid.Row="0">Label:</TextBlock>
+                <TextBox Grid.Row="1" Name="MyLabelText"/>
+            </Grid>
 
             <!-- COUNT TEXTBOX-->
             <Grid Grid.Column="4" Padding="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0">Count:</TextBlock>
-            <TextBox Grid.Row="1" Name="MyCountText" Width="5"/>
-        </Grid>
+                <TextBlock Grid.Row="0">Count:</TextBlock>
+                <TextBox Grid.Row="1" Name="MyCountText" Width="5"/>
+            </Grid>
 
             <!-- DISPLAY TYPE -->
             <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Center" Padding="10">
-            <RadioButton GroupName="DisplayGroup" IsChecked="True">Trace</RadioButton>
-            <RadioButton GroupName="DisplayGroup">Preview</RadioButton>
-            <RadioButton GroupName="DisplayGroup">None</RadioButton>
-        </StackPanel>
+                <RadioButton Name="MyTraceButton" IsChecked="True">Trace</RadioButton>
+                <RadioButton Name="MyReferenceButton">Reference</RadioButton>
+                <RadioButton Name="MyMemoryButton">Memory</RadioButton>
+            </StackPanel>
     
         </Grid>
     </Border>

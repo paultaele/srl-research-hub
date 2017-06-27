@@ -19,17 +19,25 @@ namespace DataCollectionSetup
 {
     public sealed partial class PromptElement : UserControl
     {
-        public PromptElement(int index)
+        public PromptElement(int position, int count)
         {
             this.InitializeComponent();
 
             //
-            MyPositionText.Text = "" + index;
+            this.MyPositionText.Text = "" + position;
+
+            //
+            this.MyTraceButton.GroupName = DISPLAY_GROUP_NAME + "_" + count;
+            this.MyReferenceButton.GroupName = DISPLAY_GROUP_NAME + "_" + count;
+            this.MyMemoryButton.GroupName = DISPLAY_GROUP_NAME + "_" + count;
         }
 
         public bool IsChecked { get { return MyRemoveCheckBox.IsChecked.Value; } }
         public string LoadName {  get { return MyLoadText.Text; } }
         public string LabelName { get { return MyLabelText.Text; } }
         public string CountName { get { return MyCountText.Text; } }
+        public string PositionName { get { return MyPositionText.Text; } set { MyPositionText.Text = value; } }
+
+        public static readonly String DISPLAY_GROUP_NAME = "DisplayGroup";
     }
 }

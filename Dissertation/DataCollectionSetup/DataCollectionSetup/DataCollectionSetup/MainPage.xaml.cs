@@ -43,9 +43,9 @@ namespace DataCollectionSetup
 
         private void AddPromptElementsButton_Click(object sender, RoutedEventArgs e)
         {
-            int count = MyPromptElementsStack.Children.Count;
-            PromptElement currentPromptElement = new PromptElement(count);
-            currentPromptElement.Name = "myPromptElement" + MyCounter++;
+            PromptElement currentPromptElement = new PromptElement(MyPromptElementsStack.Children.Count, MyCounter);
+            currentPromptElement.Name = "myPromptElement" + MyCounter;
+            MyCounter++;
 
             MyPromptElementsStack.Children.Add(currentPromptElement);
         }
@@ -61,10 +61,70 @@ namespace DataCollectionSetup
                 }
             }
 
+            if (promptElementsToDelete.Count == 0) { return; }
+
             foreach (var promptElementToDelate in promptElementsToDelete)
             {
                 MyPromptElementsStack.Children.Remove(promptElementToDelate);
             }
+
+            for (int i = 0; i < MyPromptElementsStack.Children.Count; ++i)
+            {
+                var promptElement = (PromptElement)(MyPromptElementsStack.Children[i]);
+                promptElement.PositionName = "" + i;
+            }
+        }
+
+        private void InsertPromptElementsButton_Click(object sender, RoutedEventArgs e)
+        {
+            // check if the value is valid
+            string value = InsertIndexText.Text;
+            int index;
+            if (!int.TryParse(value, out index)) {
+                InsertIndexText.Text = ""; // clear the text box
+                return; // do nothing
+            }
+
+            //
+            int count = MyPromptElementsStack.Children.Count;
+
+            // case: stack is empty
+            if (count == 0)
+            {
+                PromptElement currentPromptElement = new PromptElement(0, MyCounter);
+                currentPromptElement.Name = "myPromptElement" + MyCounter;
+                MyCounter++;
+
+                MyPromptElementsStack.Children.Add(currentPromptElement);
+            }
+
+            // case: index exceeds stack size
+            else if (index >= count)
+            {
+                PromptElement currentPromptElement = new PromptElement(count, MyCounter);
+                currentPromptElement.Name = "myPromptElement" + MyCounter;
+                MyCounter++;
+
+                MyPromptElementsStack.Children.Add(currentPromptElement);
+            }
+
+            //
+            else
+            {
+                PromptElement currentPromptElement = new PromptElement(index, MyCounter);
+                currentPromptElement.Name = "myPromptElement" + MyCounter;
+                MyCounter++;
+
+                //
+                MyPromptElementsStack.Children.Insert(index, currentPromptElement);
+                for (int i = index + 1; i < MyPromptElementsStack.Children.Count; ++i)
+                {
+                    var promptElement = (PromptElement)MyPromptElementsStack.Children[i];
+                    promptElement.PositionName = "" + i;
+                }
+            }
+
+            this.InsertIndexText.Text = "";
         }
 
         private int MyCounter { get; set; }
